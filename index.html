@@ -1,0 +1,441 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SmashLabs - שחרר את הזעם שלך!</title>
+    <meta name="description" content="חדרי זעם, צבע, זריקת גרזנים ומרכז גרפיטי בתל אביב. המקום הכי מגניב לשחרר לחצים - בטוח, מהנה ומשחרר">
+    <meta name="keywords" content="חדר זעם, חדר צבע, זריקת גרזנים, גרפיטי, תל אביב, פעילויות, בילוי">
+    <meta name="author" content="SmashLabs">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://smashlabs.co.il/">
+    <meta property="og:title" content="SmashLabs - שחרר את הזעם שלך!">
+    <meta property="og:description" content="חדרי זעם, צבע, זריקת גרזנים ומרכז גרפיטי בתל אביב">
+    <meta property="og:image" content="https://smashlabs.co.il/og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://smashlabs.co.il/">
+    <meta property="twitter:title" content="SmashLabs - שחרר את הזעם שלך!">
+    <meta property="twitter:description" content="חדרי זעם, צבע, זריקת גרזנים ומרכז גרפיטי בתל אביב">
+    <meta property="twitter:image" content="https://smashlabs.co.il/og-image.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/navbar.css?v=20260126c">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/user-auth.css">
+    <link rel="stylesheet" href="css/nagishli.css">
+    <link rel="stylesheet" href="css/whatsapp-widget.css">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "SmashLabs",
+            "description": "חדרי זעם, צבע, זריקת גרזנים ומרכז גרפיטי",
+            "url": "https://smashlabs.co.il",
+            "telephone": "052-123-4567",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "רחוב הגרפיטי 15",
+                "addressLocality": "תל אביב",
+                "addressCountry": "IL"
+            },
+            "openingHours": [
+                "Mo-Th 10:00-22:00",
+                "Fr-Sa 09:00-23:00"
+            ],
+            "priceRange": "$$"
+        }
+    </script>
+
+    <!-- NagishLi Accessibility Plugin -->
+    <script>
+        var nl_lang = "he"; // Hebrew language
+        var nl_pos = "BL"; // Bottom Left position
+        var nl_color = "blue"; // Blue color theme
+        var nl_compact = "0"; // Full menu mode
+        var nl_dir = "nl-files"; // Directory for NagishLi files
+        var nl_contact = "u:info+d:"; // Contact email will be info@domain
+
+        // Debug function
+        window.addEventListener('load', function() {
+            console.log('Page loaded, checking for NagishLi...');
+            console.log('NagishLi element:', document.querySelector('nagishli'));
+            console.log('jQuery available:', typeof jQuery !== 'undefined');
+            console.log('nl_lang:', typeof nl_lang !== 'undefined' ? nl_lang : 'undefined');
+
+            // Check for NagishLi elements after a delay
+            setTimeout(function() {
+                const nagishliElements = document.querySelectorAll('[id*="nagishli"], [class*="nagishli"], [class*="nlap"]');
+                console.log('NagishLi elements found:', nagishliElements);
+                nagishliElements.forEach(el => {
+                    console.log('Element:', el, 'Style:', window.getComputedStyle(el));
+                });
+            }, 2000);
+        });
+    </script>
+    <style>
+        /* Force NagishLi visibility - Debug */
+        
+        [id*="nagishli"],
+        [class*="nagishli"],
+        [class*="nlap"] {
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 999999 !important;
+            display: block !important;
+        }
+    </style>
+    <nagishli></nagishli>
+    <script src="js/nagishli.js"></script>
+    <script src="js/header-inject.js"></script>
+</head>
+
+<body>
+    <div id="site-header"></div>
+
+    <main id="main" tabindex="-1" style="padding-top: 120px !important;">
+        <!-- Hero Section -->
+        <section class="hero hero-bg-main" aria-label="הירו" style="padding-top: 100px !important;">
+            <div class="hero-content fade-in">
+                <h1 class="graffiti-text">שחרר את הזעם שלך!</h1>
+                <p class="graffiti-text">המקום הכי מגניב לשחרר לחצים - בטוח, מהנה ומשחרר</p>
+                <a href="select-package.html" class="cta-button" role="button" aria-label="הזמן עכשיו">הזמן עכשיו</a>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="section fade-in" id="about" style="padding-top: 100px !important;">
+            <div class="container">
+                <h2 class="section-title graffiti-text" style="margin-top: 50px !important;">ברוכים הבאים</h2>
+                <div class="card">
+                    <p class="intro-text">
+                        ברוכים הבאים לסמאש לאב ספלאש – מתחם הפעילויות שמשפריץ אדרנלין והנאה עתקית!<br><br> בין אם אתם מחפשים להוציא אנרגיה בצעם, לגלות את האמן שבכם או לחגוג אירועים מיוחדים – סמאש לאב ספלאש הוא היעד המושלם עבורכם! כאן, במתחם המרתיב שלנו, תמצאו מגוון רחב של פעילויות
+                        שיתאימו לכל הגילאים ולכל הטעמים.<br><br>
+                        <strong>חדר זעם</strong>: שחררו מתחים ורגשות באווירה בטוחה ומיוחדת. חדר הזעם שלנו מציע לכם את האפשרות להתפרק בכיף, עם כל הכלים לכך.<br><br>
+                        <strong>חדר הטלגרנטים</strong>: הכניסו את האתגר לחייכם! חדר ההטלה מציע חווית יחודית המאפשרת לכם לפתח את שבירת הגבול ולהרגיש את האדרנלין זורם.<br><br>
+                        <strong>חדר צבע</strong>: התנסו בעבודת יצירה יחודית ומשתוללות מהנה עם בכמה מהחומרים המרגשים ביותר שיש. חדר הצבע שלנו מספק את כל מה שאתם צריכים כדי לשחרר את היצירתיות שלכם.<br><br>
+                        <strong>האקדמיה לגרפיטי ואומנות רחוב</strong>: גלו את סודות המורכבויות של האומנות המיוחדת הזו עם סדנאות שמיועדות לכל הרמות. גם אם אתם מתחילים או אם קצועיים, כאן תמצאו מקום לביטוי אישי.<br><br>סמאש לאב ספלאש הוא המקום שבו האדרנלין פוגש את היצירתיות, ומציע לכל אחד ואחת באשר הוא/היא הזדמנות לחגוג, להתנסות ולגלות דברים חדשים. נצלו את יום חופשיכם, חוגגו עם חברים ובואו לפלוא עולמות חדשים של כיף והנאה במתחם שלנו!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Selection Section -->
+        <section class="section fade-in" id="quick-select" aria-label="בחירה מהירה">
+            <div class="container">
+                <h2 class="section-title graffiti-text">בחר את החוויה שלך</h2>
+
+                <!-- Symmetric 2x2 Grid for Quick Selection -->
+                <div class="grinders-container">
+                    <div class="grinder-quadrant" onclick="window.location.href='paint-room.html'" role="button" tabindex="0" aria-label="חדר צבע">
+                        <h3>חדר צבע</h3>
+                        <p>התנסו בעבודת יצירה יחודית ומשתוללות מהנה עם בכמה מהחומרים המרגשים ביותר שיש. חדר הצבע שלנו מספק את כל מה שאתם צריכים כדי לשחרר את היצירתיות שלכם.</p>
+                    </div>
+                    <div class="grinder-quadrant" onclick="window.location.href='rage-room.html'" role="button" tabindex="0" aria-label="חדר זעם">
+                        <h3>חדר זעם</h3>
+                        <p>שחררו מתחים ורגשות באווירה בטוחה ומיוחדת. חדר הזעם שלנו מציע לכם את האפשרות להתפרק בכיף, עם כל הכלים לכך.</p>
+                    </div>
+                    <div class="grinder-quadrant" onclick="window.location.href='throwing-axes.html'" role="button" tabindex="0" aria-label="הטלת גרנטים">
+                        <h3>הטלת גרנטים</h3>
+                        <p>חוויה צבעונית אומגרת הצעים אחר חדר זעם - למאשר מה שכתבת</p>
+                    </div>
+                    <div class="grinder-quadrant" onclick="window.location.href='graffiti-center.html'" role="button" tabindex="0" aria-label="מרכז גרפיטי">
+                        <h3>מרכז גרפיטי</h3>
+                        <p>האקדמיה לגרפיטי ואומנות רחוב: גלו את סודות המורכבויות של האומנות המיוחדת הזו עם סדנאות שמיועדות לכל הרמות. גם אם אתם מתחילים או אם קצועיים, כאן תמצאו מקום לביטוי אישי.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Keyboard support for grinder quadrants -->
+        <script>
+            document.querySelectorAll('.grinder-quadrant').forEach(el => {
+                el.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        el.click();
+                    }
+                });
+            });
+        </script>
+
+        <!-- Detailed Rooms Section -->
+        <section class="section fade-in" id="rooms" aria-label="החדרים שלנו">
+            <div class="container">
+                <h2 class="section-title graffiti-text">החדרים שלנו</h2>
+
+                <!-- Symmetric 2x2 Grid for Room Cards -->
+                <div class="rooms-grid rooms-grid-responsive">
+                    <div class="room-card">
+                        <h3 class="graffiti-text">חדר צבע</h3>
+                        <img src="photos/paintroom.jpeg" alt="חדר צבע עם קירות צבעוניים, מברשות ודליי צבע" class="room-img" width="400" height="200" loading="lazy" decoding="async">
+                        <p>
+                            בחירית צבעים שפרפרים וחיי ורבי מנא מלאים בצבע משלב לקבוצות משפחות וזוגות.
+                        </p>
+                        <ul class="feature-list">
+                            <li>✓ ציוד מקצועי מלא</li>
+                            <li>✓ בגדי הגנה</li>
+                            <li>✓ הדרכה מלאה</li>
+                            <li>✓ מקום לקבוצות גדולות</li>
+                        </ul>
+                        <a href="paint-room.html" class="cta-button" role="button" aria-label="הזמן חדר צבע">הזמן חדר צבע</a>
+                    </div>
+                    <div class="room-card">
+                        <h3 class="graffiti-text">חדר זעם</h3>
+                        <img src="photos/RAGEROOM.jpeg" alt="חדר זעם עם חפצים לשבירה וציוד מגן" class="room-img" width="400" height="200" loading="lazy" decoding="async">
+                        <p>
+                            שברו כל מה שבא לכם - טלוויזיות, מחשבים, כלים ועוד. החווייה הכי משחררת לשחרר כעס ולחצים מהיום יום.
+                        </p>
+                        <ul class="feature-list">
+                            <li>✓ מגוון חפצים לשבירה</li>
+                            <li>✓ ציוד הגנה מלא</li>
+                            <li>✓ סביבה בטוחה</li>
+                            <li>✓ הדרכה מקצועית</li>
+                        </ul>
+                        <a href="rage-room.html" class="cta-button" role="button" aria-label="הזמן חדר זעם">הזמן חדר זעם</a>
+                    </div>
+                    <div class="room-card">
+                        <h3 class="graffiti-text">חדר הטלתגרנטים</h3>
+                        <img src="photos/throwingaxs.jpeg" alt="אדם זורק גרזן למטרה בחדר זריקת גרזנים" class="room-img" width="400" height="200" loading="lazy" decoding="async">
+                        <p>
+                            למדו לזרוק גרזנים כמו אמיתיים! משחק כיף ומאתגר שמשלב דיוק, כוח וריכוז מתאים לכולם!
+                        </p>
+                        <ul class="feature-list">
+                            <li>✓ הדרכה מקצועית</li>
+                            <li>✓ גרזנים איכותיים</li>
+                            <li>✓ מטרות מקצועיות</li>
+                            <li>✓ תחרויות וצ'לנג'ים</li>
+                        </ul>
+                        <a href="throwing-axes.html" class="cta-button" role="button" aria-label="הזמן זריקת גרזנים">הזמן זריקת גרזנים</a>
+                    </div>
+                    <div class="room-card">
+                        <h3 class="graffiti-text">מרכז גרפיטי</h3>
+                        <img src="photos/grafiiti.jpeg" alt="מרכז גרפיטי עם קירות מצוירים וספריי צבע" class="room-img" width="400" height="200" loading="lazy" decoding="async">
+                        <p>
+                            למדו טכניקות גרפיטי מקצועיות, יצרו עבודות אמנות על קירות חוקיים ותהיו חלק מקהילת האמנים שלנו.
+                        </p>
+                        <ul class="feature-list">
+                            <li>✓ סדנאות גרפיטי</li>
+                            <li>✓ חומרים מקצועיים</li>
+                            <li>✓ מדריכים מקצועיים</li>
+                            <li>✓ קירות חוקיים לאמנות</li>
+                        </ul>
+                        <a href="graffiti-center.html" class="cta-button" role="button" aria-label="הזמן סדנת גרפיטי">הזמן סדנת גרפיטי</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="section fade-in" id="contact" aria-label="צור קשר">
+            <div class="container">
+                <h2 class="section-title graffiti-text">צור קשר</h2>
+
+                <!-- Symmetric Contact Grid -->
+                <div class="contact-grid">
+                    <div class="contact-card">
+                        <h3 class="graffiti-text">פרטי התקשרות</h3>
+                        <div class="contact-info">
+                            <p><strong>טלפון:</strong> <a href="tel:0504429195" aria-label="התקשר לטלפון 0504429195">0504429195</a></p>
+                            <p><strong>אימייל:</strong> <a href="mailto:Smashlab.nahariya@gmail.com" aria-label="שלח אימייל לכתובת Smashlab.nahariya@gmail.com">Smashlab.nahariya@gmail.com</a></p>
+                            <p><strong>כתובת:</strong> ולפסון 9 נהרייה</p>
+                            <p><strong>שעות פתיחה:</strong></p>
+                            <p>א' - ו': 11:00 - 22:00</p>
+                            <p>שבת: 11:00 - 18:00</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <h3 class="graffiti-text">הזמנה מהירה</h3>
+                        <p>התקשרו עכשיו או שלחו הודעה ונחזור אליכם בתוך דקות!</p>
+                        <div class="quick-actions">
+                            <a href="tel:0504429195" class="cta-button" role="button" aria-label="התקשר עכשיו">התקשר עכשיו</a>
+                            <a href="https://wa.me/9720504429195" class="cta-button" role="button" aria-label="שלח הודעת וואטסאפ">וואטסאפ</a>
+                            <a href="order.html" class="cta-button" role="button" aria-label="הזמן אונלין">הזמן אונלין</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer role="contentinfo">
+        <div class="footer-inner">
+            <p class="graffiti-text" style="font-size: 1.5rem; margin-bottom: 1rem;">SmashLabs - המקום לשחרר לחצים!</p>
+            <p>כל הזכויות שמורות © 2025</p>
+            <div class="footer-links" style="margin: 1rem 0; text-align: center;">
+                <a href="accessibility.html" style="color: var(--muted); text-decoration: underline;">הצהרת נגישות</a> |
+                <a href="disclaimer.html" style="color: var(--muted); text-decoration: underline;">הסכם שימוש</a> |
+                <a href="cookie-settings.html" style="color: var(--muted); text-decoration: underline;">הגדרות עוגיות</a>
+            </div>
+            <div class="social-links">
+                <a href="#" title="פייסבוק" aria-label="פייסבוק">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                </a>
+                <a href="#" title="אינסטגרם" aria-label="אינסטגרם">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </a>
+                <a href="#" title="טוויטר" aria-label="טוויטר">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    </svg>
+                </a>
+                <a href="#" title="יוטיוב" aria-label="יוטיוב">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <!-- Scripts TEMPORARILY DISABLED FOR TESTING -->
+    <!-- <script src="scripts.js"></script>
+    <script src="js/order.js"></script>
+    <script src="js/enhancements.js"></script> -->
+
+    <!-- Cookie Management System -->
+    <script src="js/cookie-manager.js"></script>
+
+    <!-- Nagishli Accessibility System -->
+    <script src="js/nagishli.js"></script>
+
+    <!-- WhatsApp Widget -->
+    <script src="js/whatsapp-widget.js"></script>
+
+    <!-- Hamburger Menu JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('.nav-links');
+
+            if (hamburger && navLinks) {
+                hamburger.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                    hamburger.setAttribute('aria-expanded',
+                        hamburger.getAttribute('aria-expanded') === 'false' ? 'true' : 'false'
+                    );
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+                        navLinks.classList.remove('active');
+                        hamburger.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                // Close menu on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+                        navLinks.classList.remove('active');
+                        hamburger.setAttribute('aria-expanded', 'false');
+                        hamburger.focus();
+                    }
+                });
+            }
+
+            // Add keyboard navigation for grinder quadrants
+            const quadrants = document.querySelectorAll('.grinder-quadrant');
+            quadrants.forEach(quadrant => {
+                quadrant.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        quadrant.click();
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- HORIZONTAL SCROLL DEBUGGER -->
+    <script>
+        setTimeout(() => {
+            console.log('🔍 DEBUGGING HORIZONTAL SCROLL...');
+
+            const viewportWidth = window.innerWidth;
+            const documentScrollWidth = document.documentElement.scrollWidth;
+            const documentClientWidth = document.documentElement.clientWidth;
+
+            console.log(`Viewport: ${viewportWidth}px`);
+            console.log(`Document scroll width: ${documentScrollWidth}px`);
+            console.log(`Document client width: ${documentClientWidth}px`);
+
+            if (documentScrollWidth > documentClientWidth) {
+                console.log(`🚨 HORIZONTAL SCROLL DETECTED! Overflow: ${documentScrollWidth - documentClientWidth}px`);
+
+                // Find ALL elements that extend beyond viewport
+                const allElements = document.querySelectorAll('*');
+                const culprits = [];
+
+                allElements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    const style = window.getComputedStyle(el);
+
+                    // Check if element extends beyond viewport
+                    if (rect.right > viewportWidth || rect.left < 0 || rect.width > viewportWidth) {
+                        culprits.push({
+                            element: el,
+                            tag: el.tagName,
+                            class: el.className,
+                            id: el.id,
+                            rect: rect,
+                            position: style.position,
+                            left: style.left,
+                            right: style.right,
+                            width: style.width,
+                            transform: style.transform
+                        });
+                    }
+                });
+
+                console.log(`Found ${culprits.length} problematic elements:`);
+                culprits.forEach((c, i) => {
+                    console.log(`${i+1}. ${c.tag}${c.class ? '.' + c.class : ''}${c.id ? '#' + c.id : ''}`);
+                    console.log(`   Position: ${c.position}, Left: ${c.left}, Right: ${c.right}`);
+                    console.log(`   BoundingRect: left=${c.rect.left}, right=${c.rect.right}, width=${c.rect.width}`);
+                    console.log(`   Transform: ${c.transform}`);
+                    console.log('   Element:', c.element);
+
+                    // Highlight the element with red border
+                    c.element.style.border = '3px solid red';
+                    c.element.style.zIndex = '10000';
+                });
+
+                // Create visual indicator
+                const indicator = document.createElement('div');
+                indicator.innerHTML = `
+                    <div style="position: fixed; top: 0; left: 0; background: red; color: white; padding: 10px; z-index: 99999; font-size: 14px;">
+                        🚨 HORIZONTAL SCROLL DETECTED!<br>
+                        Viewport: ${viewportWidth}px<br>
+                        Document: ${documentScrollWidth}px<br>
+                        Overflow: ${documentScrollWidth - documentClientWidth}px<br>
+                        Check console for details
+                    </div>
+                `;
+                document.body.appendChild(indicator);
+            } else {
+                console.log('✅ No horizontal scroll detected');
+            }
+        }, 1000);
+    </script>
+    <script src="js/user-auth.js"></script>
+</body>
+
+</html>

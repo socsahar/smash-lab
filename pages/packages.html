@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בחר חבילה - SmashLabs</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="packages-page.css">
+</head>
+
+<body>
+    <div class="packages-page">
+        <header id="site-header"></header>
+
+        <main class="packages-main">
+            <section class="packages-hero">
+                <h1>יאללה אז בוא נסגור חבילה</h1>
+                <h2 class="packages-subtitle">מי מגיע לשחק?</h2>
+            </section>
+
+            <section class="packages-grid">
+                <article class="package-card" role="button" tabindex="0" aria-label="קוביה 1: מגיע לבד - צריך את הזמן של עצמי" data-cube="solo" onclick="navigateToPackage('solo')">
+                    <div class="package-card-header">
+                        <h3>קוביה 1</h3>
+                        <p class="package-card-title">מגיע לבד</p>
+                    </div>
+                    <p class="package-card-text">צריך את הזמן של עצמי</p>
+                </article>
+
+                <article class="package-card" role="button" tabindex="0" aria-label="קוביה 2: דייט זוגי - מגיעים לפתור בעיות" data-cube="couple" onclick="navigateToPackage('couple')">
+                    <div class="package-card-header">
+                        <h3>קוביה 2</h3>
+                        <p class="package-card-title">דייט זוגי</p>
+                    </div>
+                    <p class="package-card-text">מגיעים לפתור בעיות</p>
+                </article>
+
+                <article class="package-card" role="button" tabindex="0" aria-label="קוביה 3: משפחתי - אבא אמא וילדים עד 5 משתתפים" data-cube="family" onclick="navigateToPackage('family')">
+                    <div class="package-card-header">
+                        <h3>קוביה 3</h3>
+                        <p class="package-card-title">משפחתי</p>
+                    </div>
+                    <p class="package-card-text">אבא אמא וילדים (עד 5 משתתפים)</p>
+                </article>
+
+                <article class="package-card" role="button" tabindex="0" aria-label="קוביה 4: בנדה - כל החברה מגיעים עד 10 משתתפים" data-cube="group" onclick="navigateToPackage('group')">
+                    <div class="package-card-header">
+                        <h3>קוביה 4</h3>
+                        <p class="package-card-title">בנדה</p>
+                    </div>
+                    <p class="package-card-text">כל החברה מגיעים (עד 10 משתתפים)</p>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <footer id="site-footer"></footer>
+
+    <script src="../js/header-inject.js"></script>
+    <script src="../js/cookie-manager.js"></script>
+    <script src="../js/whatsapp-widget.js"></script>
+    <script src="packages.js"></script>
+</body>
+
+</html>

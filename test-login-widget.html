@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login Widget</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/user-auth.css">
+    <style>
+        .test-panel {
+            background: #222;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+        .test-panel h2 {
+            color: #ff6b00;
+            margin-bottom: 20px;
+        }
+        .test-panel button {
+            background: #ff6b00;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .test-panel button:hover {
+            background: #ff8800;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            background: #333;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <main style="padding: 40px 20px; min-height: 60vh;">
+        <div class="test-panel">
+            <h2>בדיקת Login Widget</h2>
+            <p>השתמש בכפתורים למטה כדי לדמות התחברות/התנתקות</p>
+            
+            <div>
+                <button onclick="simulateLogin()">דמה התחברות רגילה</button>
+                <button onclick="simulateAdminLogin()">דמה התחברות מנהל</button>
+                <button onclick="simulateLogout()">דמה התנתקות</button>
+                <button onclick="checkStatus()">בדוק סטטוס</button>
+            </div>
+
+            <div id="status"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SmashLabs</h3>
+                    <p>Test Page</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/user-auth.js"></script>
+    <link rel="stylesheet" href="css/navbar.css">
+    <script src="js/header-inject.js"></script>
+    <script>
+        function simulateLogin() {
+            const testUser = {
+                name: 'משתמש בדיקה',
+                email: 'test@example.com',
+                phone: '0501234567',
+                verified: true
+            };
+            localStorage.setItem('smashlabs_current_user', JSON.stringify(testUser));
+            console.log('Simulated regular login');
+            
+            // Trigger refresh
+            if (window.UserAuth && window.UserAuth.refresh) {
+                window.UserAuth.refresh();
+            }
+            
+            checkStatus();
+        }
+
+        function simulateAdminLogin() {
+            localStorage.setItem('smashlabs_admin_logged_in', 'true');
+            console.log('Simulated admin login');
+            
+            // Trigger refresh
+            if (window.UserAuth && window.UserAuth.refresh) {
+                window.UserAuth.refresh();
+            }
+            
+            checkStatus();
+        }
+
+        function simulateLogout() {
+            localStorage.removeItem('smashlabs_current_user');
+            localStorage.removeItem('smashlabs_admin_logged_in');
+            console.log('Simulated logout');
+            
+            // Trigger refresh
+            if (window.UserAuth && window.UserAuth.refresh) {
+                window.UserAuth.refresh();
+            }
+            
+            checkStatus();
+        }
+
+        function checkStatus() {
+            const currentUser = localStorage.getItem('smashlabs_current_user');
+            const isAdmin = localStorage.getItem('smashlabs_admin_logged_in');
+            const widget = document.getElementById('user-auth-widget');
+            
+            const status = {
+                'מצב ב-localStorage:': {
+                    'smashlabs_current_user': currentUser || 'לא קיים',
+                    'smashlabs_admin_logged_in': isAdmin || 'לא קיים'
+                },
+                'Widget קיים:': widget ? 'כן' : 'לא',
+                'תוכן Widget:': widget ? widget.innerHTML : 'אין widget'
+            };
+            
+            document.getElementById('status').textContent = JSON.stringify(status, null, 2);
+        }
+
+        // Check initial status
+        setTimeout(checkStatus, 1000);
+    </script>
+</body>
+</html>

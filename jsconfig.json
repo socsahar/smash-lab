@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "module": "ESNext",
+    "target": "ES6",
+    "lib": ["ES6", "DOM"],
+    "jsx": "preserve"
+  },
+  "exclude": [
+    "node_modules",
+    "**/node_modules/*",
+    "dist",
+    "build"
+  ],
+  "include": [
+    "js/**/*.js",
+    "api/**/*.js",
+    "*.js"
+  ]
+}

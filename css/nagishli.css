@@ -1,0 +1,571 @@
+/**
+ * Nagishli v2.3 - Accessibility Widget Styles
+ * Professional Hebrew-First Accessibility Solution
+ */
+
+
+/* Reset and base styles */
+
+#nagishli-widget,
+#nagishli-panel,
+.nagishli-announcer,
+.nagishli-skip-link,
+#nagishli-mask {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    direction: rtl;
+    text-align: right;
+}
+
+
+/* Widget button */
+
+#nagishli-widget {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    width: 60px !important;
+    height: 60px !important;
+    background: #0066cc !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3) !important;
+    user-select: none !important;
+    max-width: 60px !important;
+    max-height: 60px !important;
+}
+
+#nagishli-widget:hover {
+    background: #0052a3;
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 102, 204, 0.4);
+}
+
+#nagishli-widget:focus {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+}
+
+#nagishli-widget:active {
+    transform: scale(0.95);
+}
+
+.nagishli-widget-icon {
+    margin-bottom: 2px;
+}
+
+.nagishli-widget-text {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+
+/* Panel */
+
+#nagishli-panel {
+    position: fixed !important;
+    top: 50% !important;
+    right: 20px !important;
+    width: 350px !important;
+    max-width: 350px !important;
+    max-height: calc(100vh - 40px) !important;
+    background: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+    z-index: 999998 !important;
+    transform: translateY(-50%) translateX(100%) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: all 0.3s ease !important;
+    overflow: hidden !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    /* Ensure widget stays on the right side */
+    left: auto !important;
+}
+
+#nagishli-panel.nagishli-panel-open {
+    transform: translateY(-50%) translateX(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+.nagishli-panel-header {
+    background: linear-gradient(135deg, #0066cc, #004499);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nagishli-panel-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nagishli-logo {
+    font-weight: 700;
+    color: #ffd700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.nagishli-panel-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nagishli-panel-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nagishli-panel-close:focus {
+    outline: 2px solid #ffd700;
+    outline-offset: 2px;
+}
+
+.nagishli-panel-content {
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #f5f5f5;
+}
+
+.nagishli-panel-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.nagishli-panel-content::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.nagishli-panel-content::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.nagishli-panel-content::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+
+/* Controls */
+
+.nagishli-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.nagishli-control-group {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 20px;
+}
+
+.nagishli-control-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.nagishli-control-title {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nagishli-control-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.nagishli-control-item {
+    display: flex;
+    align-items: center;
+}
+
+
+/* Toggle switches */
+
+.nagishli-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    width: 100%;
+    position: relative;
+}
+
+.nagishli-toggle input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.nagishli-toggle-slider {
+    position: relative;
+    width: 48px;
+    height: 24px;
+    background: #ccc;
+    border-radius: 24px;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.nagishli-toggle-slider::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.nagishli-toggle input[type="checkbox"]:checked+.nagishli-toggle-slider {
+    background: #0066cc;
+}
+
+.nagishli-toggle input[type="checkbox"]:checked+.nagishli-toggle-slider::before {
+    transform: translateX(-24px);
+}
+
+.nagishli-toggle input[type="checkbox"]:focus+.nagishli-toggle-slider {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+}
+
+.nagishli-toggle-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    flex: 1;
+}
+
+.nagishli-toggle:hover .nagishli-toggle-label {
+    color: #0066cc;
+}
+
+
+/* Panel footer */
+
+.nagishli-panel-footer {
+    background: #f8f9fa;
+    padding: 16px 20px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nagishli-reset-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.nagishli-reset-btn:hover {
+    background: #c82333;
+}
+
+.nagishli-reset-btn:focus {
+    outline: 2px solid #dc3545;
+    outline-offset: 2px;
+}
+
+.nagishli-version {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+
+/* Accessibility enhancements */
+
+.nagishli-skip-link {
+    position: absolute !important;
+    left: -9999px !important;
+    z-index: 999999 !important;
+    padding: 8px 16px !important;
+    background: #000 !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    border-radius: 4px !important;
+    transition: all 0.2s ease !important;
+}
+
+.nagishli-skip-link:focus {
+    left: 8px !important;
+    top: 8px !important;
+    outline: 2px solid #ffd700 !important;
+    outline-offset: 2px !important;
+}
+
+
+/* Screen reader only content */
+
+.nagishli-announcer {
+    position: absolute !important;
+    left: -10000px !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+}
+
+
+/* Accessibility feature styles */
+
+
+/* High contrast mode */
+
+.nagishli-high-contrast {
+    filter: contrast(150%) brightness(110%);
+}
+
+.nagishli-high-contrast * {
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+
+.nagishli-high-contrast a {
+    color: #0000ff !important;
+    text-decoration: underline !important;
+}
+
+.nagishli-high-contrast a:visited {
+    color: #800080 !important;
+}
+
+
+/* Dyslexia font */
+
+.nagishli-dyslexia-font * {
+    font-family: 'OpenDyslexic', 'Comic Sans MS', cursive !important;
+}
+
+
+/* Link highlighting */
+
+.nagishli-highlight-links a {
+    background: #ffff00 !important;
+    color: #000 !important;
+    padding: 2px 4px !important;
+    border-radius: 3px !important;
+    text-decoration: underline !important;
+    font-weight: bold !important;
+}
+
+
+/* Enhanced cursor */
+
+.nagishli-enhanced-cursor {
+    cursor: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTQiIGZpbGw9IiMwMDY2Y2MiIGZpbGwtb3BhY2l0eT0iMC4zIi8+CjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjQiIGZpbGw9IiMwMDY2Y2MiLz4KPC9zdmc+'), auto !important;
+}
+
+
+/* Enhanced keyboard navigation */
+
+.nagishli-enhanced-keyboard *:focus {
+    outline: 3px solid #0066cc !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 5px rgba(0, 102, 204, 0.2) !important;
+}
+
+
+/* Color filters */
+
+.nagishli-color-filters {
+    filter: sepia(20%) saturate(70%);
+}
+
+
+/* Reading mask */
+
+.nagishli-reading-mask {
+    position: relative;
+}
+
+#nagishli-mask {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+    z-index: 9998 !important;
+    background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.8) 50%, transparent 60%) !important;
+    transition: background 0.1s ease !important;
+}
+
+
+/* Mobile responsiveness */
+
+@media (max-width: 768px) {
+    #nagishli-widget {
+        width: 56px !important;
+        height: 56px !important;
+        bottom: 16px !important;
+        right: 16px !important;
+        max-width: 56px !important;
+        max-height: 56px !important;
+    }
+    .nagishli-widget-text {
+        font-size: 9px !important;
+    }
+    #nagishli-panel {
+        right: 16px !important;
+        width: 320px !important;
+        max-width: 320px !important;
+        left: auto !important;
+    }
+    .nagishli-panel-header {
+        padding: 14px 16px !important;
+    }
+    .nagishli-panel-title {
+        font-size: 16px !important;
+    }
+    .nagishli-panel-content {
+        padding: 16px !important;
+        max-height: 300px !important;
+    }
+    .nagishli-controls {
+        gap: 20px !important;
+    }
+    .nagishli-control-group {
+        padding-bottom: 16px !important;
+    }
+    .nagishli-panel-footer {
+        padding: 12px 16px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #nagishli-widget {
+        width: 52px !important;
+        height: 52px !important;
+        bottom: 12px !important;
+        right: 12px !important;
+        max-width: 52px !important;
+        max-height: 52px !important;
+    }
+    .nagishli-widget-text {
+        font-size: 8px !important;
+    }
+    #nagishli-panel {
+        right: 12px !important;
+        width: 280px !important;
+        max-width: 280px !important;
+        left: auto !important;
+        top: 20px;
+        transform: translateY(0) translateX(100%);
+        max-height: calc(100vh - 40px);
+    }
+    #nagishli-panel.nagishli-panel-open {
+        transform: translateY(0) translateX(0);
+    }
+    .nagishli-panel-content {
+        max-height: calc(100vh - 160px);
+    }
+}
+
+
+/* RTL support */
+
+[dir="ltr"] #nagishli-widget {
+    left: 20px;
+    right: auto;
+}
+
+[dir="ltr"] #nagishli-panel {
+    left: 20px;
+    right: auto;
+    transform: translateY(-50%) translateX(-100%);
+}
+
+[dir="ltr"] #nagishli-panel.nagishli-panel-open {
+    transform: translateY(-50%) translateX(0);
+}
+
+[dir="ltr"] .nagishli-toggle-slider::before {
+    right: auto;
+    left: 2px;
+}
+
+[dir="ltr"] .nagishli-toggle input[type="checkbox"]:checked+.nagishli-toggle-slider::before {
+    transform: translateX(24px);
+}
+
+
+/* High contrast mode overrides */
+
+@media (prefers-contrast: high) {
+    #nagishli-widget {
+        border: 2px solid #000;
+    }
+    #nagishli-panel {
+        border: 2px solid #000;
+        box-shadow: none;
+    }
+    .nagishli-toggle-slider {
+        border: 1px solid #000;
+    }
+}
+
+
+/* Reduced motion support */
+
+@media (prefers-reduced-motion: reduce) {
+    #nagishli-widget,
+    #nagishli-panel,
+    .nagishli-toggle-slider,
+    .nagishli-toggle-slider::before,
+    .nagishli-reset-btn,
+    .nagishli-panel-close,
+    #nagishli-mask {
+        transition: none !important;
+        animation: none !important;
+    }
+}

@@ -1,0 +1,44 @@
+/* BACKUP: Hip-Hop Graffiti Style - Based on Yellow/Purple Bubble Letters Reference */
+/* Use this file to restore the hip-hop graffiti look */
+
+/* Import Authentic Old-School Graffiti Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap');
+
+/* Custom CSS Variables - True Hip-Hop Graffiti Style */
+:root {
+  --graffiti-yellow: #ffcc00;
+  --bubble-purple: #6633cc;
+  --street-purple: #4a1a5c;
+  --electric-blue: #0099ff;
+  --hot-orange: #ff6600;
+  --neon-pink: #ff0099;
+  --street-black: #000000;
+  --outline-white: #ffffff;
+  --concrete-gray: #333333;
+  --dark-bg: #1a1a1a;
+  --brick-wall: #8b4513;
+  
+  /* True graffiti bubble letter effects like your reference */
+  --wild-shadow: 
+    3px 3px 0 var(--street-black),
+    6px 6px 0 var(--bubble-purple),
+    9px 9px 0 var(--street-purple),
+    12px 12px 15px rgba(0, 0, 0, 0.8);
+  --bubble-shadow: 
+    4px 4px 0 var(--street-black),
+    8px 8px 0 var(--bubble-purple),
+    12px 12px 0 var(--street-purple),
+    16px 16px 20px rgba(0, 0, 0, 0.6);
+  --wild-glow: 0 0 25px currentColor;
+  --graffiti-outline: 4px solid var(--street-black);
+  
+  /* Hip-hop spray paint texture overlays */
+  --spray-texture: 
+    radial-gradient(circle at 25% 35%, rgba(255, 204, 0, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 75% 65%, rgba(102, 51, 204, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(255, 102, 0, 0.2) 0%, transparent 60%);
+}

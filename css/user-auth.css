@@ -1,0 +1,206 @@
+/* User Authentication Widget Styles */
+
+.user-auth-widget {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 20px;
+}
+
+.user-auth-widget .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+}
+
+.user-auth-widget .user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.user-auth-widget .user-name {
+    font-weight: 500;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.user-auth-widget .user-dropdown {
+    position: relative;
+}
+
+.user-auth-widget .dropdown-toggle {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.3s ease;
+}
+
+.user-auth-widget .dropdown-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.user-auth-widget .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: #2a2a2a;
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 180px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.user-auth-widget .dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-auth-widget .dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    text-align: right;
+    color: #fff;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.user-auth-widget .dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.user-auth-widget .btn-login,
+.user-auth-widget .btn-register {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.user-auth-widget .btn-login {
+    background: transparent;
+    color: #fff;
+    border: 2px solid #fff;
+}
+
+.user-auth-widget .btn-login:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.user-auth-widget .btn-register {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: 2px solid transparent;
+}
+
+.user-auth-widget .btn-register:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .user-auth-widget {
+        margin-left: 0;
+        margin-top: 10px;
+        justify-content: center;
+    }
+
+    .user-auth-widget .user-name {
+        display: none;
+    }
+
+    .user-auth-widget .dropdown-menu {
+        right: 0;
+        left: auto;
+    }
+
+    .user-auth-widget .btn-login,
+    .user-auth-widget .btn-register {
+        padding: 6px 16px;
+        font-size: 13px;
+    }
+}
+
+/* Header Integration */
+.header-inner {
+    position: relative;
+    display: grid !important;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-inner .logo {
+    order: 1;
+}
+
+.header-inner .site-nav {
+    order: 2;
+    justify-content: center;
+}
+
+.header-inner .user-auth-widget {
+    order: 3;
+    position: static;
+    transform: none;
+    margin-left: 0;
+}
+
+.header-inner .hamburger {
+    order: 4;
+}
+
+@media (max-width: 768px) {
+    .header-inner {
+        grid-template-columns: auto 1fr auto;
+    }
+    
+    .header-inner .user-auth-widget {
+        position: static;
+        transform: none;
+    }
+}
+
+/* Admin Badge */
+.user-auth-widget .admin-badge {
+    background: #ffd700;
+    color: #000;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-right: 5px;
+}

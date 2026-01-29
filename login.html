@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>התחברות - SmashLabs</title>
+    <meta name="description" content="התחבר למערכת SmashLabs - ניהול הזמנות ופרופיל אישי">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="התחברות - SmashLabs">
+    <meta property="og:description" content="התחבר למערכת SmashLabs - ניהול הזמנות ופרופיל אישי">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💥</text></svg>">
+
+    <!-- Google Fonts Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/user-auth.css">
+    <link rel="stylesheet" href="css/nagishli.css">
+    <link rel="stylesheet" href="css/whatsapp-widget.css">
+    <link rel="stylesheet" href="css/navbar.css">
+
+    <!-- Preload and load fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Fallback styles for login page -->
+    <style>
+        /* Fallback styles if main CSS fails to load */
+        body { 
+            font-family: 'Heebo', 'Rubik', Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: #fff; 
+            margin: 0; 
+            padding: 0;
+            min-height: 100vh;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: #222;
+        }
+        .logo { color: #ff6b00; font-size: 1.5rem; text-decoration: none; font-weight: bold; }
+        .nav-links { 
+            display: flex; 
+            list-style: none; 
+            gap: 1rem; 
+            margin: 0; 
+            padding: 0; 
+        }
+        .nav-links a { 
+            color: #fff; 
+            text-decoration: none; 
+            padding: 0.5rem 1rem; 
+        }
+        .nav-links a:hover { color: #ff6b00; }
+        .hero { 
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); 
+            padding: 4rem 2rem; 
+            text-align: center; 
+        }
+        .hero h1 { 
+            font-size: 2.5rem; 
+            margin-bottom: 1rem; 
+            color: #ff6b00; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+        }
+        .card { 
+            background: #222; 
+            border-radius: 10px; 
+            padding: 2rem; 
+            margin: 2rem 0; 
+        }
+        .form-group { 
+            margin-bottom: 1.5rem; 
+        }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 0.5rem; 
+            color: #ff6b00; 
+            font-weight: bold; 
+        }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; 
+            padding: 0.75rem; 
+            border: 1px solid #444; 
+            background: #333; 
+            color: #fff; 
+            border-radius: 5px; 
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .cta-button { 
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2); 
+            color: #fff; 
+            padding: 1rem 2rem; 
+            border: none; 
+            border-radius: 5px; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-block; 
+            width: 100%;
+        }
+        .cta-button:hover {
+            opacity: 0.9;
+        }
+        .hamburger { display: none; }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger { display: block; }
+        }
+        .password-requirements {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-top: 0.5rem;
+        }
+        .password-requirements ul {
+            margin: 0.5rem 0;
+            padding-right: 1.5rem;
+        }
+        .password-requirements li {
+            margin: 0.25rem 0;
+        }
+        .password-requirements li.valid {
+            color: #4caf50;
+        }
+        .password-requirements li.invalid {
+            color: #f44336;
+        }
+        .toggle-form {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #aaa;
+        }
+        .toggle-form a {
+            color: #ff6b00;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            background: #f44336;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .success-message {
+            background: #4caf50;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        /* Admin Panel Styles */
+        .admin-panel {
+            display: none;
+        }
+        .admin-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .admin-header h2 {
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .admin-subtitle {
+            color: #aaa;
+            font-size: 1rem;
+        }
+        .admin-section-title {
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        .user-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(255,107,0,0.2);
+        }
+        .user-item:hover {
+            background: rgba(255,107,0,0.1);
+        }
+        .user-email {
+            color: #fff;
+            font-size: 1rem;
+        }
+        .user-date {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        .delete-user-btn {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.3s;
+        }
+        .delete-user-btn:hover {
+            opacity: 0.85;
+        }
+        .admin-logout-btn {
+            background: transparent;
+            color: #ff6b00;
+            border: 2px solid #ff6b00;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            transition: all 0.3s;
+        }
+        .admin-logout-btn:hover {
+            background: #ff6b00;
+            color: #000;
+        }
+        .no-users {
+            text-align: center;
+            color: #888;
+            padding: 2rem;
+        }
+    </style>
+    
+    <!-- NagishLi Accessibility Plugin Configuration -->
+    <script>
+        window.NagishLiConfig = {
+            'nlService': 'nagishli',
+            'nlPurchaseUrl': '',
+            'nlCustomCss': '',
+            'nlIgnore': ['img', 'video', 'audio', 'canvas'],
+            'nlLang': 'he',
+            'nlCustomText': {
+                'accessibilitySymbol': 'נגישות',
+                'mainMenu': 'תפריט נגישות ראשי',
+                'submenu': 'תפריט משנה',
+                'imageAlt': 'תמונה ללא תיאור',
+                'skipToMain': 'דלג לתוכן הראשי',
+                'increaseText': 'הגדל טקסט',
+                'decreaseText': 'הקטן טקסט',
+                'increaseTextSpacing': 'הגדל ריווח בין אותיות',
+                'decreaseTextSpacing': 'הקטן ריווח בין אותיות',
+                'increaseLineHeight': 'הגדל גובה שורה',
+                'decreaseLineHeight': 'הקטן גובה שורה',
+                'invertColors': 'הפוך צבעים',
+                'grayHues': 'גווני אפור',
+                'underlineLinks': 'הדגש קישורים',
+                'bigCursor': 'סמן גדול',
+                'readingGuide': 'מדריך קריאה',
+                'textToSpeech': 'הקראת טקסט',
+                'speechToText': 'דיבור לטקסט',
+                'screenReader': 'קורא מסך',
+                'highContrast': 'ניגודיות גבוהה',
+                'resetSettings': 'איפוס הגדרות',
+                'close': 'סגור'
+            }
+        };
+    </script>
+    <nagishli></nagishli>
+    <script src="nagishli.js"></script>
+    <script src="js/header-inject.js"></script>
+</head>
+
+<body>
+    <div id="site-header"></div>
+
+    <!-- Main Content -->
+    <main id="main-content" tabindex="-1" role="main" style="padding-top: 120px !important;">
+        <!-- Hero Section -->
+        <section class="hero" aria-label="הירו התחברות">
+            <div class="hero-content fade-in">
+                <h1 class="graffiti-text">התחברות למערכת</h1>
+                <p class="graffiti-text">נהל את ההזמנות והפרופיל האישי שלך</p>
+            </div>
+        </section>
+
+        <!-- Login/Registration Section -->
+        <section class="section fade-in" id="login-section">
+            <div class="container">
+                <div class="card" style="max-width: 500px; margin: 0 auto; padding: var(--spacing-xl);">
+
+                    <!-- Login Form -->
+                    <div id="login-form-container">
+                        <h2 class="section-title graffiti-text" style="text-align: center; margin-bottom: var(--spacing-lg);">התחברות</h2>
+                        <form class="auth-form" id="login-form">
+                            <div class="form-group">
+                                <label for="login-email">אימייל *</label>
+                                <input type="email" id="login-email" name="email" required autocomplete="email">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="login-password">סיסמה *</label>
+                                <input type="password" id="login-password" name="password" required autocomplete="current-password">
+                            </div>
+
+                            <div style="text-align: center; margin-top: var(--spacing-xl);">
+                                <button type="submit" class="cta-button">
+                                    התחבר
+                                </button>
+                            </div>
+
+                            <!-- Error/Success Messages for Login -->
+                            <div id="login-error-message" class="error-message" role="alert" style="margin-top: 1rem;"></div>
+                            <div id="login-success-message" class="success-message" role="alert" style="margin-top: 1rem;"></div>
+
+                            <div class="toggle-form">
+                                <p>עדיין אין לך חשבון? <a href="#" id="show-register">הירשם עכשיו</a></p>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Registration Form -->
+                    <div id="register-form-container" style="display: none;">
+                        <h2 class="section-title graffiti-text" style="text-align: center; margin-bottom: var(--spacing-lg);">הרשמה</h2>
+                        <form class="auth-form" id="register-form">
+                            <div class="form-group">
+                                <label for="register-name">שם מלא *</label>
+                                <input type="text" id="register-name" name="name" required autocomplete="name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="register-email">אימייל *</label>
+                                <input type="email" id="register-email" name="email" required autocomplete="email">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="register-password">סיסמה *</label>
+                                <input type="password" id="register-password" name="password" required autocomplete="new-password">
+                                <div class="password-requirements">
+                                    <p style="margin: 0.5rem 0;">הסיסמה חייבת לכלול:</p>
+                                    <ul id="password-requirements-list">
+                                        <li id="req-length" class="invalid">לפחות 8 תווים</li>
+                                        <li id="req-uppercase" class="invalid">אות גדולה אחת לפחות</li>
+                                        <li id="req-lowercase" class="invalid">אות קטנה אחת לפחות</li>
+                                        <li id="req-number" class="invalid">מספר אחד לפחות</li>
+                                        <li id="req-special" class="invalid">תו מיוחד אחד לפחות (!@#$%^&*)</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="register-password-confirm">אימות סיסמה *</label>
+                                <input type="password" id="register-password-confirm" name="password-confirm" required autocomplete="new-password">
+                            </div>
+
+                            <div style="text-align: center; margin-top: var(--spacing-xl);">
+                                <button type="submit" class="cta-button" id="register-submit-btn">
+                                    הירשם
+                                </button>
+                                <p id="button-hint" style="margin-top: 0.5rem; font-size: 0.85rem; color: #f44336; display: none;">נא להשלים את כל השדות ולעמוד בדרישות הסיסמה</p>
+                            </div>
+
+                            <!-- Error/Success Messages for Register -->
+                            <div id="error-message" class="error-message" role="alert" style="margin-top: 1rem;"></div>
+                            <div id="success-message" class="success-message" role="alert" style="margin-top: 1rem;"></div>
+
+                            <div class="toggle-form">
+                                <p>כבר יש לך חשבון? <a href="#" id="show-login">התחבר</a></p>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Verification Form -->
+                    <div id="verification-form-container" style="display: none;">
+                        <h2 class="section-title graffiti-text" style="text-align: center; margin-bottom: var(--spacing-lg);">אימות מייל</h2>
+                        <p style="text-align: center; color: #aaa; margin-bottom: 2rem;">
+                            שלחנו קוד אימות למייל שלך.<br>
+                            אנא הזן את הקוד כדי להשלים את ההרשמה.
+                        </p>
+                        <form class="auth-form" id="verification-form">
+                            <div class="form-group">
+                                <label for="verification-code">קוד אימות (6 ספרות) *</label>
+                                <input type="text" id="verification-code" name="code" required maxlength="6" pattern="[0-9]{6}" 
+                                       style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem;">
+                            </div>
+
+                            <div style="text-align: center; margin-top: var(--spacing-xl);">
+                                <button type="submit" class="cta-button">
+                                    אמת קוד
+                                </button>
+                            </div>
+
+                            <!-- Error/Success Messages for Verification -->
+                            <div id="verification-error-message" class="error-message" role="alert" style="margin-top: 1rem;"></div>
+                            <div id="verification-success-message" class="success-message" role="alert" style="margin-top: 1rem;"></div>
+
+                            <div class="toggle-form">
+                                <p>לא קיבלת קוד? <a href="#" id="resend-code">שלח שוב</a></p>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Admin Panel -->
+                    <div id="admin-panel-container" class="admin-panel">
+                        <div class="admin-header">
+                            <h2 class="graffiti-text">Welcome back IDAN 👋</h2>
+                            <p class="admin-subtitle">פאנל ניהול משתמשים</p>
+                        </div>
+                        
+                        <h3 class="admin-section-title graffiti-text">משתמשים רשומים</h3>
+                        <div class="user-list" id="user-list">
+                            <!-- Users will be loaded here dynamically -->
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <button class="cta-button" id="admin-logout-btn" style="margin-top: 1.5rem;">התנתק</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SmashLabs</h3>
+                    <p>המתחם המושלם לשחרור לחצים וחוויות ייחודיות</p>
+                </div>
+                <div class="footer-section">
+                    <h3>קישורים מהירים</h3>
+                    <ul>
+                        <li><a href="index.html">בית</a></li>
+                        <li><a href="about.html">אודות</a></li>
+                        <li><a href="order.html">הזמנה</a></li>
+                        <li><a href="login.html">התחברות</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>צור קשר</h3>
+                    <p>טלפון: 050-123-4567</p>
+                    <p>אימייל: info@smashlabs.co.il</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 SmashLabs. כל הזכויות שמורות.</p>
+                <p>
+                    <a href="accessibility.html">הצהרת נגישות</a> |
+                    <a href="disclaimer.html">תנאי שימוש</a> |
+                    <a href="waiver.html">כתב ויתור</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Widget -->
+    <div class="whatsapp-widget" role="region" aria-label="WhatsApp">
+        <a href="https://wa.me/972501234567" target="_blank" rel="noopener noreferrer" class="whatsapp-button" aria-label="צור קשר בוואטסאפ">
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 0c-8.837 0-16 7.163-16 16 0 2.825 0.737 5.607 2.137 8.048l-2.137 7.952 7.933-2.127c2.42 1.37 5.173 2.127 8.067 2.127 8.837 0 16-7.163 16-16s-7.163-16-16-16zM16 29.467c-2.482 0-4.908-0.646-7.07-1.87l-0.507-0.292-5.155 1.382 1.389-5.165-0.316-0.522c-1.372-2.271-2.008-4.78-2.008-7.467 0-7.513 6.12-13.633 13.633-13.633s13.633 6.12 13.633 13.633-6.087 13.633-13.6 13.633zM21.2 18.267c-0.302-0.151-1.789-0.883-2.065-0.984-0.277-0.101-0.479-0.151-0.681 0.151s-0.783 0.984-0.96 1.186c-0.177 0.202-0.353 0.227-0.655 0.076s-1.279-0.472-2.435-1.502c-0.899-0.803-1.506-1.795-1.683-2.097s-0.019-0.464 0.133-0.614c0.137-0.137 0.302-0.353 0.454-0.531s0.202-0.303 0.303-0.505c0.101-0.202 0.050-0.378-0.025-0.531s-0.681-1.641-0.934-2.245c-0.247-0.589-0.497-0.509-0.681-0.518-0.176-0.008-0.378-0.010-0.58-0.010s-0.531 0.076-0.808 0.378c-0.277 0.303-1.058 1.034-1.058 2.522s1.083 2.925 1.234 3.127c0.151 0.202 2.13 3.253 5.16 4.562 0.721 0.311 1.284 0.497 1.723 0.636 0.724 0.230 1.383 0.197 1.904 0.12 0.581-0.087 1.789-0.731 2.042-1.437s0.253-1.312 0.177-1.437c-0.076-0.126-0.278-0.202-0.58-0.353z" fill="currentColor"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/whatsapp-widget.js"></script>
+    <script src="js/user-auth.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/login.js"></script>
+
+</body>
+
+</html>
