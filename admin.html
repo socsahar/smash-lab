@@ -1374,7 +1374,10 @@
                         };
                         
                         try {
-                            const response = await fetch(`http://localhost:8000/api/calendar/bookings/${bookingId}`, {
+                            const API_URL = window.location.hostname === 'localhost' 
+                                ? 'http://localhost:8000' 
+                                : 'https://smash-lab.onrender.com';
+                            const response = await fetch(`${API_URL}/api/calendar/bookings/${bookingId}`, {
                                 method: 'PUT',
                                 headers: {
                                     'Content-Type': 'application/json'
@@ -1470,7 +1473,10 @@
                     };
                     
                     try {
-                        const response = await fetch('http://localhost:8000/api/calendar/create-booking', {
+                        const API_URL = window.location.hostname === 'localhost' 
+                            ? 'http://localhost:8000' 
+                            : 'https://smash-lab.onrender.com';
+                        const response = await fetch(`${API_URL}/api/calendar/create-booking`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -1484,7 +1490,7 @@
                         
                         // Update payment status if needed
                         if (document.getElementById('createPaymentStatus').value === 'paid') {
-                            await fetch(`http://localhost:8000/api/calendar/bookings/${result.booking.id}`, {
+                            await fetch(`${API_URL}/api/calendar/bookings/${result.booking.id}`, {
                                 method: 'PUT',
                                 headers: {
                                     'Content-Type': 'application/json'
