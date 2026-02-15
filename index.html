@@ -1,0 +1,181 @@
+﻿﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>האתר בפיתוח - SmashLabs</title>
+    <meta name="description" content="האתר נמצא תחת פיתוח - ניתן ליצור קשר בוואטסאפ">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* Override body padding-top for this page only */
+        body {
+            padding-top: 0 !important;
+        }
+
+        /* Additional styles for maintenance page */
+        .maintenance-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: var(--bg);
+        }
+
+        .maintenance-content {
+            text-align: center;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: var(--border-radius-lg);
+            border: 2px solid var(--primary);
+            box-shadow: 0 10px 40px rgba(255, 107, 0, 0.3);
+        }
+
+        .maintenance-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .maintenance-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+            font-weight: 700;
+        }
+
+        .maintenance-message {
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            color: var(--text);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .whatsapp-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            background: linear-gradient(45deg, #25D366, #128C7E);
+            color: white;
+            text-decoration: none;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+            min-width: 250px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .whatsapp-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(37, 211, 102, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .whatsapp-icon {
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+        }
+
+        .contact-info {
+            margin-top: 2rem;
+            color: var(--primary);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .maintenance-content {
+                padding: 2rem 1.5rem;
+            }
+
+            .maintenance-icon {
+                font-size: 3.5rem;
+            }
+
+            .whatsapp-button {
+                padding: var(--spacing-sm) var(--spacing-lg);
+                font-size: var(--font-size-base);
+                min-width: 200px;
+            }
+
+            .whatsapp-icon {
+                width: 28px;
+                height: 28px;
+            }
+
+            .maintenance-message {
+                margin-bottom: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="maintenance-container">
+        <div class="maintenance-content">
+            <div class="maintenance-icon">🚧</div>
+            
+            <h1 class="maintenance-title graffiti-text">
+                מצטערים על אי הנוחות הזמנית
+            </h1>
+            
+            <p class="maintenance-message">
+                האתר נמצא תחת פיתוח ונשוב לפעול בהקדם האפשרי!
+            </p>
+            
+            <p class="maintenance-message">
+                ניתן ליצור איתנו קשר בוואטסאפ לתיאום הזמנות
+            </p>
+
+            <a href="https://wa.me/972504429195?text=%D7%94%D7%99%D7%99%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%91%D7%A6%D7%A2%20%D7%94%D7%96%D7%9E%D7%A0%D7%94" 
+               class="whatsapp-button" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               aria-label="צור קשר בוואטסאפ">
+                <svg class="whatsapp-icon" viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 0C7.163 0 0 7.163 0 16c0 2.825.738 5.485 2.031 7.794L.05 31.95l8.312-2.131C10.625 31.188 13.238 32 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.25c-2.488 0-4.844-.694-6.844-1.9l-.494-.3-5.106 1.306 1.35-4.95-.325-.512C2.756 21.012 2 18.563 2 16c0-7.731 6.269-14 14-14s14 6.269 14 14-6.269 14-14 14zm7.688-10.456c-.425-.212-2.506-1.238-2.894-1.375-.387-.138-.669-.212-.95.212-.281.425-1.088 1.375-1.331 1.65-.244.281-.494.319-.919.106-.425-.212-1.794-.662-3.419-2.113-1.263-1.125-2.113-2.519-2.356-2.944-.244-.425-.025-.656.188-.869.188-.188.425-.494.637-.744.213-.244.281-.419.419-.7.138-.281.069-.525-.031-.738-.106-.212-.95-2.287-1.3-3.137-.344-.825-.694-.713-.95-.725-.244-.012-.525-.012-.806-.012s-.744.106-1.131.525c-.387.425-1.481 1.45-1.481 3.531s1.519 4.1 1.725 4.381c.213.281 2.988 4.556 7.238 6.387 1.013.438 1.8.7 2.419.894.1.031 1.919.631 3.669.375.563-.081 1.731-.706 1.975-1.387.244-.681.244-1.269.169-1.387-.075-.119-.35-.194-.775-.406z"/>
+                </svg>
+                פתח וואטסאפ
+            </a>
+
+            <div class="contact-info">
+                📱 050-442-9195
+            </div>
+            <h2>למילוי הסכם ויתור על מנת לשחק:
+			<a href="/justwaiver.html" style="color: red font: Ariel;">
+			לחץ כאן
+			</a>
+			</h2>
+			<h5>האתר נמצא בפיתוח על ידי <a href="https://sanda-uinc.onrender.com/"> Sand</a></h5>
+        </div>
+    </div>
+</body>
+
+</html>

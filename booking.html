@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>הזמן זמן - SmashLabs</title>
+    <meta name="description" content="הזמן זמן במתחם SmashLabs - בחר תאריך ושעה נוחים עבורך">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="הזמן זמן - SmashLabs">
+    <meta property="og:description" content="הזמן זמן במתחם SmashLabs - בחר תאריך ושעה נוחים עבורך">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💥</text></svg>">
+
+    <!-- Google Fonts Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Preload and load fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="site-header"></div>
+
+    <!-- Main Content -->
+    <main id="main-content" tabindex="-1" role="main">
+        <!-- Booking Section -->
+        <section class="section" id="booking">
+            <div class="container">
+                <h1 class="section-title graffiti-text">הזמן זמן</h1>
+                <div class="card" style="max-width: 600px; margin: 0 auto;">
+                    <div id="booking-status" role="status" aria-live="polite" style="margin-bottom: 1rem;"></div>
+
+                    <form class="booking-form" id="booking-form">
+                        <div class="form-group">
+                            <label for="booking-name">שם מלא *</label>
+                            <input type="text" id="booking-name" name="name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="booking-email">אימייל *</label>
+                            <input type="email" id="booking-email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="booking-date">תאריך *</label>
+                            <input type="date" id="booking-date" name="date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="booking-time">שעת התחלה *</label>
+                            <input type="time" id="booking-time" name="time" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="booking-duration">משך הזמן (שעות) *</label>
+                            <select id="booking-duration" name="duration" required>
+                                <option value="">בחר משך זמן</option>
+                                <option value="1">שעה אחת</option>
+                                <option value="1.5">שעה וחצי</option>
+                                <option value="2">שעתיים</option>
+                                <option value="3">3 שעות</option>
+                                <option value="4">4 שעות</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="booking-timezone">אזור זמן *</label>
+                            <select id="booking-timezone" name="timezone" required>
+                                <option value="Asia/Jerusalem">ישראל (Asia/Jerusalem)</option>
+                                <option value="Europe/London">לונדון (Europe/London)</option>
+                                <option value="America/New_York">ניו יורק (America/New_York)</option>
+                                <option value="America/Los_Angeles">לוס אנג'לס (America/Los_Angeles)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="booking-notes">הערות נוספות</label>
+                            <textarea id="booking-notes" name="notes" rows="3" placeholder="פרטים נוספים על ההזמנה"></textarea>
+                        </div>
+
+                        <button type="submit" class="cta-button" style="width: 100%;">הזמן זמן</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer role="contentinfo">
+        <div class="footer-inner">
+            <p class="graffiti-text" style="font-size: 1.5rem; margin-bottom: 1rem;">SmashLabs - המקום לשחרר לחצים!</p>
+            <p>צור קשר: 052-123-4567 | info@smashlabs.co.il</p>
+            <div class="social-links">
+                <a href="#" title="פייסבוק" aria-label="פייסבוק">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                </a>
+                <a href="#" title="אינסטגרם" aria-label="אינסטגרם">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </a>
+                <a href="#" title="טיקטוק" aria-label="טיקטוק">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+                    </svg>
+                </a>
+                <a href="#" title="יוטיוב" aria-label="יוטיוב">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                </a>
+            </div>
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                <p style="font-size: 0.85rem; color: var(--muted); opacity: 0.7;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500;">sand</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="scripts.js"></script>
+    <script src="js/booking.js"></script>
+    <link rel="stylesheet" href="css/nagishli.css">
+    <link rel="stylesheet" href="css/whatsapp-widget.css">
+    <script src="js/nagishli.js"></script>
+    <script src="js/whatsapp-widget.js"></script>
+
+    <script>
+        // Remove header emojis for clean design
+        document.addEventListener('DOMContentLoaded', function() {
+            const emojiRegex = /[\p{Extended_Pictographic}\uFE0F]/gu;
+            document.querySelectorAll('h1, h2, h3').forEach(header => {
+                header.textContent = header.textContent.replace(emojiRegex, '');
+            });
+        });
+    </script>
+<script src="js/user-auth.js"></script>

@@ -1,0 +1,1008 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>תשלום - SmashLabs</title>
+    <meta name="description" content="השלמת תהליך התשלום לשירותי SmashLabs">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💳</text></svg>">
+
+    <!-- Console Filter - Block third-party logs -->
+    <script>
+        (function() {
+            const blockedPatterns = [
+                'NagishLi', 'nagishli', 'jQuery', 'missing_setting',
+                'nl_lang', 'Element:', 'Style:', 'CSSStyleDeclaration',
+                'operata', 'pc-override', 'aria-hidden',
+                'nagishli-sr-only', 'nagishli-option',
+                'לפתוח את התפריט', 'הצהרת נגישות', 'accessibility',
+                'sprite.png', 'tl.png', 'tr.png', 'bl.png', 'br.png',
+                'Blocked aria-hidden', 'WAI-ARIA', 'w3c.github.io',
+                'getElementsByTagName is not a function', 'content_script.js',
+                'Fetching batch', 'Scroll check', 'Scroll event fired',
+                'Waiver elements', 'Signature captured', 'Email sent',
+                'Supabase not ready', 'processWaiver', 'Address data',
+                'Sample record', 'Sample cities'
+            ];
+            
+            function shouldBlock(args) {
+                const str = JSON.stringify(args);
+                return blockedPatterns.some(pattern => 
+                    str.toLowerCase().includes(pattern.toLowerCase()));
+            }
+            
+            const originalLog = console.log;
+            const originalError = console.error;
+            const originalWarn = console.warn;
+            const originalInfo = console.info;
+            
+            console.log = function(...args) {
+                if (!shouldBlock(args)) originalLog.apply(console, args);
+            };
+            console.error = function(...args) {
+                if (!shouldBlock(args)) originalError.apply(console, args);
+            };
+            console.warn = function(...args) {
+                if (!shouldBlock(args)) originalWarn.apply(console, args);
+            };
+            console.info = function(...args) {
+                if (!shouldBlock(args)) originalInfo.apply(console, args);
+            };
+        })();
+    </script>
+
+    <!-- Google Fonts Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/nagishli.css">
+    <link rel="stylesheet" href="css/whatsapp-widget.css">
+    <link rel="stylesheet" href="css/custom-modal.css">
+
+    <!-- Preload and load fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Fallback styles for payment page -->
+    <style>
+        /* Fallback styles if main CSS fails to load */
+        body { 
+            font-family: 'Heebo', 'Rubik', Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: #fff; 
+            margin: 0; 
+            padding: 0;
+            min-height: 100vh;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: #222;
+        }
+        .logo { color: #ff6b00; font-size: 1.5rem; text-decoration: none; font-weight: bold; }
+        .nav-links { 
+            display: flex; 
+            list-style: none; 
+            gap: 1rem; 
+            margin: 0; 
+            padding: 0; 
+        }
+        .nav-links a { 
+            color: #fff; 
+            text-decoration: none; 
+            padding: 0.5rem 1rem; 
+        }
+        .nav-links a:hover { color: #ff6b00; }
+        .hero { 
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); 
+            padding: 4rem 2rem; 
+            text-align: center; 
+        }
+        .hero h1 { 
+            font-size: 2.5rem; 
+            margin-bottom: 1rem; 
+            color: #ff6b00; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+        }
+        .card { 
+            background: #222; 
+            border-radius: 10px; 
+            padding: 2rem; 
+            margin: 2rem 0; 
+        }
+        .payment-summary {
+            background: #333;
+            border: 2px solid #ff6b00;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+        }
+        .total-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff6b00;
+            border-top: 2px solid #555;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+        .form-group { 
+            margin-bottom: 1.5rem; 
+        }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 0.5rem; 
+            color: #ff6b00; 
+            font-weight: bold; 
+        }
+        .form-group input, .form-group select { 
+            width: 100%; 
+            padding: 0.75rem; 
+            border: 1px solid #444; 
+            background: #333; 
+            color: #fff; 
+            border-radius: 5px; 
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .btn { 
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2); 
+            color: #fff; 
+            padding: 1rem 2rem; 
+            border: none; 
+            border-radius: 5px; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-block; 
+            margin: 0.5rem;
+        }
+        .btn-secondary {
+            background: #555;
+        }
+        .coupon-section {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(31, 182, 194, 0.1);
+            border: 1px solid rgba(31, 182, 194, 0.3);
+            border-radius: 8px;
+        }
+        .coupon-input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .coupon-input-group input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid rgba(31, 182, 194, 0.5);
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+        .coupon-input-group button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .btn-apply-coupon {
+            background: linear-gradient(45deg, #1fb6c2, #00d4ff);
+            color: #fff;
+        }
+        .btn-apply-coupon:hover {
+            transform: scale(1.05);
+        }
+        .btn-remove-coupon {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+        .btn-remove-coupon:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+        .coupon-message {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .coupon-success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+        .coupon-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+        .discount-item {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .hamburger { display: none; }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger { display: block; }
+        }
+    </style>
+    
+    <!-- NagishLi Accessibility Plugin Configuration -->
+    <script>
+        window.NagishLiConfig = {
+            'nlService': 'nagishli',
+            'nlPurchaseUrl': '',
+            'nlCustomCss': '',
+            'nlIgnore': ['img', 'video', 'audio', 'canvas'],
+            'nlLang': 'he',
+            'nlCustomText': {
+                'accessibilitySymbol': 'נגישות',
+                'mainMenu': 'תפריט נגישות ראשי',
+                'submenu': 'תפריט משנה',
+                'imageAlt': 'תמונה ללא תיאור',
+                'skipToMain': 'דלג לתוכן הראשי',
+                'increaseText': 'הגדל טקסט',
+                'decreaseText': 'הקטן טקסט',
+                'increaseTextSpacing': 'הגדל ריווח בין אותיות',
+                'decreaseTextSpacing': 'הקטן ריווח בין אותיות',
+                'increaseLineHeight': 'הגדל גובה שורה',
+                'decreaseLineHeight': 'הקטן גובה שורה',
+                'invertColors': 'הפוך צבעים',
+                'grayHues': 'גווני אפור',
+                'underlineLinks': 'הדגש קישורים',
+                'bigCursor': 'סמן גדול',
+                'readingGuide': 'מדריך קריאה',
+                'textToSpeech': 'הקראת טקסט',
+                'speechToText': 'דיבור לטקסט',
+                'screenReader': 'קורא מסך',
+                'highContrast': 'ניגודיות גבוהה',
+                'resetSettings': 'איפוס הגדרות',
+                'close': 'סגור'
+            }
+        };
+    </script>
+    <nagishli></nagishli>
+    <script src="js/nagishli.js"></script>
+    <script src="js/header-inject.js"></script>
+</head>
+
+<body>
+    <div id="site-header"></div>
+
+    <!-- Main Content -->
+    <main id="main-content" tabindex="-1" role="main" style="padding-top: 120px !important;">
+        <!-- Hero Section -->
+        <section class="hero" aria-label="הירו תשלום">
+            <div class="hero-content fade-in">
+                <h1 class="graffiti-text">השלמת תשלום</h1>
+                <p class="graffiti-text">כמעט סיימנו! אשר את פרטי ההזמנה ובצע תשלום</p>
+            </div>
+        </section>
+
+        <!-- Payment Section -->
+        <section class="section fade-in" id="payment">
+            <div class="container">
+                <h2 class="section-title graffiti-text">סיכום הזמנה</h2>
+                
+                <div class="card" style="max-width: 700px; margin: 0 auto;">
+                    <!-- Order Summary -->
+                    <div id="order-summary" class="payment-summary">
+                        <h3 style="color: #ff6b00; margin-bottom: 1rem;">פרטי ההזמנה</h3>
+                        <div id="order-details">
+                            <!-- Order details will be loaded here by JavaScript -->
+                        </div>
+                        
+                        <!-- Coupon Section -->
+                        <div class="coupon-section">
+                            <h4 style="color: #1fb6c2; margin: 0 0 0.5rem 0;">🎟️ יש לך קוד קופון?</h4>
+                            <div class="coupon-input-group">
+                                <input type="text" id="coupon-code" placeholder="הזן קוד קופון" maxlength="20">
+                                <button type="button" class="btn-apply-coupon" onclick="applyCouponCode()">החל</button>
+                            </div>
+                            <div id="coupon-message"></div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <form id="payment-form">
+                        <h3 style="color: #ff6b00; margin-bottom: 1rem;">פרטי תשלום</h3>
+                        
+                        <div class="form-group">
+                            <label for="payment-method">אמצעי תשלום</label>
+                            <select id="payment-method" name="payment-method" required>
+                                <option value="">בחר אמצעי תשלום</option>
+                                <option value="credit-card">כרטיס אשראי</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="bit">Bit</option>
+                                <option value="bank-transfer">העברה בנקאית</option>
+                            </select>
+                        </div>
+
+                        <div id="credit-card-fields" style="display: none;">
+                            <div class="form-group">
+                                <label for="card-number">מספר כרטיס *</label>
+                                <input type="text" 
+                                       id="card-number" 
+                                       name="card-number" 
+                                       placeholder="1234 5678 9012 3456"
+                                       maxlength="19"
+                                       autocomplete="cc-number"
+                                       dir="ltr"
+                                       required>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="expiry">תוקף (MM/YY) *</label>
+                                    <input type="text" 
+                                           id="expiry" 
+                                           name="expiry" 
+                                           placeholder="12/26"
+                                           maxlength="5"
+                                           autocomplete="cc-exp"
+                                           dir="ltr"
+                                           required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV *</label>
+                                    <input type="text" 
+                                           id="cvv" 
+                                           name="cvv" 
+                                           placeholder="123"
+                                           maxlength="4"
+                                           autocomplete="cc-csc"
+                                           dir="ltr"
+                                           required>
+                                </div>
+                            </div>
+                            <div style="background: rgba(31, 182, 194, 0.1); border: 1px solid rgba(31, 182, 194, 0.3); padding: 0.75rem; border-radius: 8px; margin-top: 0.5rem;">
+                                <p style="font-size: 0.85rem; color: #1fb6c2; margin: 0;">🔒 התשלום מאובטח באמצעות Verifone</p>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <button type="button" class="btn btn-secondary" onclick="goBack()">חזור להזמנה</button>
+                            <button type="submit" class="btn">המשך לתשלום</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer role="contentinfo">
+        <div class="footer-inner">
+            <p class="graffiti-text" style="font-size: 1.5rem; margin-bottom: 1rem;">SmashLabs - המקום לשחרר לחצים!</p>
+            <p>כל הזכויות שמורות © 2025</p>
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                <p style="font-size: 0.85rem; color: var(--muted); opacity: 0.7;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500;">sand</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Verifone.js SDK -->
+    <script src="https://cst.test-gsc.vfims.com/verifone/verifone.js" onerror="console.error('Failed to load Verifone.js from primary source')"></script>
+    <script src="js/config.js"></script>
+    <script src="js/custom-modal.js"></script>
+    <script src="js/verifone-payment.js"></script>
+    <script src="scripts.js"></script>
+    <script src="js/nagishli.js"></script>
+    <script src="js/whatsapp-widget.js"></script>
+    
+    <script>
+        // Load order details from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderData = localStorage.getItem('currentOrder');
+            
+            if (!orderData) {
+                if (window.customModal) {
+                    window.customModal.error('לא נמצאו פרטי הזמנה. מפנה חזרה לדף ההזמנה...', 'שגיאה').then(() => {
+                        window.location.href = 'order.html';
+                    });
+                } else {
+                    alert('לא נמצאו פרטי הזמנה. מפנה חזרה לדף ההזמנה...');
+                    window.location.href = 'order.html';
+                }
+                return;
+            }
+            
+            const order = JSON.parse(orderData);
+            
+            // Check if waiver was signed
+            if (!order.waiverSigned || !order.waiver) {
+                if (window.customModal) {
+                    window.customModal.warning('חובה לחתום על כתב ויתור לפני התשלום. מפנה לכתב הויתור...', 'כתב ויתור נדרש').then(() => {
+                        window.location.href = 'waiver.html';
+                    });
+                } else {
+                    alert('חובה לחתום על כתב ויתור לפני התשלום. מפנה לכתב הויתור...');
+                    window.location.href = 'waiver.html';
+                }
+                return;
+            }
+            
+            displayOrderSummary(order);
+            
+            // Handle payment method selection
+            const paymentMethod = document.getElementById('payment-method');
+            const creditCardFields = document.getElementById('credit-card-fields');
+            
+            paymentMethod.addEventListener('change', function() {
+                if (this.value === 'credit-card') {
+                    creditCardFields.style.display = 'block';
+                } else {
+                    creditCardFields.style.display = 'none';
+                }
+            });
+            
+            // Handle payment form submission
+            document.getElementById('payment-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await processPayment(order);
+            });
+            
+            // Format card number input
+            const cardNumberInput = document.getElementById('card-number');
+            if (cardNumberInput) {
+                cardNumberInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\s/g, '');
+                    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                    e.target.value = formattedValue;
+                });
+            }
+            
+            // Format expiry input
+            const expiryInput = document.getElementById('expiry');
+            if (expiryInput) {
+                expiryInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length >= 2) {
+                        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                    }
+                    e.target.value = value;
+                });
+            }
+        });
+        
+        // Global variable to track applied coupon
+        let appliedCoupon = null;
+        
+        function displayOrderSummary(order) {
+            const serviceNames = {
+                'paint-room': 'חדר צבע',
+                'rage-room': 'חדר זעם',
+                'throwing-axes': 'זריקת גרזנים',
+                'graffiti-center': 'מרכז גרפיטי',
+                'birthday': 'יום הולדת',
+                'rent-lab': 'השכרת מעבדה',
+                'combo': 'משולב'
+            };
+            
+            const servicePrices = {
+                'paint-room': 120,
+                'rage-room': 150,
+                'throwing-axes': 100,
+                'graffiti-center': 200,
+                'birthday': 300,
+                'rent-lab': 500,
+                'combo': 200
+            };
+            
+            // Get service from order.service or fallback to packageName
+            const serviceKey = order.service || order.roomType || 'not-selected';
+            const displayName = order.packageName || serviceNames[serviceKey] || serviceKey || 'לא נבחר';
+            const basePrice = order.price || servicePrices[serviceKey] || 100;
+            const subtotal = basePrice * parseInt(order.quantity || order.participants || 1);
+            
+            // Calculate discount if coupon applied
+            let discount = 0;
+            let totalPrice = subtotal;
+            if (appliedCoupon) {
+                discount = appliedCoupon.discount;
+                totalPrice = Math.max(0, subtotal - discount);
+            }
+            
+            const detailsHTML = `
+                <div class="price-item">
+                    <span><strong>שם:</strong> ${order.name}</span>
+                </div>
+                <div class="price-item">
+                    <span><strong>שירות:</strong> ${displayName}</span>
+                    <span>₪${basePrice}</span>
+                </div>
+                <div class="price-item">
+                    <span><strong>כמות משתתפים:</strong> ${order.quantity || order.participants || 1}</span>
+                    <span>x${order.quantity || order.participants || 1}</span>
+                </div>
+                ${order.date ? `<div class="price-item"><span><strong>תאריך:</strong> ${order.date}</span></div>` : ''}
+                ${order.notes ? `<div class="price-item"><span><strong>הערות:</strong> ${order.notes}</span></div>` : ''}
+                <div class="price-item">
+                    <span>סכום ביניים:</span>
+                    <span>₪${subtotal}</span>
+                </div>
+                ${appliedCoupon ? `
+                <div class="price-item discount-item">
+                    <span>🎟️ הנחה (${appliedCoupon.code}):</span>
+                    <span>-₪${discount.toFixed(2)}</span>
+                </div>
+                ` : ''}
+                <div class="price-item total-price">
+                    <span>סך הכל לתשלום:</span>
+                    <span>₪${totalPrice.toFixed(2)}</span>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: #444; border-radius: 5px;">
+                    <strong>מספר הזמנה:</strong> ${order.orderId}
+                </div>
+                ${order.waiver ? `
+                <div style="margin-top: 1rem; padding: 1rem; background: #2d5a2d; border-radius: 5px; border: 2px solid #4CAF50;">
+                    <h4 style="color: #4CAF50; margin: 0 0 0.5rem 0;">✅ כתב ויתור נחתם</h4>
+                    <p style="margin: 0;"><strong>חתום על ידי:</strong> ${order.waiver.fullName}</p>
+                    <p style="margin: 0;"><strong>תאריך חתימה:</strong> ${order.waiver.signatureDate}</p>
+                </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('order-details').innerHTML = detailsHTML;
+        }
+        
+        // Initialize Supabase client
+        let supabaseClient = null;
+        function initSupabase() {
+            if (supabaseClient) return supabaseClient;
+            if (typeof supabase === 'undefined' || !window.ENV_CONFIG) {
+                console.error('Supabase not available');
+                return null;
+            }
+            supabaseClient = supabase.createClient(
+                window.ENV_CONFIG.SUPABASE_URL,
+                window.ENV_CONFIG.SUPABASE_ANON_KEY
+            );
+            return supabaseClient;
+        }
+        
+        async function applyCouponCode() {
+            const couponInput = document.getElementById('coupon-code');
+            const couponCode = couponInput.value.trim().toUpperCase();
+            const messageDiv = document.getElementById('coupon-message');
+            
+            if (!couponCode) {
+                messageDiv.innerHTML = '<div class="coupon-message coupon-error">❌ אנא הזן קוד קופון</div>';
+                return;
+            }
+            
+            // Get order data to calculate total
+            const orderData = localStorage.getItem('currentOrder');
+            if (!orderData) {
+                messageDiv.innerHTML = '<div class="coupon-message coupon-error">❌ שגיאה בטעינת פרטי הזמנה</div>';
+                return;
+            }
+            
+            const order = JSON.parse(orderData);
+            const servicePrices = {
+                'paint-room': 120,
+                'rage-room': 150,
+                'throwing-axes': 100,
+                'graffiti-center': 200,
+                'birthday': 300,
+                'rent-lab': 500,
+                'combo': 200
+            };
+            
+            const serviceKey = order.service || order.roomType || 'not-selected';
+            const basePrice = order.price || servicePrices[serviceKey] || 100;
+            const orderTotal = basePrice * parseInt(order.quantity || order.participants || 1);
+            
+            // Initialize Supabase and fetch coupon
+            const client = initSupabase();
+            if (!client) {
+                messageDiv.innerHTML = '<div class="coupon-message coupon-error">❌ שגיאה בחיבור למסד הנתונים</div>';
+                return;
+            }
+            
+            try {
+                // Fetch coupon from Supabase
+                const { data: coupon, error } = await client
+                    .from('coupons')
+                    .select('*')
+                    .eq('code', couponCode)
+                    .neq('status', 'deleted')
+                    .single();
+                
+                if (error || !coupon) {
+                    messageDiv.innerHTML = '<div class="coupon-message coupon-error">❌ קוד קופון לא נמצא</div>';
+                    return;
+                }
+                
+                if (coupon.status === 'revoked') {
+                    messageDiv.innerHTML = '<div class="coupon-message coupon-error">❌ קופון זה בוטל</div>';
+                    return;
+                }
+                
+                const now = new Date();
+                const expiry = new Date(coupon.expiry_date);
+                if (expiry < now) {
+                    messageDiv.innerHTML = '<div class="coupon-message coupon-error">❌ תוקף הקופון פג</div>';
+                    return;
+                }
+                
+                if (coupon.max_uses && coupon.used_count >= coupon.max_uses) {
+                    messageDiv.innerHTML = '<div class="coupon-message coupon-error">❌ הקופון הגיע למכסת השימושים המקסימלית</div>';
+                    return;
+                }
+                
+                if (orderTotal < coupon.min_purchase) {
+                    messageDiv.innerHTML = `<div class="coupon-message coupon-error">❌ דרושה קניה מינימלית של ₪${coupon.min_purchase}</div>`;
+                    return;
+                }
+                
+                // Calculate discount
+                let discount = 0;
+                if (coupon.type === 'percentage') {
+                    discount = (orderTotal * coupon.discount) / 100;
+                } else {
+                    discount = coupon.discount;
+                }
+                discount = Math.min(discount, orderTotal);
+                
+                // Apply coupon
+                appliedCoupon = {
+                    id: coupon.id,
+                    code: coupon.code,
+                    discount: discount,
+                    type: coupon.type,
+                    value: coupon.discount
+                };
+                
+                // Update display
+                displayOrderSummary(order);
+                
+                // Show success message with remove button
+                messageDiv.innerHTML = `
+                    <div class="coupon-message coupon-success">
+                        ✅ קופון הוחל בהצלחה! הנחה של ₪${discount.toFixed(2)}
+                        <button type="button" class="btn-remove-coupon" onclick="removeCoupon()" style="margin-right: 10px;">הסר קופון</button>
+                    </div>
+                `;
+                
+                // Disable input and apply button
+                couponInput.disabled = true;
+                document.querySelector('.btn-apply-coupon').disabled = true;
+            } catch (err) {
+                console.error('Error validating coupon:', err);
+                messageDiv.innerHTML = '<div class="coupon-message coupon-error">❌ שגיאה באימות קופון</div>';
+            }
+        }
+        
+        function removeCoupon() {
+            appliedCoupon = null;
+            
+            // Re-enable input and apply button
+            const couponInput = document.getElementById('coupon-code');
+            couponInput.value = '';
+            couponInput.disabled = false;
+            document.querySelector('.btn-apply-coupon').disabled = false;
+            
+            // Clear message
+            document.getElementById('coupon-message').innerHTML = '';
+            
+            // Reload order data to refresh display
+            const orderData = localStorage.getItem('currentOrder');
+            if (orderData) {
+                const order = JSON.parse(orderData);
+                displayOrderSummary(order);
+            }
+        }
+        
+        // Process credit card payment with Verifone
+        async function processCreditCardPayment(order) {
+            // Validate card inputs
+            const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
+            const expiry = document.getElementById('expiry').value;
+            const cvv = document.getElementById('cvv').value;
+            
+            if (!cardNumber || !expiry || !cvv) {
+                if (window.customModal) {
+                    window.customModal.warning('אנא מלא את כל פרטי הכרטיס', 'פרטים חסרים');
+                } else {
+                    alert('אנא מלא את כל פרטי הכרטיס');
+                }
+                return;
+            }
+            
+            // Validate card number (basic check)
+            if (cardNumber.length < 13 || cardNumber.length > 19) {
+                if (window.customModal) {
+                    window.customModal.error('מספר כרטיס לא תקין', 'שגיאה');
+                } else {
+                    alert('מספר כרטיס לא תקין');
+                }
+                return;
+            }
+            
+            // Parse expiry
+            const [expiryMonth, expiryYear] = expiry.split('/');
+            if (!expiryMonth || !expiryYear || expiryMonth.length !== 2 || expiryYear.length !== 2) {
+                if (window.customModal) {
+                    window.customModal.error('תאריך תפוגה לא תקין (MM/YY)', 'שגיאה');
+                } else {
+                    alert('תאריך תפוגה לא תקין');
+                }
+                return;
+            }
+            
+            const button = document.querySelector('#payment-form button[type="submit"]');
+            const originalText = button.textContent;
+            button.textContent = 'מעבד תשלום... ⏳';
+            button.disabled = true;
+            
+            try {
+                // Initialize Verifone
+                if (!window.verifonePayment) {
+                    throw new Error('Verifone payment system not loaded');
+                }
+                
+                await window.verifonePayment.init();
+                
+                // Calculate final amount
+                const servicePrices = {
+                    'paint-room': 120,
+                    'rage-room': 150,
+                    'throwing-axes': 100,
+                    'graffiti-center': 200,
+                    'birthday': 300,
+                    'rent-lab': 500,
+                    'combo': 200
+                };
+                const serviceKey = order.service || order.roomType || 'not-selected';
+                const basePrice = order.price || servicePrices[serviceKey] || 100;
+                const subtotal = basePrice * parseInt(order.quantity || order.participants || 1);
+                const finalPrice = appliedCoupon ? Math.max(0, subtotal - appliedCoupon.discount) : subtotal;
+                
+                // Prepare order data
+                const orderData = {
+                    orderId: order.orderId || `TEMP-${Date.now()}`,
+                    amount: finalPrice,
+                    customerName: order.name || order.customerName,
+                    customerEmail: order.email || order.customerEmail,
+                    customerPhone: order.phone || order.customerPhone,
+                    description: `${order.packageName || order.serviceName || 'SmashLabs Booking'}`,
+                    packageId: order.packageId || order.service,
+                    packageName: order.packageName || order.serviceName,
+                    date: order.date,
+                    time: order.time,
+                    duration: order.duration || 60
+                };
+                
+                // Prepare card data
+                const cardData = {
+                    number: cardNumber,
+                    expiryMonth: expiryMonth,
+                    expiryYear: '20' + expiryYear,
+                    cvv: cvv
+                };
+                
+                // Process payment
+                const result = await window.verifonePayment.processPayment(cardData, orderData);
+                
+                if (result.success) {
+                    // Save to Supabase
+                    try {
+                        const savedBooking = await window.verifonePayment.saveBookingToDatabase(orderData, result);
+                        console.log('✅ Booking saved:', savedBooking);
+                        
+                        // Update order with actual database ID
+                        order.dbOrderId = savedBooking.id;
+                        order.orderId = String(savedBooking.id).padStart(5, '0');
+                    } catch (dbError) {
+                        console.error('⚠️ Database save error:', dbError);
+                        // Continue even if DB save fails - payment succeeded
+                    }
+                    
+                    // Track coupon usage
+                    if (appliedCoupon) {
+                        try {
+                            const client = initSupabase();
+                            await client.from('coupon_usage').insert([{
+                                coupon_id: appliedCoupon.id,
+                                customer_email: order.email,
+                                order_amount: subtotal,
+                                discount_amount: appliedCoupon.discount,
+                                order_id: order.orderId
+                            }]);
+                        } catch (err) {
+                            console.error('Error tracking coupon:', err);
+                        }
+                    }
+                    
+                    // Save completed order
+                    localStorage.setItem('completedOrder', JSON.stringify({
+                        ...order,
+                        paymentMethod: 'credit-card',
+                        paymentDate: new Date().toISOString(),
+                        status: 'paid',
+                        transactionId: result.transactionId,
+                        coupon: appliedCoupon ? {
+                            code: appliedCoupon.code,
+                            discount: appliedCoupon.discount
+                        } : null,
+                        originalPrice: subtotal,
+                        finalPrice: finalPrice
+                    }));
+                    
+                    // Success message
+                    if (window.customModal) {
+                        window.customModal.show({
+                            title: 'תשלום בוצע בהצלחה! 🎉',
+                            message: `התשלום אושר במערכת.\nמספר הזמנה: ${order.orderId}\nמעביר לסיכום ההזמנה...`,
+                            showCloseButton: false
+                        });
+                    }
+                    
+                    setTimeout(() => {
+                        window.location.href = 'order-success.html';
+                    }, 2000);
+                    
+                } else {
+                    throw new Error('Payment failed');
+                }
+                
+            } catch (error) {
+                console.error('❌ Payment error:', error);
+                button.textContent = originalText;
+                button.disabled = false;
+                
+                if (window.customModal) {
+                    window.customModal.error(
+                        'התשלום נכשל. אנא בדוק את פרטי הכרטיס ונסה שוב.',
+                        'שגיאה בתשלום'
+                    );
+                } else {
+                    alert('התשלום נכשל. אנא נסה שוב.');
+                }
+            }
+        }
+        
+        async function processPayment(order) {
+            const paymentMethod = document.getElementById('payment-method').value;
+            
+            if (!paymentMethod) {
+                if (window.customModal) {
+                    window.customModal.warning('אנא בחר אמצעי תשלום', 'חסר אמצעי תשלום');
+                } else {
+                    alert('אנא בחר אמצעי תשלום');
+                }
+                return;
+            }
+            
+            // Handle credit card payment with Verifone
+            if (paymentMethod === 'credit-card') {
+                await processCreditCardPayment(order);
+                return;
+            }
+            
+            // Handle credit card payment with Verifone
+            if (paymentMethod === 'credit-card') {
+                await processCreditCardPayment(order);
+                return;
+            }
+            
+            // Simulate payment processing
+            const processingMessage = 'מעבד תשלום...';
+            const button = document.querySelector('#payment-form button[type="submit"]');
+            const originalText = button.textContent;
+            button.textContent = processingMessage;
+            button.disabled = true;
+            
+            setTimeout(async () => {
+                // Track coupon usage if applied
+                if (appliedCoupon) {
+                    const client = initSupabase();
+                    if (client) {
+                        try {
+                            // Insert usage record into coupon_usage table
+                            await client
+                                .from('coupon_usage')
+                                .insert([{
+                                    coupon_id: appliedCoupon.id,
+                                    customer_email: order.email,
+                                    order_amount: order.price * (order.quantity || order.participants || 1),
+                                    discount_amount: appliedCoupon.discount,
+                                    order_id: order.orderId
+                                }]);
+                            
+                            // Note: used_count is auto-incremented by database trigger
+                        } catch (err) {
+                            console.error('Error tracking coupon usage:', err);
+                        }
+                    }
+                }
+                
+                // Calculate final price with discount
+                const servicePrices = {
+                    'paint-room': 120,
+                    'rage-room': 150,
+                    'throwing-axes': 100,
+                    'graffiti-center': 200,
+                    'birthday': 300,
+                    'rent-lab': 500,
+                    'combo': 200
+                };
+                const serviceKey = order.service || order.roomType || 'not-selected';
+                const basePrice = order.price || servicePrices[serviceKey] || 100;
+                const subtotal = basePrice * parseInt(order.quantity || order.participants || 1);
+                const finalPrice = appliedCoupon ? Math.max(0, subtotal - appliedCoupon.discount) : subtotal;
+                
+                // Simulate successful payment
+                localStorage.setItem('completedOrder', JSON.stringify({
+                    ...order,
+                    paymentMethod: paymentMethod,
+                    paymentDate: new Date().toISOString(),
+                    status: 'paid',
+                    coupon: appliedCoupon ? {
+                        code: appliedCoupon.code,
+                        discount: appliedCoupon.discount,
+                        type: appliedCoupon.type,
+                        value: appliedCoupon.value
+                    } : null,
+                    originalPrice: subtotal,
+                    finalPrice: finalPrice
+                }));
+                
+                if (window.customModal) {
+                    // Show modal without close button
+                    window.customModal.show({
+                        title: 'תשלום בוצע! 🎉',
+                        message: 'התשלום בוצע בהצלחה!\n\nמפנה לדף אישור...',
+                        type: 'success',
+                        icon: '✅',
+                        showCloseButton: false,
+                        buttons: []
+                    });
+                    
+                    // Auto-redirect after 5 seconds
+                    setTimeout(() => {
+                        window.location.href = 'order-success.html';
+                    }, 5000);
+                } else {
+                    alert('התשלום בוצע בהצלחה! מפנה לדף אישור...');
+                    setTimeout(() => {
+                        window.location.href = 'order-success.html';
+                    }, 5000);
+                }
+            }, 2000);
+        }
+        
+        function goBack() {
+            window.location.href = 'waiver.html';
+        }
+    </script>
+    <script src="js/user-auth.js"></script>
+</body>
+
+</html>

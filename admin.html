@@ -1,0 +1,3400 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לוח בקרה - SmashLabs Admin</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💥</text></svg>">
+    
+    <!-- Console Filter - Block browser extension logs -->
+    <script>
+        (function() {
+            const blockedPatterns = [
+                'content_script.js', 'override.js', 'pc-override', 'operata',
+                'browser extension', 'extension:', 'chrome-extension',
+                'getElementsByTagName is not a function'
+            ];
+            
+            function shouldBlock(args) {
+                const str = JSON.stringify(args);
+                return blockedPatterns.some(pattern => 
+                    str.toLowerCase().includes(pattern.toLowerCase()));
+            }
+            
+            const originalError = console.error;
+            const originalWarn = console.warn;
+            
+            console.error = function(...args) {
+                if (!shouldBlock(args)) originalError.apply(console, args);
+            };
+            console.warn = function(...args) {
+                if (!shouldBlock(args)) originalWarn.apply(console, args);
+            };
+        })();
+    </script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/admin-dashboard.css">
+    <link rel="stylesheet" href="css/custom-modal.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f0f0f;
+            font-family: 'Heebo', 'Rubik', Arial, sans-serif;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 3px solid #ff6b00;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .admin-user-name {
+            color: #1fb6c2;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-logout:hover {
+            transform: scale(1.05);
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            font-size: 1.2rem;
+            color: #999;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* Popular Package & Stats Section Styles */
+        .popular-package,
+        .upcoming-bookings,
+        .today-bookings {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+
+        .subsection-title {
+            font-size: 1.5rem;
+            color: #ff6b00;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .package-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .package-name {
+            font-size: 1.3rem;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .package-count {
+            font-size: 1.8rem;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .bookings-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bookings-table thead {
+            background: rgba(255, 107, 0, 0.2);
+        }
+
+        .bookings-table th {
+            padding: 15px;
+            text-align: right;
+            color: #ff6b00;
+            font-weight: 600;
+        }
+
+        .bookings-table td {
+            padding: 12px 15px;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bookings-table tbody tr {
+            transition: background 0.3s ease;
+        }
+
+        .bookings-table tbody tr:hover {
+            background: rgba(255, 107, 0, 0.1);
+        }
+
+        .status-badge,
+        .payment-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.confirmed {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-badge.pending {
+            background: #ff9800;
+            color: white;
+        }
+
+        .status-badge.completed {
+            background: #2196f3;
+            color: white;
+        }
+
+        .status-badge.cancelled {
+            background: #f44336;
+            color: white;
+        }
+
+        .payment-badge.paid {
+            background: #4caf50;
+            color: white;
+        }
+
+        .payment-badge.pending {
+            background: #ff9800;
+            color: white;
+        }
+
+        .payment-badge.refunded {
+            background: #9c27b0;
+            color: white;
+        }
+
+        .payment-badge.failed {
+            background: #f44336;
+            color: white;
+        }
+
+        .rage-room { color: #ff6b00; }
+        .throwing-axes { color: #4caf50; }
+        .paint-room { color: #e91e63; }
+        .combo { color: #9c27b0; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.1), rgba(31, 182, 194, 0.1));
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff6b00;
+        }
+
+        .stat-label {
+            color: #999;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #ff6b00;
+            margin-bottom: 20px;
+        }
+
+        .revenue-section {
+            margin-bottom: 30px;
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.2));
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+
+        .stat-card.success .stat-value {
+            color: #4caf50;
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.2));
+            border-color: rgba(255, 152, 0, 0.3);
+        }
+
+        .stat-card.warning .stat-value {
+            color: #ff9800;
+        }
+
+        .stat-card.info {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(33, 150, 243, 0.2));
+            border-color: rgba(33, 150, 243, 0.3);
+        }
+
+        .stat-card.info .stat-value {
+            color: #2196f3;
+        }
+
+        .bookings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .booking-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border-right: 4px solid;
+        }
+
+        .booking-card.rage-room {
+            border-color: #ff6b00;
+        }
+
+        .booking-card.throwing-axes {
+            border-color: #4caf50;
+        }
+
+        .booking-card.paint-room {
+            border-color: #e91e63;
+        }
+
+        .booking-time {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1fb6c2;
+        }
+
+        .booking-package {
+            font-size: 1.1rem;
+            margin: 10px 0;
+        }
+
+        .booking-customer {
+            color: #999;
+        }
+
+        .booking-status {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .no-bookings {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+
+        /* Calendar Styles */
+        .calendar-header {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .view-btn:hover {
+            background: rgba(255, 107, 0, 0.2);
+            border-color: #ff6b00;
+        }
+
+        .view-btn.active {
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2);
+            border-color: #ff6b00;
+            box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3);
+        }
+
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .current-date-label {
+            font-size: 1.3rem;
+            color: #ff6b00;
+            font-weight: 700;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .nav-btn {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 107, 0, 0.2);
+            border-color: #ff6b00;
+            transform: scale(1.05);
+        }
+
+        .today-btn {
+            background: linear-gradient(45deg, #1fb6c2, #00a8b5);
+            border-color: #1fb6c2;
+        }
+
+        .today-btn:hover {
+            background: linear-gradient(45deg, #00a8b5, #008c96);
+        }
+
+        .calendar-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 2px solid;
+        }
+
+        .calendar-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+
+        .calendar-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .month-view {
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 700;
+            color: #ff6b00;
+            padding: 10px;
+            background: rgba(255, 107, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ff6b00;
+        }
+
+        .calendar-day.today {
+            background: rgba(255, 107, 0, 0.1);
+            border: 2px solid #ff6b00;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.4;
+        }
+
+        .calendar-day.empty {
+            cursor: default;
+            background: transparent;
+            border: none;
+        }
+
+        .day-number {
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .day-bookings {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .calendar-booking {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid;
+        }
+
+        .calendar-booking:hover {
+            transform: translateX(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .calendar-booking.rage-room {
+            background: rgba(255, 107, 0, 0.2);
+            border-color: #ff6b00;
+            color: #fff;
+        }
+
+        .calendar-booking.throwing-axes {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4caf50;
+            color: #fff;
+        }
+
+        .calendar-booking.paint-room {
+            background: rgba(233, 30, 99, 0.2);
+            border-color: #e91e63;
+            color: #fff;
+        }
+
+        .calendar-booking.combo {
+            background: rgba(156, 39, 176, 0.2);
+            border-color: #9c27b0;
+            color: #fff;
+        }
+
+        .more-bookings {
+            font-size: 0.7rem;
+            color: #1fb6c2;
+            text-align: center;
+            padding: 4px;
+            font-weight: 600;
+        }
+
+        /* Day View Styles */
+        .day-view {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hour-slot {
+            display: flex;
+            gap: 15px;
+            min-height: 60px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 0;
+        }
+
+        .hour-label {
+            min-width: 80px;
+            font-weight: 700;
+            color: #ff6b00;
+            font-size: 1.1rem;
+            padding-top: 5px;
+            text-align: right;
+        }
+
+        .hour-bookings {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .empty-hour {
+            color: rgba(255, 255, 255, 0.4);
+            font-style: italic;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .day-view .calendar-booking {
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-left: 4px solid;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .day-view .booking-time {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1fb6c2;
+        }
+
+        .day-view .booking-package {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .day-view .booking-customer,
+        .day-view .booking-phone {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .booking-badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .status-badge,
+        .payment-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.confirmed {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+
+        .status-badge.pending {
+            background: rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+
+        .status-badge.cancelled {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        .payment-badge.paid {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+
+        .payment-badge.pending {
+            background: rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+
+        .payment-badge.failed {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 2px solid rgba(255, 107, 0, 0.3);
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 2px solid rgba(255, 107, 0, 0.3);
+            background: rgba(255, 107, 0, 0.1);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #ff6b00;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 107, 0, 0.2);
+            color: #ff6b00;
+            transform: rotate(90deg);
+        }
+
+        .booking-details {
+            padding: 25px;
+        }
+
+        .detail-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-right: 4px solid #ff6b00;
+        }
+
+        .detail-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-section h3 {
+            color: #ff6b00;
+            font-size: 1.2rem;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 107, 0, 0.3);
+        }
+
+        .detail-section p {
+            color: #fff;
+            margin: 10px 0;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            line-height: 1.8;
+        }
+
+        .detail-section p strong {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .detail-section .status-badge,
+        .detail-section .payment-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ff6b00;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select {
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff6b00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: left 12px center;
+            background-size: 16px;
+            padding-left: 40px;
+        }
+
+        .form-group select option {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .form-group select option:checked,
+        .form-group select option:focus {
+            background: #ff6b00;
+            color: #fff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6b00;
+            background: rgba(255, 107, 0, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 107, 0, 0.3);
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b00, #ff8800);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #ff8800, #ffa500);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Hamburger Menu Styles */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: #ff6b00;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(9px, 9px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(8px, -8px);
+        }
+
+        /* Reports Section Styles */
+        .reports-container { padding: 20px; }
+        .reports-filters {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .filter-group label {
+            font-weight: 600;
+            color: #ff6b00;
+        }
+        .filter-group select,
+        .filter-group input[type="date"] {
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'Heebo', sans-serif;
+        }
+        .btn-primary {
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-primary:hover { transform: scale(1.05); }
+        .btn-secondary {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 107, 0, 0.5);
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { background: rgba(255, 107, 0, 0.2); }
+        .reports-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .report-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 107, 0, 0.3);
+        }
+        .report-card.revenue { background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.2)); border-color: rgba(76, 175, 80, 0.4); }
+        .report-card.orders { background: linear-gradient(135deg, rgba(255, 107, 0, 0.1), rgba(255, 107, 0, 0.2)); border-color: rgba(255, 107, 0, 0.4); }
+        .report-card.bookings { background: linear-gradient(135deg, rgba(31, 182, 194, 0.1), rgba(31, 182, 194, 0.2)); border-color: rgba(31, 182, 194, 0.4); }
+        .report-card.cancellations { background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.2)); border-color: rgba(239, 68, 68, 0.4); }
+        .report-card.avg-order { background: linear-gradient(135deg, rgba(156, 39, 176, 0.1), rgba(156, 39, 176, 0.2)); border-color: rgba(156, 39, 176, 0.4); }
+        .report-card.conversion { background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(33, 150, 243, 0.2)); border-color: rgba(33, 150, 243, 0.4); }
+        .card-icon { font-size: 3rem; opacity: 0.8; }
+        .card-content { flex: 1; }
+        .card-content h3 { font-size: 0.9rem; color: #999; margin-bottom: 8px; }
+        .card-value { font-size: 2rem; font-weight: bold; color: #fff; margin-bottom: 5px; }
+        .card-change { font-size: 0.85rem; color: #4caf50; }
+        .card-change.negative { color: #ef4444; }
+        .reports-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+        .reports-section h3 {
+            font-size: 1.5rem;
+            color: #ff6b00;
+            margin-bottom: 20px;
+        }
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .reports-table thead { background: rgba(255, 107, 0, 0.2); }
+        .reports-table th {
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+            color: #ff6b00;
+            border-bottom: 2px solid rgba(255, 107, 0, 0.3);
+        }
+        .reports-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .reports-table tbody tr:hover { background: rgba(255, 107, 0, 0.1); }
+        .service-breakdown-container { overflow-x: auto; }
+        .payment-breakdown,
+        .customer-analytics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .payment-item,
+        .analytics-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+        .payment-item span:first-child,
+        .analytics-item span:first-child {
+            font-weight: 600;
+            color: #999;
+        }
+        .payment-item span:last-child,
+        .analytics-item span:last-child {
+            font-weight: bold;
+            color: #ff6b00;
+            font-size: 1.1rem;
+        }
+
+        /* Coupons Section Styles */
+        .coupons-container { padding: 20px; }
+        .coupon-form-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+        .coupon-form-card h3 {
+            color: #ff6b00;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-group label {
+            color: #999;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'Heebo', sans-serif;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6b00;
+        }
+        .btn-large {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+        .coupons-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+        .stat-box.active { border-color: rgba(76, 175, 80, 0.5); background: rgba(76, 175, 80, 0.1); }
+        .stat-box.used { border-color: rgba(33, 150, 243, 0.5); background: rgba(33, 150, 243, 0.1); }
+        .stat-box.expired { border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.1); }
+        .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+        .stat-content {
+            flex: 1;
+        }
+        .stat-label {
+            color: #999;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        .coupons-filter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .coupons-filter label {
+            color: #ff6b00;
+            font-weight: 600;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover {
+            background: rgba(255, 107, 0, 0.2);
+        }
+        .filter-btn.active {
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2);
+            border-color: transparent;
+        }
+        .coupons-list-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+        .coupons-list-section h3 {
+            color: #ff6b00;
+            margin-bottom: 20px;
+        }
+        .coupons-table-wrapper {
+            overflow-x: auto;
+        }
+        .coupons-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .coupons-table thead {
+            background: rgba(255, 107, 0, 0.2);
+        }
+        .coupons-table th {
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+            color: #ff6b00;
+            border-bottom: 2px solid rgba(255, 107, 0, 0.3);
+        }
+        .coupons-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .coupons-table tbody tr:hover {
+            background: rgba(255, 107, 0, 0.1);
+        }
+        .coupon-code {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #1fb6c2;
+            font-size: 1.1rem;
+        }
+        .coupon-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-active { background: rgba(76, 175, 80, 0.2); color: #4caf50; border: 1px solid #4caf50; }
+        .badge-used { background: rgba(33, 150, 243, 0.2); color: #2196f3; border: 1px solid #2196f3; }
+        .badge-expired { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+        .badge-revoked { background: rgba(158, 158, 158, 0.2); color: #9e9e9e; border: 1px solid #9e9e9e; }
+        .action-btn {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .btn-revoke {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+        .btn-revoke:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+        .btn-delete {
+            background: rgba(158, 158, 158, 0.2);
+            color: #9e9e9e;
+            border: 1px solid #9e9e9e;
+        }
+        .btn-delete:hover {
+            background: rgba(158, 158, 158, 0.4);
+        }
+        .btn-copy {
+            background: rgba(31, 182, 194, 0.2);
+            color: #1fb6c2;
+            border: 1px solid #1fb6c2;
+        }
+        .btn-copy:hover {
+            background: rgba(31, 182, 194, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 60px;
+            }
+
+            .admin-header {
+                padding: 0.75rem 1rem;
+            }
+
+            .admin-logo {
+                font-size: 1.3rem;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .admin-header-right {
+                position: fixed;
+                top: 65px;
+                right: -100%;
+                width: 280px;
+                height: calc(100vh - 65px);
+                background: rgba(0, 0, 0, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0;
+                padding: 1.5rem;
+                border-left: 3px solid #ff6b00;
+                transition: right 0.3s ease;
+                box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+                overflow-y: auto;
+            }
+
+            .admin-header-right.active {
+                right: 0;
+            }
+
+            .admin-user {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                padding: 1rem;
+                background: rgba(255, 107, 0, 0.1);
+                border-radius: 8px;
+                margin-bottom: 1rem;
+            }
+
+            .admin-user span {
+                font-size: 1.2rem;
+            }
+
+            .admin-user-name {
+                font-size: 1.1rem;
+            }
+
+            .btn-logout {
+                width: 100%;
+                margin: 0.5rem 0 !important;
+                padding: 1rem;
+                font-size: 1rem;
+                text-align: center;
+            }
+
+            .main-content {
+                margin-top: 70px;
+                padding: 1rem;
+            }
+
+            .admin-tabs {
+                flex-direction: column;
+                gap: 0.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .admin-tab {
+                width: 100%;
+                padding: 1rem;
+                font-size: 1rem;
+            }
+
+            /* Enhanced Calendar Mobile Optimizations */
+            .calendar-header {
+                padding: 15px;
+            }
+
+            .calendar-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .view-controls {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .view-btn {
+                flex: 1;
+                min-width: 90px;
+                padding: 12px 10px;
+                font-size: 0.9rem;
+            }
+
+            .date-navigation {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .current-date-label {
+                width: 100%;
+                font-size: 1rem;
+                min-width: auto;
+                margin-bottom: 10px;
+                order: -1;
+            }
+
+            .nav-btn {
+                padding: 10px 12px;
+                font-size: 1rem;
+                flex: 1;
+            }
+
+            .today-btn {
+                flex: 1;
+            }
+
+            .calendar-legend {
+                gap: 10px;
+                font-size: 0.8rem;
+                padding: 10px;
+            }
+
+            .legend-item {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+
+            .calendar-container {
+                padding: 10px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .calendar-grid {
+                gap: 5px;
+            }
+
+            /* Month View Mobile Optimization */
+            .calendar-grid.month-view {
+                grid-template-columns: repeat(7, minmax(45px, 1fr));
+                min-width: 320px;
+            }
+
+            .calendar-day-header {
+                padding: 8px 4px;
+                font-size: 0.75rem;
+            }
+
+            .calendar-day {
+                min-height: 70px;
+                padding: 6px;
+            }
+
+            .day-number {
+                font-size: 0.9rem;
+                margin-bottom: 3px;
+            }
+
+            .calendar-booking {
+                padding: 3px 5px;
+                font-size: 0.65rem;
+                border-left-width: 2px;
+            }
+
+            .more-bookings {
+                font-size: 0.6rem;
+                padding: 2px;
+            }
+
+            /* Day View Mobile Optimization */
+            .day-view {
+                padding: 0;
+            }
+
+            .hour-slot {
+                flex-direction: column;
+                gap: 8px;
+                min-height: auto;
+                padding: 12px 8px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .hour-label {
+                min-width: auto;
+                font-size: 1rem;
+                padding: 0;
+                text-align: right;
+                margin-bottom: 8px;
+            }
+
+            .hour-bookings {
+                gap: 8px;
+            }
+
+            .day-view .calendar-booking {
+                padding: 12px 15px;
+                font-size: 0.85rem;
+                border-left-width: 3px;
+            }
+
+            .empty-hour {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+
+            /* Modal Mobile Optimization */
+            .modal-content {
+                width: 95%;
+                max-width: 100%;
+                max-height: 90vh;
+                margin: 5vh auto;
+                border-radius: 12px;
+            }
+
+            .modal-header {
+                padding: 1rem;
+            }
+
+            .modal-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .booking-details {
+                padding: 12px;
+            }
+
+            .detail-section {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+
+            .detail-section h3 {
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+            }
+
+            .detail-section p {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+                font-size: 0.9rem;
+            }
+
+            .detail-section p strong {
+                min-width: auto;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .form-group label {
+                font-size: 0.9rem;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 1rem;
+                padding: 12px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 14px;
+                font-size: 1rem;
+            }
+
+            /* Stats Grid Mobile */
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            /* Table Mobile Optimization */
+            .bookings-table {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .bookings-table table {
+                min-width: 600px;
+            }
+
+            /* Touch-friendly spacing */
+            button,
+            .btn,
+            .view-btn,
+            .nav-btn {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+        }
+
+        /* Landscape Mobile Optimization */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .calendar-grid.month-view {
+                grid-template-columns: repeat(7, minmax(55px, 1fr));
+            }
+
+            .calendar-day {
+                min-height: 60px;
+            }
+        }
+
+        /* Small Mobile Devices */
+        @media (max-width: 375px) {
+            .calendar-grid.month-view {
+                grid-template-columns: repeat(7, minmax(40px, 1fr));
+            }
+
+            .calendar-day {
+                min-height: 60px;
+                padding: 4px;
+            }
+
+            .day-number {
+                font-size: 0.8rem;
+            }
+
+            .calendar-booking {
+                font-size: 0.6rem;
+                padding: 2px 4px;
+            }
+
+            .view-btn,
+            .nav-btn {
+                font-size: 0.85rem;
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="admin-header-left">
+            <div class="admin-logo">SmashLabs Admin</div>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="תפריט" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="admin-header-right" id="adminMenu">
+            <div class="admin-user">
+                <span>👤</span>
+                <span class="admin-user-name" id="adminName">מנהל</span>
+            </div>
+            <a href="index.html" class="btn-logout" style="text-decoration: none; margin-left: 10px;">🏠 אתר ראשי</a>
+            <button class="btn-logout" onclick="logout()">התנתק</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Tabs Navigation -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="dashboard" onclick="switchTab('dashboard')">
+                📊 סקירה כללית
+            </button>
+            <button class="admin-tab" data-tab="calendar" onclick="switchTab('calendar')">
+                📅 לוח שנה
+            </button>
+            <button class="admin-tab" data-tab="bookings" onclick="switchTab('bookings')">
+                📋 הזמנות
+            </button>
+            <button class="admin-tab" data-tab="reports" onclick="switchTab('reports')">
+                📈 דוחות
+            </button>
+            <button class="admin-tab" data-tab="coupons" onclick="switchTab('coupons')">
+                🎟️ קופונים
+            </button>
+        </div>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="admin-section active">
+            <div class="loading">טוען נתונים</div>
+        </section>
+
+        <!-- Calendar Section -->
+        <section id="calendar-section" class="admin-section">
+            <div class="loading">טוען לוח שנה</div>
+        </section>
+
+        <!-- Bookings Section -->
+        <section id="bookings-section" class="admin-section">
+            <div class="loading">טוען הזמנות</div>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports-section" class="admin-section">
+            <div class="reports-container">
+                <h2 class="section-title">📈 דוחות עסקיים</h2>
+                
+                <!-- Date Range Filter -->
+                <div class="reports-filters">
+                    <div class="filter-group">
+                        <label>תקופה:</label>
+                        <select id="reportPeriod" onchange="updateReports()">
+                            <option value="today">היום</option>
+                            <option value="week">השבוע</option>
+                            <option value="month" selected>החודש</option>
+                            <option value="quarter">הרבעון</option>
+                            <option value="year">השנה</option>
+                            <option value="custom">טווח מותאם אישית</option>
+                        </select>
+                    </div>
+                    <div class="filter-group custom-dates" style="display:none;">
+                        <label>מתאריך:</label>
+                        <input type="date" id="reportStartDate">
+                        <label>עד תאריך:</label>
+                        <input type="date" id="reportEndDate">
+                    </div>
+                    <button onclick="updateReports()" class="btn-primary">🔄 עדכן דוחות</button>
+                    <button onclick="exportReports()" class="btn-secondary">💾 ייצא לאקסל</button>
+                </div>
+
+                <!-- Financial Summary Cards -->
+                <div class="reports-cards">
+                    <div class="report-card revenue">
+                        <div class="card-icon">💰</div>
+                        <div class="card-content">
+                            <h3>סה"כ הכנסות</h3>
+                            <div class="card-value" id="totalRevenue">₪0</div>
+                            <div class="card-change" id="revenueChange">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card orders">
+                        <div class="card-icon">📦</div>
+                        <div class="card-content">
+                            <h3>סה"כ הזמנות</h3>
+                            <div class="card-value" id="totalOrders">0</div>
+                            <div class="card-change" id="ordersChange">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card bookings">
+                        <div class="card-icon">📅</div>
+                        <div class="card-content">
+                            <h3>סה"כ הזמנות תורים</h3>
+                            <div class="card-value" id="totalBookings">0</div>
+                            <div class="card-change" id="bookingsChange">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card cancellations">
+                        <div class="card-icon">❌</div>
+                        <div class="card-content">
+                            <h3>ביטולים</h3>
+                            <div class="card-value" id="totalCancellations">0</div>
+                            <div class="card-change" id="cancellationsRate">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card avg-order">
+                        <div class="card-icon">📊</div>
+                        <div class="card-content">
+                            <h3>ממוצע להזמנה</h3>
+                            <div class="card-value" id="avgOrderValue">₪0</div>
+                            <div class="card-change" id="avgOrderChange">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card conversion">
+                        <div class="card-icon">📈</div>
+                        <div class="card-content">
+                            <h3>שיעור המרה</h3>
+                            <div class="card-value" id="conversionRate">0%</div>
+                            <div class="card-change" id="conversionChange">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Breakdown -->
+                <div class="reports-section">
+                    <h3>פילוח לפי שירות</h3>
+                    <div class="service-breakdown-container">
+                        <table class="reports-table" id="serviceBreakdownTable">
+                            <thead>
+                                <tr>
+                                    <th>שירות</th>
+                                    <th>כמות הזמנות</th>
+                                    <th>הכנסות</th>
+                                    <th>% מסך ההכנסות</th>
+                                    <th>ממוצע להזמנה</th>
+                                </tr>
+                            </thead>
+                            <tbody id="serviceBreakdownBody">
+                                <tr><td colspan="5">טוען נתונים...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Payment Methods Breakdown -->
+                <div class="reports-section">
+                    <h3>פילוח לפי אמצעי תשלום</h3>
+                    <div class="payment-breakdown">
+                        <div class="payment-item">
+                            <span>💳 אשראי</span>
+                            <span id="creditCardTotal">₪0 (0%)</span>
+                        </div>
+                        <div class="payment-item">
+                            <span>💵 מזומן</span>
+                            <span id="cashTotal">₪0 (0%)</span>
+                        </div>
+                        <div class="payment-item">
+                            <span>🔄 העברה בנקאית</span>
+                            <span id="transferTotal">₪0 (0%)</span>
+                        </div>
+                        <div class="payment-item">
+                            <span>📱 אחר</span>
+                            <span id="otherPaymentTotal">₪0 (0%)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Analytics -->
+                <div class="reports-section">
+                    <h3>ניתוח לקוחות</h3>
+                    <div class="customer-analytics">
+                        <div class="analytics-item">
+                            <span>לקוחות חדשים</span>
+                            <span id="newCustomers">0</span>
+                        </div>
+                        <div class="analytics-item">
+                            <span>לקוחות חוזרים</span>
+                            <span id="returningCustomers">0</span>
+                        </div>
+                        <div class="analytics-item">
+                            <span>שיעור חזרה</span>
+                            <span id="customerRetentionRate">0%</span>
+                        </div>
+                        <div class="analytics-item">
+                            <span>ממוצע הזמנות ללקוח</span>
+                            <span id="avgOrdersPerCustomer">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Customers -->
+                <div class="reports-section">
+                    <h3>לקוחות מובילים</h3>
+                    <table class="reports-table" id="topCustomersTable">
+                        <thead>
+                            <tr>
+                                <th>דירוג</th>
+                                <th>שם לקוח</th>
+                                <th>אימייל</th>
+                                <th>טלפון</th>
+                                <th>כמות הזמנות</th>
+                                <th>סה"כ הכנסות</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topCustomersBody">
+                            <tr><td colspan="6">טוען נתונים...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cancellations Analysis -->
+                <div class="reports-section">
+                    <h3>ניתוח ביטולים</h3>
+                    <table class="reports-table" id="cancellationsTable">
+                        <thead>
+                            <tr>
+                                <th>תאריך ביטול</th>
+                                <th>לקוח</th>
+                                <th>שירות</th>
+                                <th>סכום</th>
+                                <th>סיבת ביטול</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cancellationsBody">
+                            <tr><td colspan="5">טוען נתונים...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coupons Section -->
+        <section id="coupons-section" class="admin-section">
+            <div class="coupons-container">
+                <h2 class="section-title">🎟️ ניהול קופונים</h2>
+                
+                <!-- Create Coupon Form -->
+                <div class="coupon-form-card">
+                    <h3>🎫 צור קופון חדש</h3>
+                    <form id="createCouponForm" onsubmit="createCoupon(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>קוד קופון *</label>
+                                <input type="text" id="couponCode" required placeholder="לדוגמה: SUMMER2026" pattern="[A-Za-z0-9]+" title="אותיות ומספרים בלבד">
+                            </div>
+                            <div class="form-group">
+                                <label>סוג הנחה *</label>
+                                <select id="couponType" required onchange="toggleDiscountInput()">
+                                    <option value="percentage">אחוזים (%)</option>
+                                    <option value="fixed">סכום קבוע (₪)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label id="discountLabel">סכום הנחה (%) *</label>
+                                <input type="number" id="couponDiscount" required min="1" max="100" placeholder="10">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>תאריך תפוגה *</label>
+                                <input type="date" id="couponExpiry" required>
+                            </div>
+                            <div class="form-group">
+                                <label>מגבלת שימושים</label>
+                                <input type="number" id="couponMaxUses" min="1" value="1" placeholder="1">
+                            </div>
+                            <div class="form-group">
+                                <label>הנחה מינימלית (₪)</label>
+                                <input type="number" id="couponMinPurchase" min="0" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>תיאור (אופציונלי)</label>
+                            <textarea id="couponDescription" rows="2" placeholder="תיאור הקופון למנהלים"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary btn-large">➕ צור קופון</button>
+                    </form>
+                </div>
+
+                <!-- Coupons Statistics -->
+                <div class="coupons-stats">
+                    <div class="stat-box">
+                        <div class="stat-icon">🎟️</div>
+                        <div class="stat-content">
+                            <div class="stat-label">סה"כ קופונים</div>
+                            <div class="stat-value" id="totalCoupons">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-box active">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <div class="stat-label">קופונים פעילים</div>
+                            <div class="stat-value" id="activeCoupons">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-box used">
+                        <div class="stat-icon">✓</div>
+                        <div class="stat-content">
+                            <div class="stat-label">שומשו</div>
+                            <div class="stat-value" id="usedCoupons">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-box expired">
+                        <div class="stat-icon">⏰</div>
+                        <div class="stat-content">
+                            <div class="stat-label">פגי תוקף</div>
+                            <div class="stat-value" id="expiredCoupons">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coupons Filter -->
+                <div class="coupons-filter">
+                    <label>סינון:</label>
+                    <button class="filter-btn active" onclick="filterCoupons('all')">הכל</button>
+                    <button class="filter-btn" onclick="filterCoupons('active')">פעילים</button>
+                    <button class="filter-btn" onclick="filterCoupons('used')">שומשו</button>
+                    <button class="filter-btn" onclick="filterCoupons('expired')">פגי תוקף</button>
+                    <button class="filter-btn" onclick="filterCoupons('revoked')">מבוטלים</button>
+                </div>
+
+                <!-- Coupons List -->
+                <div class="coupons-list-section">
+                    <h3>📋 רשימת קופונים</h3>
+                    <div class="coupons-table-wrapper">
+                        <table class="coupons-table">
+                            <thead>
+                                <tr>
+                                    <th>קוד</th>
+                                    <th>הנחה</th>
+                                    <th>סטטוס</th>
+                                    <th>שימושים</th>
+                                    <th>תאריך תפוגה</th>
+                                    <th>מינימום קנייה</th>
+                                    <th>תיאור</th>
+                                    <th>נוצר על ידי</th>
+                                    <th>נוצר בתאריך</th>
+                                    <th>פעולות</th>
+                                </tr>
+                            </thead>
+                            <tbody id="couponsTableBody">
+                                <tr><td colspan="10" style="text-align:center;">טוען קופונים...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Edit Booking Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>ערוך הזמנה</h2>
+                <button class="modal-close" onclick="closeEditModal()">×</button>
+            </div>
+            <form id="editBookingForm">
+                <input type="hidden" id="editBookingId">
+                
+                <div class="booking-details">
+                    <!-- Customer Details Section -->
+                    <div class="detail-section">
+                        <h3>פרטי לקוח</h3>
+                        <div class="form-group">
+                            <label>שם לקוח</label>
+                            <input type="text" id="editCustomerName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>אימייל</label>
+                            <input type="email" id="editCustomerEmail" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>טלפון</label>
+                            <input type="tel" id="editCustomerPhone" required>
+                        </div>
+                    </div>
+
+                    <!-- Booking Details Section -->
+                    <div class="detail-section">
+                        <h3>פרטי הזמנה</h3>
+                        <div class="form-group">
+                            <label>תאריך</label>
+                            <input type="date" id="editBookingDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>שעה</label>
+                            <input type="time" id="editBookingTime" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>סטטוס הזמנה</label>
+                            <select id="editStatus">
+                                <option value="confirmed">מאושר</option>
+                                <option value="completed">הושלם</option>
+                                <option value="cancelled">בוטל</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Payment Details Section -->
+                    <div class="detail-section">
+                        <h3>פרטי תשלום</h3>
+                        <div class="form-group">
+                            <label>סכום ששולם</label>
+                            <input type="number" id="editPaymentAmount" step="0.01">
+                        </div>
+
+                        <div class="form-group">
+                            <label>סטטוס תשלום</label>
+                            <select id="editPaymentStatus">
+                                <option value="pending">ממתין</option>
+                                <option value="paid">שולם</option>
+                                <option value="refunded">הוחזר</option>
+                                <option value="failed">נכשל</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>אמצעי תשלום</label>
+                            <select id="editPaymentMethod">
+                                <option value="">לא צוין</option>
+                                <option value="credit_card">כרטיס אשראי</option>
+                                <option value="cash">מזומן</option>
+                                <option value="bank_transfer">העברה בנקאית</option>
+                                <option value="bit">Bit</option>
+                                <option value="paypal">PayPal</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>מזהה עסקה</label>
+                            <input type="text" id="editPaymentTransactionId">
+                        </div>
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="detail-section">
+                        <h3>הערות</h3>
+                        <div class="form-group">
+                            <label>הערות לקוח</label>
+                            <textarea id="editCustomerNotes" readonly></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>הערות מנהל</label>
+                            <textarea id="editAdminNotes" placeholder="הוסף הערות פנימיות..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">ביטול</button>
+                        <button type="submit" class="btn btn-primary">שמור שינויים</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Booking Details Modal -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>פרטי הזמנה</h2>
+                <button class="modal-close" onclick="closeViewModal()">×</button>
+            </div>
+            <div id="viewModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Create New Booking Modal -->
+    <div id="createBookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>צור הזמנה חדשה</h2>
+                <button class="modal-close" onclick="closeCreateBookingModal()">×</button>
+            </div>
+            <form id="createBookingForm">
+                <div class="booking-details">
+                    <!-- Customer Details Section -->
+                    <div class="detail-section">
+                        <h3>פרטי לקוח</h3>
+                        <div class="form-group">
+                            <label>שם לקוח *</label>
+                            <input type="text" id="createCustomerName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>אימייל *</label>
+                            <input type="email" id="createCustomerEmail" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>טלפון *</label>
+                            <input type="tel" id="createCustomerPhone" required>
+                        </div>
+                    </div>
+
+                    <!-- Booking Details Section -->
+                    <div class="detail-section">
+                        <h3>פרטי הזמנה</h3>
+                        <div class="form-group">
+                            <label>חבילה *</label>
+                            <select id="createPackageId" required onchange="updatePackagePrice(this.value)">
+                                <option value="">בחר חבילה</option>
+                                <optgroup label="חדר זעם">
+                                    <option value="solo-rage-basic" data-price="120">חדר זעם - בסיסי (₪120)</option>
+                                    <option value="solo-rage-standard" data-price="150">חדר זעם - סטנדרט (₪150)</option>
+                                    <option value="solo-rage-premium" data-price="180">חדר זעם - פרימיום (₪180)</option>
+                                    <option value="solo-rage-extreme" data-price="210">חדר זעם - מוגזם (₪210)</option>
+                                </optgroup>
+                                <optgroup label="זריקת גרזנים">
+                                    <option value="solo-axes-basic" data-price="100">זריקת גרזנים - בסיסי (₪100)</option>
+                                    <option value="solo-axes-standard" data-price="130">זריקת גרזנים - סטנדרט (₪130)</option>
+                                    <option value="solo-axes-premium" data-price="160">זריקת גרזנים - פרימיום (₪160)</option>
+                                    <option value="solo-axes-extreme" data-price="190">זריקת גרזנים - מוגזם (₪190)</option>
+                                </optgroup>
+                                <optgroup label="חדר צבע">
+                                    <option value="solo-paint-basic" data-price="140">חדר צבע - בסיסי (₪140)</option>
+                                    <option value="solo-paint-standard" data-price="170">חדר צבע - סטנדרט (₪170)</option>
+                                    <option value="solo-paint-premium" data-price="200">חדר צבע - פרימיום (₪200)</option>
+                                    <option value="solo-paint-extreme" data-price="230">חדר צבע - מוגזם (₪230)</option>
+                                </optgroup>
+                                <optgroup label="משולב">
+                                    <option value="solo-combo-basic" data-price="280">משולב - בסיסי (₪280)</option>
+                                    <option value="solo-combo-standard" data-price="350">משולב - סטנדרט (₪350)</option>
+                                    <option value="solo-combo-premium" data-price="390">משולב - פרימיום (₪390)</option>
+                                    <option value="solo-combo-extreme" data-price="420">משולב - מוגזם (₪420)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>תאריך *</label>
+                            <input type="date" id="createBookingDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>שעה *</label>
+                            <input type="time" id="createBookingTime" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>משך (דקות)</label>
+                            <input type="number" id="createDuration" value="60" min="30" step="30">
+                        </div>
+                    </div>
+
+                    <!-- Payment Details Section -->
+                    <div class="detail-section">
+                        <h3>פרטי תשלום</h3>
+                        <div class="form-group">
+                            <label>מחיר *</label>
+                            <input type="number" id="createPrice" step="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>סטטוס תשלום</label>
+                            <select id="createPaymentStatus">
+                                <option value="pending">ממתין</option>
+                                <option value="paid">שולם</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>אמצעי תשלום</label>
+                            <select id="createPaymentMethod">
+                                <option value="">לא צוין</option>
+                                <option value="credit_card">כרטיס אשראי</option>
+                                <option value="cash">מזומן</option>
+                                <option value="bank_transfer">העברה בנקאית</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Notes Section -->
+                    <div class="detail-section">
+                        <h3>הערות</h3>
+                        <div class="form-group">
+                            <label>הערות לקוח</label>
+                            <textarea id="createCustomerNotes" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>הערות מנהל</label>
+                            <textarea id="createAdminNotes" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateBookingModal()">ביטול</button>
+                    <button type="submit" class="btn btn-primary">צור הזמנה</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/custom-modal.js"></script>
+    <script src="js/admin-dashboard.js"></script>
+    <script src="js/admin-calendar.js"></script>
+    <script src="js/admin-bookings.js"></script>
+    
+    <script>
+        // Tab Switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update sections
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-section`).classList.add('active');
+
+            // Load section data
+            if (tabName === 'dashboard' && typeof loadDashboard === 'function') {
+                loadDashboard();
+            } else if (tabName === 'calendar' && typeof loadCalendar === 'function') {
+                loadCalendar();
+            } else if (tabName === 'bookings' && typeof loadBookings === 'function') {
+                loadBookings();
+            } else if (tabName === 'reports') {
+                loadReports();
+            } else if (tabName === 'coupons') {
+                loadCoupons();
+            }
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('האם אתה בטוח שברצונך להתנתק?')) {
+                // Clear admin session from both storages
+                sessionStorage.removeItem('smashlabs_admin_token');
+                sessionStorage.removeItem('smashlabs_admin_logged_in');
+                sessionStorage.removeItem('smashlabs_current_user');
+                
+                localStorage.removeItem('smashlabs_admin_logged_in');
+                localStorage.removeItem('smashlabs_current_user');
+                
+                console.log('Admin logged out');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Check authentication
+        function checkAuth() {
+            // Check both storages for admin status
+            const isAdminSession = sessionStorage.getItem('smashlabs_admin_logged_in') === 'true';
+            const isAdminLocal = localStorage.getItem('smashlabs_admin_logged_in') === 'true';
+            const currentUser = JSON.parse(sessionStorage.getItem('smashlabs_current_user') || localStorage.getItem('smashlabs_current_user') || '{}');
+            
+            const isAdmin = isAdminSession || isAdminLocal || currentUser.is_admin === true;
+            
+            console.log('Admin auth check:', { isAdminSession, isAdminLocal, currentUser, isAdmin });
+            
+            if (!isAdmin) {
+                alert('אין לך הרשאות גישה לעמוד זה. נדרשת הרשאת מנהל.');
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            // Set admin name from either storage
+            const userData = JSON.parse(sessionStorage.getItem('smashlabs_current_user') || localStorage.getItem('smashlabs_current_user') || '{}');
+            if (userData.name) {
+                document.getElementById('adminName').textContent = userData.name;
+            } else {
+                document.getElementById('adminName').textContent = 'מנהל';
+            }
+            
+            return true;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            if (checkAuth()) {
+                // Load initial dashboard
+                loadDashboard();
+                
+                // Hamburger Menu Functionality
+                const hamburger = document.getElementById('hamburger');
+                const adminMenu = document.getElementById('adminMenu');
+                
+                if (hamburger && adminMenu) {
+                    // Toggle menu on hamburger click
+                    hamburger.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const isActive = adminMenu.classList.toggle('active');
+                        hamburger.classList.toggle('active');
+                        hamburger.setAttribute('aria-expanded', isActive);
+                        
+                        // Prevent body scroll when menu is open
+                        if (isActive) {
+                            document.body.style.overflow = 'hidden';
+                        } else {
+                            document.body.style.overflow = '';
+                        }
+                    });
+                    
+                    // Close menu when clicking outside
+                    document.addEventListener('click', function(e) {
+                        if (adminMenu.classList.contains('active') && 
+                            !adminMenu.contains(e.target) && 
+                            !hamburger.contains(e.target)) {
+                            adminMenu.classList.remove('active');
+                            hamburger.classList.remove('active');
+                            hamburger.setAttribute('aria-expanded', 'false');
+                            document.body.style.overflow = '';
+                        }
+                    });
+                    
+                    // Close menu on escape key
+                    document.addEventListener('keydown', function(e) {
+                        if (e.key === 'Escape' && adminMenu.classList.contains('active')) {
+                            adminMenu.classList.remove('active');
+                            hamburger.classList.remove('active');
+                            hamburger.setAttribute('aria-expanded', 'false');
+                            document.body.style.overflow = '';
+                            hamburger.focus();
+                        }
+                    });
+                    
+                    // Close menu when clicking menu items
+                    const menuButtons = adminMenu.querySelectorAll('button, a');
+                    menuButtons.forEach(button => {
+                        button.addEventListener('click', function() {
+                            if (window.innerWidth <= 768) {
+                                adminMenu.classList.remove('active');
+                                hamburger.classList.remove('active');
+                                hamburger.setAttribute('aria-expanded', 'false');
+                                document.body.style.overflow = '';
+                            }
+                        });
+                    });
+                    
+                    // Handle window resize
+                    let resizeTimer;
+                    window.addEventListener('resize', function() {
+                        clearTimeout(resizeTimer);
+                        resizeTimer = setTimeout(function() {
+                            if (window.innerWidth > 768) {
+                                adminMenu.classList.remove('active');
+                                hamburger.classList.remove('active');
+                                hamburger.setAttribute('aria-expanded', 'false');
+                                document.body.style.overflow = '';
+                            }
+                        }, 250);
+                    });
+                }
+                
+                // Setup edit form submission
+                const editForm = document.getElementById('editBookingForm');
+                if (editForm) {
+                    editForm.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        
+                        const bookingId = document.getElementById('editBookingId').value;
+                        const updateData = {
+                            customer_name: document.getElementById('editCustomerName').value,
+                            customer_email: document.getElementById('editCustomerEmail').value,
+                            customer_phone: document.getElementById('editCustomerPhone').value,
+                            booking_date: document.getElementById('editBookingDate').value,
+                            booking_time: document.getElementById('editBookingTime').value,
+                            status: document.getElementById('editStatus').value,
+                            payment_status: document.getElementById('editPaymentStatus').value,
+                            payment_method: document.getElementById('editPaymentMethod').value,
+                            payment_amount: parseFloat(document.getElementById('editPaymentAmount').value) || null,
+                            payment_transaction_id: document.getElementById('editPaymentTransactionId').value,
+                            admin_notes: document.getElementById('editAdminNotes').value
+                        };
+                        
+                        try {
+                            const API_URL = window.location.hostname === 'localhost' 
+                                ? 'http://localhost:8000' 
+                                : 'https://smash-lab.onrender.com';
+                            const response = await fetch(`${API_URL}/api/calendar/bookings/${bookingId}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(updateData)
+                            });
+                            
+                            if (!response.ok) throw new Error('Failed to update booking');
+                            
+                            alert('ההזמנה עודכנה בהצלחה!');
+                            closeEditModal();
+                            
+                            // Reload current view
+                            const activeTab = document.querySelector('.admin-tab.active');
+                            if (activeTab) {
+                                const tabName = activeTab.getAttribute('data-tab');
+                                if (tabName === 'dashboard' && typeof loadDashboard === 'function') {
+                                    loadDashboard();
+                                } else if (tabName === 'calendar' && typeof loadCalendar === 'function') {
+                                    loadCalendar();
+                                } else if (tabName === 'bookings' && typeof loadBookings === 'function') {
+                                    loadBookings();
+                                }
+                            }
+                            
+                        } catch (error) {
+                            console.error('Error updating booking:', error);
+                            alert('שגיאה בעדכון ההזמנה');
+                        }
+                    });
+                }
+            }
+        });
+
+        // Modal Management
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        function closeViewModal() {
+            document.getElementById('viewModal').classList.remove('active');
+        }
+        
+        function closeCreateBookingModal() {
+            document.getElementById('createBookingModal').classList.remove('active');
+            document.getElementById('createBookingForm').reset();
+        }
+        
+        function openCreateBookingModal(selectedDate) {
+            document.getElementById('createBookingModal').classList.add('active');
+            // Set date to selected date or today
+            const dateToUse = selectedDate || new Date().toISOString().split('T')[0];
+            document.getElementById('createBookingDate').value = dateToUse;
+            // Set default time to current hour or 10:00
+            const now = new Date();
+            const defaultTime = selectedDate ? '10:00' : `${String(now.getHours()).padStart(2, '0')}:00`;
+            document.getElementById('createBookingTime').value = defaultTime;
+        }
+        
+        function updatePackagePrice(packageId) {
+            const selectElement = document.getElementById('createPackageId');
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const price = selectedOption.getAttribute('data-price');
+            if (price) {
+                document.getElementById('createPrice').value = price;
+            }
+        }
+        
+        // Handle create booking form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const createForm = document.getElementById('createBookingForm');
+            if (createForm) {
+                createForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const packageSelect = document.getElementById('createPackageId');
+                    const selectedOption = packageSelect.options[packageSelect.selectedIndex];
+                    const packageName = selectedOption.text.split(' (')[0]; // Extract name without price
+                    
+                    const bookingData = {
+                        packageId: document.getElementById('createPackageId').value,
+                        packageName: packageName,
+                        customerName: document.getElementById('createCustomerName').value,
+                        customerEmail: document.getElementById('createCustomerEmail').value,
+                        customerPhone: document.getElementById('createCustomerPhone').value,
+                        bookingDate: document.getElementById('createBookingDate').value,
+                        bookingTime: document.getElementById('createBookingTime').value,
+                        durationMinutes: parseInt(document.getElementById('createDuration').value) || 60,
+                        price: parseFloat(document.getElementById('createPrice').value),
+                        orderId: 'ADM-' + Date.now(),
+                        customerNotes: document.getElementById('createCustomerNotes').value,
+                        adminNotes: document.getElementById('createAdminNotes').value
+                    };
+                    
+                    try {
+                        const API_URL = window.location.hostname === 'localhost' 
+                            ? 'http://localhost:8000' 
+                            : 'https://smash-lab.onrender.com';
+                        const response = await fetch(`${API_URL}/api/calendar/create-booking`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(bookingData)
+                        });
+                        
+                        if (!response.ok) throw new Error('Failed to create booking');
+                        
+                        const result = await response.json();
+                        
+                        // Update payment status if needed
+                        if (document.getElementById('createPaymentStatus').value === 'paid') {
+                            await fetch(`${API_URL}/api/calendar/bookings/${result.booking.id}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    payment_status: 'paid',
+                                    payment_method: document.getElementById('createPaymentMethod').value,
+                                    payment_amount: parseFloat(document.getElementById('createPrice').value)
+                                })
+                            });
+                        }
+                        
+                        alert('ההזמנה נוצרה בהצלחה!');
+                        closeCreateBookingModal();
+                        
+                        // Reload current view
+                        const activeTab = document.querySelector('.admin-tab.active');
+                        if (activeTab) {
+                            const tabName = activeTab.getAttribute('data-tab');
+                            if (tabName === 'dashboard' && typeof loadDashboard === 'function') {
+                                loadDashboard();
+                            } else if (tabName === 'calendar' && typeof loadCalendar === 'function') {
+                                loadCalendar();
+                            } else if (tabName === 'bookings' && typeof loadBookings === 'function') {
+                                loadBookings();
+                            }
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error creating booking:', error);
+                        alert('שגיאה ביצירת ההזמנה: ' + error.message);
+                    }
+                });
+            }
+        });
+
+        // Close modals on outside click
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // ==================== REPORTS FUNCTIONALITY ====================
+        
+        let reportsData = { orders: [], bookings: [], cancellations: [], startDate: null, endDate: null };
+
+        async function loadReports() {
+            const period = document.getElementById('reportPeriod').value;
+            const { startDate, endDate } = getDateRange(period);
+            reportsData.startDate = startDate;
+            reportsData.endDate = endDate;
+            
+            try {
+                await loadOrdersData();
+                await loadBookingsData();
+                await loadCancellationsData();
+                calculateFinancialMetrics();
+                calculateServiceBreakdown();
+                calculatePaymentMethods();
+                calculateCustomerAnalytics();
+                displayTopCustomers();
+                displayCancellations();
+            } catch (error) {
+                console.error('Error loading reports:', error);
+            }
+        }
+
+        function updateReports() {
+            const period = document.getElementById('reportPeriod').value;
+            if (period === 'custom') {
+                document.querySelector('.custom-dates').style.display = 'flex';
+                const startDate = document.getElementById('reportStartDate').value;
+                const endDate = document.getElementById('reportEndDate').value;
+                if (startDate && endDate) {
+                    reportsData.startDate = new Date(startDate);
+                    reportsData.endDate = new Date(endDate);
+                } else return;
+            } else {
+                document.querySelector('.custom-dates').style.display = 'none';
+            }
+            loadReports();
+        }
+
+        function getDateRange(period) {
+            const now = new Date();
+            let startDate, endDate = new Date();
+            // Extend endDate to include future bookings (1 year ahead)
+            endDate.setFullYear(endDate.getFullYear() + 1);
+            
+            switch(period) {
+                case 'today': 
+                    startDate = new Date(now.setHours(0,0,0,0)); 
+                    endDate = new Date(now);
+                    endDate.setHours(23,59,59,999);
+                    break;
+                case 'week': 
+                    startDate = new Date(now.setDate(now.getDate() - 7)); 
+                    break;
+                case 'month': 
+                    startDate = new Date(now.setMonth(now.getMonth() - 1)); 
+                    break;
+                case 'quarter': 
+                    startDate = new Date(now.setMonth(now.getMonth() - 3)); 
+                    break;
+                case 'year': 
+                    startDate = new Date(now.setFullYear(now.getFullYear() - 1)); 
+                    break;
+                case 'custom':
+                    startDate = new Date(document.getElementById('reportStartDate').value || now);
+                    endDate = new Date(document.getElementById('reportEndDate').value || now);
+                    endDate.setHours(23,59,59,999);
+                    break;
+                default: 
+                    startDate = new Date(now.setMonth(now.getMonth() - 1));
+            }
+            return { startDate, endDate };
+        }
+
+        async function loadOrdersData() {
+            reportsData.orders = [];
+            
+            // Package name mapping
+            const packageNames = {
+                'couple-rage-expanded': 'חדר זעם - מורחב (זוגות)',
+                'solo-rage-basic': 'חדר זעם - בסיסי',
+                'solo-rage-expanded': 'חדר זעם - מורחב',
+                'solo-rage-extreme': 'חדר זעם - מוגזם',
+                'solo-rage-explode': 'חדר זעם - בא לי להתפוצץ',
+                'paint-room': 'חדר צבע',
+                'rage-room': 'חדר זעם',
+                'throwing-axes': 'זריקת גרזנים',
+                'graffiti-center': 'מרכז גרפיטי',
+                'birthday': 'יום הולדת',
+                'rent-lab': 'השכרת מעבדה',
+                'combo': 'משולב'
+            };
+            
+            // Load from localStorage (includes currentOrder and completedOrder)
+            const keys = Object.keys(localStorage);
+            keys.forEach(key => {
+                if (key.startsWith('order_') || key === 'currentOrder' || key === 'completedOrder') {
+                    try {
+                        const order = JSON.parse(localStorage.getItem(key));
+                        if (order && (order.orderId || order.id)) {
+                            const orderDate = new Date(order.createdAt || order.paymentDate || order.bookingDate || Date.now());
+                            if (orderDate >= reportsData.startDate && orderDate <= reportsData.endDate) {
+                                // Map package ID to name
+                                const packageId = order.service || order.packageId || order.roomType;
+                                const displayName = order.packageName || packageNames[packageId] || packageId;
+                                
+                                reportsData.orders.push({
+                                    ...order,
+                                    service: displayName,
+                                    packageName: displayName
+                                });
+                            }
+                        }
+                    } catch (e) {}
+                }
+            });
+
+            if (window.orderDB && window.orderDB.getAllOrders) {
+                try {
+                    const dbOrders = await window.orderDB.getAllOrders();
+                    if (Array.isArray(dbOrders)) {
+                        dbOrders.forEach(order => {
+                            const orderDate = new Date(order.created_at || order.booking_date);
+                            if (orderDate >= reportsData.startDate && orderDate <= reportsData.endDate) {
+                                const packageId = order.package_id || order.service;
+                                const displayName = order.package_name || packageNames[packageId] || packageId;
+                                
+                                reportsData.orders.push({
+                                    orderId: order.id,
+                                    service: displayName,
+                                    packageName: displayName,
+                                    price: order.price || order.total_price,
+                                    customerName: order.customer_name,
+                                    customerEmail: order.customer_email,
+                                    customerPhone: order.customer_phone,
+                                    paymentMethod: order.payment_method || 'אשראי',
+                                    paymentStatus: order.payment_status || 'paid',
+                                    status: order.status || 'completed',
+                                    createdAt: order.created_at,
+                                    bookingDate: order.booking_date
+                                });
+                            }
+                        });
+                    }
+                } catch (e) {}
+            }
+        }
+
+        async function loadBookingsData() {
+            reportsData.bookings = [];
+            
+            // Package name mapping
+            const packageNames = {
+                'couple-rage-expanded': 'חדר זעם - מורחב (זוגות)',
+                'solo-rage-basic': 'חדר זעם - בסיסי',
+                'solo-rage-expanded': 'חדר זעם - מורחב',
+                'solo-rage-extreme': 'חדר זעם - מוגזם',
+                'solo-rage-explode': 'חדר זעם - בא לי להתפוצץ',
+                'paint-room': 'חדר צבע',
+                'rage-room': 'חדר זעם',
+                'throwing-axes': 'זריקת גרזנים',
+                'graffiti-center': 'מרכז גרפיטי',
+                'birthday': 'יום הולדת',
+                'rent-lab': 'השכרת מעבדה',
+                'combo': 'משולב'
+            };
+            
+            try {
+                const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://smash-lab.onrender.com';
+                const response = await fetch(`${API_URL}/api/calendar/bookings`);
+                if (response.ok) {
+                    const bookings = await response.json();
+                    if (Array.isArray(bookings)) {
+                        bookings.forEach(booking => {
+                            const bookingDate = new Date(booking.booking_date);
+                            if (bookingDate >= reportsData.startDate && bookingDate <= reportsData.endDate) {
+                                // Map package ID to name
+                                const packageId = booking.package_id || booking.service;
+                                const displayName = booking.package_name || packageNames[packageId] || packageId;
+                                
+                                reportsData.bookings.push({
+                                    ...booking,
+                                    service: displayName,
+                                    package_name: displayName
+                                });
+                            }
+                        });
+                    }
+                }
+            } catch (e) {}
+        }
+
+        async function loadCancellationsData() {
+            reportsData.cancellations = [];
+            reportsData.cancellations = reportsData.bookings.filter(b => b.status === 'cancelled' || b.status === 'canceled');
+            reportsData.cancellations.push(...reportsData.orders.filter(o => o.status === 'cancelled' || o.status === 'canceled'));
+        }
+
+        function calculateFinancialMetrics() {
+            let totalRevenue = 0;
+            let totalOrders = reportsData.orders.length;
+            let totalBookings = reportsData.bookings.length;
+            let totalCancellations = reportsData.cancellations.length;
+            
+            reportsData.orders.forEach(order => {
+                if (order.paymentStatus === 'paid' || order.payment_status === 'paid') {
+                    totalRevenue += parseFloat(order.price || order.total_price || 0);
+                }
+            });
+            
+            reportsData.bookings.forEach(booking => {
+                if (booking.payment_status === 'paid') {
+                    totalRevenue += parseFloat(booking.price || 0);
+                }
+            });
+            
+            const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+            const cancellationRate = totalBookings > 0 ? (totalCancellations / totalBookings * 100).toFixed(1) : 0;
+            const conversionRate = (totalOrders + totalBookings) > 0 ? ((totalOrders / (totalOrders + totalBookings + totalCancellations)) * 100).toFixed(1) : 0;
+            
+            document.getElementById('totalRevenue').textContent = `₪${totalRevenue.toLocaleString('he-IL', {minimumFractionDigits: 0})}`;
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalBookings').textContent = totalBookings;
+            document.getElementById('totalCancellations').textContent = totalCancellations;
+            document.getElementById('avgOrderValue').textContent = `₪${avgOrderValue.toLocaleString('he-IL', {minimumFractionDigits: 0})}`;
+            document.getElementById('conversionRate').textContent = `${conversionRate}%`;
+            document.getElementById('cancellationsRate').textContent = `${cancellationRate}% שיעור ביטול`;
+            
+            // Hide change indicators (no historical data available)
+            document.getElementById('revenueChange').style.display = 'none';
+            document.getElementById('ordersChange').style.display = 'none';
+            document.getElementById('bookingsChange').style.display = 'none';
+            document.getElementById('avgOrderChange').style.display = 'none';
+            document.getElementById('conversionChange').style.display = 'none';
+        }
+
+        function calculateServiceBreakdown() {
+            const serviceMap = {};
+            let totalRevenue = 0;
+            
+            reportsData.orders.forEach(order => {
+                if (order.paymentStatus === 'paid' || order.payment_status === 'paid') {
+                    const service = order.service || order.packageName || 'אחר';
+                    const price = parseFloat(order.price || order.total_price || 0);
+                    totalRevenue += price;
+                    if (!serviceMap[service]) serviceMap[service] = { count: 0, revenue: 0 };
+                    serviceMap[service].count++;
+                    serviceMap[service].revenue += price;
+                }
+            });
+            
+            reportsData.bookings.forEach(booking => {
+                if (booking.payment_status === 'paid') {
+                    const service = booking.package_name || 'אחר';
+                    const price = parseFloat(booking.price || 0);
+                    totalRevenue += price;
+                    if (!serviceMap[service]) serviceMap[service] = { count: 0, revenue: 0 };
+                    serviceMap[service].count++;
+                    serviceMap[service].revenue += price;
+                }
+            });
+            
+            const tbody = document.getElementById('serviceBreakdownBody');
+            tbody.innerHTML = '';
+            
+            Object.entries(serviceMap).sort((a, b) => b[1].revenue - a[1].revenue).forEach(([service, data]) => {
+                const percentage = totalRevenue > 0 ? (data.revenue / totalRevenue * 100).toFixed(1) : 0;
+                const avgPerOrder = data.count > 0 ? (data.revenue / data.count).toFixed(0) : 0;
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${service}</td><td>${data.count}</td><td>₪${data.revenue.toLocaleString('he-IL')}</td><td>${percentage}%</td><td>₪${avgPerOrder}</td>`;
+                tbody.appendChild(row);
+            });
+            
+            if (Object.keys(serviceMap).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">אין נתונים להצגה</td></tr>';
+            }
+        }
+
+        function calculatePaymentMethods() {
+            const paymentMap = { credit: 0, cash: 0, transfer: 0, other: 0 };
+            let totalRevenue = 0;
+            
+            reportsData.orders.forEach(order => {
+                if (order.paymentStatus === 'paid') {
+                    const price = parseFloat(order.price || order.total_price || 0);
+                    totalRevenue += price;
+                    const method = order.paymentMethod || 'credit';
+                    if (method.includes('credit') || method.includes('אשראי')) paymentMap.credit += price;
+                    else if (method.includes('cash') || method.includes('מזומן')) paymentMap.cash += price;
+                    else if (method.includes('transfer') || method.includes('העברה')) paymentMap.transfer += price;
+                    else paymentMap.other += price;
+                }
+            });
+            
+            reportsData.bookings.forEach(booking => {
+                if (booking.payment_status === 'paid') {
+                    const price = parseFloat(booking.price || 0);
+                    totalRevenue += price;
+                    const method = booking.payment_method || 'credit';
+                    if (method.includes('credit') || method.includes('אשראי')) paymentMap.credit += price;
+                    else if (method.includes('cash') || method.includes('מזומן')) paymentMap.cash += price;
+                    else if (method.includes('transfer') || method.includes('העברה')) paymentMap.transfer += price;
+                    else paymentMap.other += price;
+                }
+            });
+            
+            const creditPct = totalRevenue > 0 ? (paymentMap.credit / totalRevenue * 100).toFixed(0) : 0;
+            const cashPct = totalRevenue > 0 ? (paymentMap.cash / totalRevenue * 100).toFixed(0) : 0;
+            const transferPct = totalRevenue > 0 ? (paymentMap.transfer / totalRevenue * 100).toFixed(0) : 0;
+            const otherPct = totalRevenue > 0 ? (paymentMap.other / totalRevenue * 100).toFixed(0) : 0;
+            
+            document.getElementById('creditCardTotal').textContent = `₪${paymentMap.credit.toLocaleString('he-IL')} (${creditPct}%)`;
+            document.getElementById('cashTotal').textContent = `₪${paymentMap.cash.toLocaleString('he-IL')} (${cashPct}%)`;
+            document.getElementById('transferTotal').textContent = `₪${paymentMap.transfer.toLocaleString('he-IL')} (${transferPct}%)`;
+            document.getElementById('otherPaymentTotal').textContent = `₪${paymentMap.other.toLocaleString('he-IL')} (${otherPct}%)`;
+        }
+
+        function calculateCustomerAnalytics() {
+            const customerMap = {};
+            [...reportsData.orders, ...reportsData.bookings].forEach(item => {
+                const email = item.customerEmail || item.customer_email;
+                if (email) {
+                    if (!customerMap[email]) {
+                        customerMap[email] = {
+                            count: 0,
+                            firstPurchase: new Date(item.createdAt || item.created_at || item.bookingDate || item.booking_date)
+                        };
+                    }
+                    customerMap[email].count++;
+                }
+            });
+            
+            const newCustomers = Object.values(customerMap).filter(c => c.count === 1).length;
+            const returningCustomers = Object.values(customerMap).filter(c => c.count > 1).length;
+            const totalCustomers = newCustomers + returningCustomers;
+            const retentionRate = totalCustomers > 0 ? (returningCustomers / totalCustomers * 100).toFixed(1) : 0;
+            const avgOrdersPerCustomer = totalCustomers > 0 ? ((reportsData.orders.length + reportsData.bookings.length) / totalCustomers).toFixed(1) : 0;
+            
+            document.getElementById('newCustomers').textContent = newCustomers;
+            document.getElementById('returningCustomers').textContent = returningCustomers;
+            document.getElementById('customerRetentionRate').textContent = `${retentionRate}%`;
+            document.getElementById('avgOrdersPerCustomer').textContent = avgOrdersPerCustomer;
+        }
+
+        function displayTopCustomers() {
+            const customerMap = {};
+            [...reportsData.orders, ...reportsData.bookings].forEach(item => {
+                const email = item.customerEmail || item.customer_email;
+                const name = item.customerName || item.customer_name;
+                const phone = item.customerPhone || item.customer_phone;
+                if (email && name) {
+                    const revenue = parseFloat(item.price || item.total_price || 0);
+                    if (!customerMap[email]) {
+                        customerMap[email] = { name, email, phone: phone || '-', count: 0, revenue: 0 };
+                    }
+                    customerMap[email].count++;
+                    if (item.paymentStatus === 'paid' || item.payment_status === 'paid') {
+                        customerMap[email].revenue += revenue;
+                    }
+                }
+            });
+            
+            const topCustomers = Object.values(customerMap).sort((a, b) => b.revenue - a.revenue).slice(0, 10);
+            const tbody = document.getElementById('topCustomersBody');
+            tbody.innerHTML = '';
+            
+            topCustomers.forEach((customer, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${index + 1}</td><td>${customer.name}</td><td>${customer.email}</td><td>${customer.phone}</td><td>${customer.count}</td><td>₪${customer.revenue.toLocaleString('he-IL')}</td>`;
+                tbody.appendChild(row);
+            });
+            
+            if (topCustomers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">אין נתונים להצגה</td></tr>';
+            }
+        }
+
+        function displayCancellations() {
+            const tbody = document.getElementById('cancellationsBody');
+            tbody.innerHTML = '';
+            
+            reportsData.cancellations.forEach(item => {
+                const row = document.createElement('tr');
+                const date = new Date(item.cancelled_at || item.updated_at || item.booking_date).toLocaleDateString('he-IL');
+                const name = item.customerName || item.customer_name || '-';
+                const service = item.service || item.package_name || '-';
+                const price = parseFloat(item.price || item.total_price || 0);
+                const reason = item.cancellation_reason || item.admin_notes || 'לא צוין';
+                row.innerHTML = `<td>${date}</td><td>${name}</td><td>${service}</td><td>₪${price.toLocaleString('he-IL')}</td><td>${reason}</td>`;
+                tbody.appendChild(row);
+            });
+            
+            if (reportsData.cancellations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">אין ביטולים בתקופה זו</td></tr>';
+            }
+        }
+
+        function exportReports() {
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += "דוח פיננסי\n";
+            csvContent += `תקופה,${reportsData.startDate.toLocaleDateString('he-IL')} - ${reportsData.endDate.toLocaleDateString('he-IL')}\n`;
+            csvContent += `סה"כ הכנסות,${document.getElementById('totalRevenue').textContent}\n`;
+            csvContent += `סה"כ הזמנות,${document.getElementById('totalOrders').textContent}\n\n`;
+            csvContent += "פילוח לפי שירות\nשירות,כמות,הכנסות,אחוז,ממוצע\n";
+            document.querySelectorAll('#serviceBreakdownBody tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length > 1) csvContent += Array.from(cells).map(cell => cell.textContent).join(',') + '\n';
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `דוח_עסקי_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const reportPeriod = document.getElementById('reportPeriod');
+            if (reportPeriod) reportPeriod.addEventListener('change', updateReports);
+        });
+
+        // ==================== COUPONS FUNCTIONALITY ====================
+        
+        let allCoupons = [];
+        let currentFilter = 'all';
+        let supabaseClient = null;
+
+        // Initialize Supabase client for coupons
+        function initSupabaseForCoupons() {
+            if (supabaseClient) return supabaseClient;
+            if (typeof supabase === 'undefined' || !window.ENV_CONFIG) {
+                console.error('Supabase not available');
+                return null;
+            }
+            supabaseClient = supabase.createClient(
+                window.ENV_CONFIG.SUPABASE_URL,
+                window.ENV_CONFIG.SUPABASE_ANON_KEY
+            );
+            return supabaseClient;
+        }
+
+        async function loadCoupons() {
+            const client = initSupabaseForCoupons();
+            if (!client) {
+                window.customModal.error('שגיאה בחיבור למסד הנתונים', 'שגיאת חיבור');
+                return;
+            }
+            
+            try {
+                // Fetch all coupons from Supabase (except deleted)
+                const { data, error } = await client
+                    .from('coupons')
+                    .select('*')
+                    .neq('status', 'deleted')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                allCoupons = data || [];
+                updateCouponsStats();
+                displayCoupons();
+            } catch (err) {
+                console.error('Error loading coupons:', err);
+                window.customModal.error('שגיאה בטעינת קופונים: ' + err.message, 'שגיאה');
+            }
+            
+            // Set minimum date to today for coupon creation
+            const today = new Date().toISOString().split('T')[0];
+            const expiryInput = document.getElementById('couponExpiry');
+            if (expiryInput) expiryInput.min = today;
+        }
+
+        async function createCoupon(event) {
+            event.preventDefault();
+            
+            const code = document.getElementById('couponCode').value.trim().toUpperCase();
+            const type = document.getElementById('couponType').value;
+            const discount = parseFloat(document.getElementById('couponDiscount').value);
+            const expiry = document.getElementById('couponExpiry').value;
+            const maxUses = document.getElementById('couponMaxUses').value;
+            const minPurchase = document.getElementById('couponMinPurchase').value;
+            const description = document.getElementById('couponDescription').value.trim();
+            
+            const client = initSupabaseForCoupons();
+            if (!client) {
+                window.customModal.error('שגיאה בחיבור למסד הנתונים', 'שגיאת חיבור');
+                return;
+            }
+            
+            try {
+                // Check if coupon code already exists
+                const { data: existing } = await client
+                    .from('coupons')
+                    .select('code')
+                    .eq('code', code)
+                    .neq('status', 'deleted')
+                    .single();
+                
+                if (existing) {
+                    window.customModal.error('קוד קופון זה כבר קיים במערכת!', 'שגיאה');
+                    return;
+                }
+                
+                const currentUser = JSON.parse(
+                    sessionStorage.getItem('smashlabs_current_user') || 
+                    localStorage.getItem('smashlabs_current_user') || 
+                    '{}'
+                );
+                
+                // Insert coupon into Supabase
+                const { data, error } = await client
+                    .from('coupons')
+                    .insert([{
+                        code: code,
+                        type: type,
+                        discount: discount,
+                        expiry_date: expiry,
+                        max_uses: maxUses ? parseInt(maxUses) : null,
+                        min_purchase: minPurchase ? parseFloat(minPurchase) : 0,
+                        description: description,
+                        status: 'active',
+                        used_count: 0,
+                        created_by: currentUser.name || currentUser.email || 'מנהל'
+                    }])
+                    .select();
+                
+                if (error) throw error;
+                
+                window.customModal.success('קופון נוצר בהצלחה!', 'הצלחה');
+                document.getElementById('createCouponForm').reset();
+                await loadCoupons();
+            } catch (err) {
+                console.error('Error creating coupon:', err);
+                window.customModal.error('שגיאה ביצירת קופון: ' + err.message, 'שגיאה');
+            }
+        }
+
+        function updateCouponsStats() {
+            const now = new Date();
+            const total = allCoupons.length;
+            const active = allCoupons.filter(c => {
+                if (c.status === 'revoked') return false;
+                const expiry = new Date(c.expiry_date);
+                if (expiry < now) return false;
+                if (c.max_uses && c.used_count >= c.max_uses) return false;
+                return true;
+            }).length;
+            const used = allCoupons.filter(c => c.used_count > 0).length;
+            const expired = allCoupons.filter(c => {
+                const expiry = new Date(c.expiry_date);
+                return expiry < now;
+            }).length;
+            
+            document.getElementById('totalCoupons').textContent = total;
+            document.getElementById('activeCoupons').textContent = active;
+            document.getElementById('usedCoupons').textContent = used;
+            document.getElementById('expiredCoupons').textContent = expired;
+        }
+
+        function displayCoupons() {
+            const tbody = document.getElementById('couponsTableBody');
+            tbody.innerHTML = '';
+            
+            const now = new Date();
+            let filteredCoupons = [...allCoupons];
+            
+            // Apply filter
+            if (currentFilter !== 'all') {
+                filteredCoupons = filteredCoupons.filter(c => {
+                    if (currentFilter === 'active') {
+                        if (c.status === 'revoked') return false;
+                        const expiry = new Date(c.expiry_date);
+                        if (expiry < now) return false;
+                        if (c.max_uses && c.used_count >= c.max_uses) return false;
+                        return true;
+                    } else if (currentFilter === 'used') {
+                        return c.used_count > 0;
+                    } else if (currentFilter === 'expired') {
+                        const expiry = new Date(c.expiry_date);
+                        return expiry < now;
+                    } else if (currentFilter === 'revoked') {
+                        return c.status === 'revoked';
+                    }
+                    return true;
+                });
+            }
+            
+            if (filteredCoupons.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">לא נמצאו קופונים</td></tr>';
+                return;
+            }
+            
+            filteredCoupons.forEach(coupon => {
+                const expiry = new Date(coupon.expiry_date);
+                const isExpired = expiry < now;
+                const isMaxedOut = coupon.max_uses && coupon.used_count >= coupon.max_uses;
+                
+                let status = 'active';
+                let statusBadge = '<span class="coupon-badge badge-active">✅ פעיל</span>';
+                
+                if (coupon.status === 'revoked') {
+                    status = 'revoked';
+                    statusBadge = '<span class="coupon-badge badge-revoked">🚫 מבוטל</span>';
+                } else if (isExpired) {
+                    status = 'expired';
+                    statusBadge = '<span class="coupon-badge badge-expired">⏰ פג תוקף</span>';
+                } else if (isMaxedOut) {
+                    status = 'maxed';
+                    statusBadge = '<span class="coupon-badge badge-used">✓ מוצה</span>';
+                }
+                
+                const discountText = coupon.type === 'percentage' 
+                    ? `${coupon.discount}%` 
+                    : `₪${coupon.discount}`;
+                
+                const usageText = coupon.max_uses 
+                    ? `${coupon.used_count}/${coupon.max_uses}` 
+                    : `${coupon.used_count}/∞`;
+                
+                const minPurchaseText = coupon.min_purchase > 0 
+                    ? `₪${coupon.min_purchase}` 
+                    : 'ללא מינימום';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="coupon-code">${coupon.code}</span></td>
+                    <td>${discountText}</td>
+                    <td>${statusBadge}</td>
+                    <td>${usageText}</td>
+                    <td>${new Date(coupon.expiry_date).toLocaleDateString('he-IL')}</td>
+                    <td>${minPurchaseText}</td>
+                    <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;">${coupon.description || '-'}</td>
+                    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;" title="${coupon.created_by || 'לא ידוע'}">${coupon.created_by || 'לא ידוע'}</td>
+                    <td>${new Date(coupon.created_at).toLocaleDateString('he-IL')}</td>
+                    <td>
+                        <button class="action-btn btn-copy" onclick="copyCouponCode('${coupon.code}')" title="העתק קוד">📋</button>
+                        ${status !== 'revoked' ? `<button class="action-btn btn-revoke" onclick="revokeCoupon('${coupon.id}')" title="בטל קופון">🚫</button>` : ''}
+                        <button class="action-btn btn-delete" onclick="deleteCoupon('${coupon.id}')" title="מחק לצמיתות">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterCoupons(filter) {
+            currentFilter = filter;
+            
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            displayCoupons();
+        }
+
+        async function revokeCoupon(couponId) {
+            if (!confirm('האם אתה בטוח שברצונך לבטל קופון זה?')) return;
+            
+            const client = initSupabaseForCoupons();
+            if (!client) {
+                window.customModal.error('שגיאה בחיבור למסד הנתונים', 'שגיאת חיבור');
+                return;
+            }
+            
+            try {
+                const currentUser = JSON.parse(
+                    sessionStorage.getItem('smashlabs_current_user') || 
+                    localStorage.getItem('smashlabs_current_user') || 
+                    '{}'
+                );
+                
+                const { error } = await client
+                    .from('coupons')
+                    .update({
+                        status: 'revoked',
+                        revoked_at: new Date().toISOString(),
+                        revoked_by: currentUser.name || currentUser.email || 'מנהל'
+                    })
+                    .eq('id', couponId);
+                
+                if (error) throw error;
+                
+                window.customModal.success('קופון בוטל בהצלחה', 'הצלחה');
+                await loadCoupons();
+            } catch (err) {
+                console.error('Error revoking coupon:', err);
+                window.customModal.error('שגיאה בביטול קופון: ' + err.message, 'שגיאה');
+            }
+        }
+
+        async function deleteCoupon(couponId) {
+            if (!confirm('האם אתה בטוח שברצונך למחוק קופון זה לצמיתות? פעולה זו אינה ניתנת לביטול.')) return;
+            
+            const client = initSupabaseForCoupons();
+            if (!client) {
+                window.customModal.error('שגיאה בחיבור למסד הנתונים', 'שגיאת חיבור');
+                return;
+            }
+            
+            try {
+                const { error } = await client
+                    .from('coupons')
+                    .update({ status: 'deleted' })
+                    .eq('id', couponId);
+                
+                if (error) throw error;
+                
+                window.customModal.success('קופון נמחק בהצלחה', 'הצלחה');
+                await loadCoupons();
+            } catch (err) {
+                console.error('Error deleting coupon:', err);
+                window.customModal.error('שגיאה במחיקת קופון: ' + err.message, 'שגיאה');
+            }
+        }
+
+        function copyCouponCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                window.customModal.success('קוד קופון הועתק ללוח: ' + code, 'העתקה');
+            }).catch(() => {
+                window.customModal.info('קוד: ' + code, 'קוד קופון');
+            });
+        }
+
+        function toggleDiscountInput() {
+            const type = document.getElementById('couponType').value;
+            const label = document.getElementById('discountLabel');
+            const input = document.getElementById('couponDiscount');
+            
+            if (type === 'percentage') {
+                label.textContent = 'סכום הנחה (%) *';
+                input.max = '100';
+                input.placeholder = '10';
+            } else {
+                label.textContent = 'סכום הנחה (₪) *';
+                input.max = '10000';
+                input.placeholder = '50';
+            }
+        }
+    </script>
+    <div style="position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem; background: rgba(0,0,0,0.9); border-top: 1px solid rgba(255,107,0,0.3); text-align: center; z-index: 999;">
+        <p style="font-size: 0.85rem; color: #888; opacity: 0.7; margin: 0;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: #ff6b00; text-decoration: none; font-weight: 500;">sand</a></p>
+    </div>
+</body>
+</html>

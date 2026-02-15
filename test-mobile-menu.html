@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Menu Test</title>
+    <link rel="stylesheet" href="css/navbar.css?v=1769427261">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; }
+        #site-header { width: 100%; }
+        .test-info {
+            padding: 2rem;
+            background: #f0f0f0;
+            margin: 1rem;
+            border-radius: 8px;
+        }
+        .test-info h2 { margin-bottom: 1rem; color: #333; }
+        .test-info p { margin: 0.5rem 0; font-family: Arial; }
+    </style>
+</head>
+<body>
+    <div id="site-header"></div>
+    
+    <div class="test-info">
+        <h2>Mobile Menu Debug Test</h2>
+        <p>Screen Width: <span id="screen-width"></span>px</p>
+        <p>Window Width: <span id="window-width"></span>px</p>
+        <p>Hamburger Element: <span id="hamburger-status"></span></p>
+        <p>Nav Links Element: <span id="navlinks-status"></span></p>
+        <p>Hamburger Display: <span id="hamburger-display"></span></p>
+        <p>Nav Links Display: <span id="navlinks-display"></span></p>
+    </div>
+
+    <script src="js/header-inject.js"></script>
+    <script>
+        // Update debug info
+        function updateDebugInfo() {
+            document.getElementById('screen-width').textContent = screen.width;
+            document.getElementById('window-width').textContent = window.innerWidth;
+            
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('.nav-links');
+            
+            document.getElementById('hamburger-status').textContent = hamburger ? '✅ Found' : '❌ Not Found';
+            document.getElementById('navlinks-status').textContent = navLinks ? '✅ Found' : '❌ Not Found';
+            
+            if (hamburger) {
+                const style = window.getComputedStyle(hamburger);
+                document.getElementById('hamburger-display').textContent = style.display;
+            } else {
+                document.getElementById('hamburger-display').textContent = 'N/A';
+            }
+            
+            if (navLinks) {
+                const style = window.getComputedStyle(navLinks);
+                document.getElementById('navlinks-display').textContent = style.display;
+            } else {
+                document.getElementById('navlinks-display').textContent = 'N/A';
+            }
+        }
+        
+        // Run after a delay to ensure header is injected
+        setTimeout(updateDebugInfo, 500);
+        window.addEventListener('resize', updateDebugInfo);
+    </script>
+    <div style="padding: 1rem; background: rgba(0,0,0,0.1); border-top: 1px solid rgba(0,0,0,0.1); text-align: center; margin-top: 2rem;">
+        <p style="font-size: 0.85rem; color: #666; opacity: 0.7; margin: 0;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: #ff6b00; text-decoration: none; font-weight: 500;">sand</a></p>
+    </div>
+</body>
+</html>

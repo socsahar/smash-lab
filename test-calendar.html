@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Calendar API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #1a1a1a; color: #fff; }
+        .container { max-width: 800px; margin: 0 auto; }
+        button { padding: 10px 20px; margin: 10px; background: #ff6b00; color: white; border: none; cursor: pointer; }
+        .result { background: #2a2a2a; padding: 15px; margin: 10px 0; border-radius: 5px; white-space: pre-wrap; }
+        input, select { padding: 8px; margin: 5px; width: 200px; }
+        label { display: inline-block; width: 150px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Calendar API</h1>
+        
+        <h2>1️⃣ Check Order Data</h2>
+        <button onclick="checkOrderData()">Check LocalStorage</button>
+        <div id="orderDataResult" class="result"></div>
+        
+        <h2>2️⃣ Test Availability Check</h2>
+        <label>Package ID:</label>
+        <input type="text" id="packageId" value="solo-rage-basic" placeholder="solo-rage-basic"><br>
+        <label>Date:</label>
+        <input type="date" id="checkDate"><br>
+        <button onclick="testAvailability()">Check Availability</button>
+        <div id="availabilityResult" class="result"></div>
+        
+        <h2>3️⃣ Test Create Booking</h2>
+        <label>Package ID:</label>
+        <input type="text" id="bookPackageId" value="solo-rage-basic"><br>
+        <label>Customer Name:</label>
+        <input type="text" id="customerName" value="Test Customer"><br>
+        <label>Email:</label>
+        <input type="email" id="customerEmail" value="test@test.com"><br>
+        <label>Phone:</label>
+        <input type="tel" id="customerPhone" value="0501234567"><br>
+        <label>Date:</label>
+        <input type="date" id="bookDate"><br>
+        <label>Time:</label>
+        <input type="time" id="bookTime" value="14:00"><br>
+        <label>Duration (min):</label>
+        <input type="number" id="duration" value="30"><br>
+        <label>Price:</label>
+        <input type="number" id="price" value="120"><br>
+        <button onclick="testCreateBooking()">Create Test Booking</button>
+        <div id="bookingResult" class="result"></div>
+        
+        <h2>4️⃣ View All Bookings</h2>
+        <label>Date:</label>
+        <input type="date" id="viewDate"><br>
+        <button onclick="viewBookings()">View Bookings</button>
+        <div id="viewResult" class="result"></div>
+    </div>
+    
+    <script>
+        // Set today's date as default
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('checkDate').value = today;
+        document.getElementById('bookDate').value = today;
+        document.getElementById('viewDate').value = today;
+        
+        function checkOrderData() {
+            const orderData = localStorage.getItem('smashlabs_order');
+            const currentOrder = localStorage.getItem('currentOrder');
+            
+            const result = {
+                'smashlabs_order': orderData ? JSON.parse(orderData) : 'NOT FOUND',
+                'currentOrder': currentOrder ? JSON.parse(currentOrder) : 'NOT FOUND'
+            };
+            
+            document.getElementById('orderDataResult').textContent = JSON.stringify(result, null, 2);
+        }
+        
+        async function testAvailability() {
+            const packageId = document.getElementById('packageId').value;
+            const date = document.getElementById('checkDate').value;
+            const resultDiv = document.getElementById('availabilityResult');
+            
+            resultDiv.textContent = '⏳ Loading...';
+            
+            try {
+                const response = await fetch(`/api/calendar/check-availability?packageId=${packageId}&date=${date}`);
+                const data = await response.json();
+                
+                resultDiv.textContent = `Status: ${response.status}\n\n` + JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultDiv.textContent = '❌ Error: ' + error.message;
+            }
+        }
+        
+        async function testCreateBooking() {
+            const bookingData = {
+                packageId: document.getElementById('bookPackageId').value,
+                packageName: 'Test Package',
+                customerName: document.getElementById('customerName').value,
+                customerEmail: document.getElementById('customerEmail').value,
+                customerPhone: document.getElementById('customerPhone').value,
+                bookingDate: document.getElementById('bookDate').value,
+                bookingTime: document.getElementById('bookTime').value,
+                durationMinutes: parseInt(document.getElementById('duration').value),
+                price: parseFloat(document.getElementById('price').value),
+                orderId: 'TEST-' + Date.now()
+            };
+            
+            const resultDiv = document.getElementById('bookingResult');
+            resultDiv.textContent = '⏳ Creating booking...';
+            
+            try {
+                const response = await fetch('/api/calendar/create-booking', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+                
+                const result = await response.json();
+                
+                resultDiv.textContent = `Status: ${response.status}\n\n` + JSON.stringify(result, null, 2);
+            } catch (error) {
+                resultDiv.textContent = '❌ Error: ' + error.message;
+            }
+        }
+        
+        async function viewBookings() {
+            const date = document.getElementById('viewDate').value;
+            const resultDiv = document.getElementById('viewResult');
+            
+            resultDiv.textContent = '⏳ Loading...';
+            
+            try {
+                const response = await fetch(`/api/calendar/bookings?date=${date}`);
+                const data = await response.json();
+                
+                resultDiv.textContent = `Status: ${response.status}\n\n` + JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultDiv.textContent = '❌ Error: ' + error.message;
+            }
+        }
+    </script>
+    <div style="padding: 1rem; background: rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.1); text-align: center; margin-top: 2rem;">
+        <p style="font-size: 0.85rem; color: #888; opacity: 0.7; margin: 0;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: #ff6b00; text-decoration: none; font-weight: 500;">sand</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,592 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>הזמנה - SmashLabs</title>
+    <meta name="description" content="הזמן את השירותים שלנו - חדר זעם, גרפיטי, חדר צבע, זריקת גרזנים במתחם SmashLabs">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="הזמנה - SmashLabs">
+    <meta property="og:description" content="הזמן את השירותים שלנו - חדר זעם, גרפיטי, חדר צבע, זריקת גרזנים במתחם SmashLabs">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💥</text></svg>">
+
+    <!-- Console Filter - Block third-party logs -->
+    <script>
+        (function() {
+            const blockedPatterns = [
+                'NagishLi', 'nagishli', 'jQuery', 'missing_setting',
+                'nl_lang', 'Element:', 'Style:', 'CSSStyleDeclaration',
+                'operata', 'pc-override', 'aria-hidden',
+                'nagishli-sr-only', 'nagishli-option',
+                'לפתוח את התפריט', 'הצהרת נגישות', 'accessibility',
+                'sprite.png', 'tl.png', 'tr.png', 'bl.png', 'br.png',
+                'Blocked aria-hidden', 'WAI-ARIA', 'w3c.github.io',
+                'getElementsByTagName is not a function', 'content_script.js',
+                'Fetching batch', 'Scroll check', 'Scroll event fired',
+                'Waiver elements', 'Signature captured', 'Email sent',
+                'Supabase not ready', 'processWaiver', 'Address data',
+                'Sample record', 'Sample cities'
+            ];
+            
+            function shouldBlock(args) {
+                const str = JSON.stringify(args);
+                return blockedPatterns.some(pattern => 
+                    str.toLowerCase().includes(pattern.toLowerCase()));
+            }
+            
+            const originalLog = console.log;
+            const originalError = console.error;
+            const originalWarn = console.warn;
+            const originalInfo = console.info;
+            
+            console.log = function(...args) {
+                if (!shouldBlock(args)) originalLog.apply(console, args);
+            };
+            console.error = function(...args) {
+                if (!shouldBlock(args)) originalError.apply(console, args);
+            };
+            console.warn = function(...args) {
+                if (!shouldBlock(args)) originalWarn.apply(console, args);
+            };
+            console.info = function(...args) {
+                if (!shouldBlock(args)) originalInfo.apply(console, args);
+            };
+        })();
+    </script>
+
+    <!-- Google Fonts Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/nagishli.css">
+    <link rel="stylesheet" href="css/whatsapp-widget.css">
+    <link rel="stylesheet" href="css/custom-modal.css">
+
+    <!-- Preload and load fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Fallback styles for order page -->
+    <style>
+        /* Fallback styles if main CSS fails to load */
+        body { 
+            font-family: 'Heebo', 'Rubik', Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: #fff; 
+            margin: 0; 
+            padding: 0;
+            min-height: 100vh;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: #222;
+        }
+        .logo { color: #ff6b00; font-size: 1.5rem; text-decoration: none; font-weight: bold; }
+        .nav-links { 
+            display: flex; 
+            list-style: none; 
+            gap: 1rem; 
+            margin: 0; 
+            padding: 0; 
+        }
+        .nav-links a { 
+            color: #fff; 
+            text-decoration: none; 
+            padding: 0.5rem 1rem; 
+        }
+        .nav-links a:hover { color: #ff6b00; }
+        .hero { 
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); 
+            padding: 4rem 2rem; 
+            text-align: center; 
+        }
+        .hero h1 { 
+            font-size: 2.5rem; 
+            margin-bottom: 1rem; 
+            color: #ff6b00; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+        }
+        .card { 
+            background: #222; 
+            border-radius: 10px; 
+            padding: 2rem; 
+            margin: 2rem 0; 
+        }
+        .form-group { 
+            margin-bottom: 1.5rem; 
+        }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 0.5rem; 
+            color: #ff6b00; 
+            font-weight: bold; 
+        }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; 
+            padding: 0.75rem; 
+            border: 1px solid #444; 
+            background: #333; 
+            color: #fff; 
+            border-radius: 5px; 
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .cta-button { 
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2); 
+            color: #fff; 
+            padding: 1rem 2rem; 
+            border: none; 
+            border-radius: 5px; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-block; 
+        }
+        .hamburger { display: none; }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger { display: block; }
+        }
+    </style>
+    
+    <!-- NagishLi Accessibility Plugin Configuration -->
+    <script>
+        window.NagishLiConfig = {
+            'nlService': 'nagishli',
+            'nlPurchaseUrl': '',
+            'nlCustomCss': '',
+            'nlIgnore': ['img', 'video', 'audio', 'canvas'],
+            'nlLang': 'he',
+            'nlCustomText': {
+                'accessibilitySymbol': 'נגישות',
+                'mainMenu': 'תפריט נגישות ראשי',
+                'submenu': 'תפריט משנה',
+                'imageAlt': 'תמונה ללא תיאור',
+                'skipToMain': 'דלג לתוכן הראשי',
+                'increaseText': 'הגדל טקסט',
+                'decreaseText': 'הקטן טקסט',
+                'increaseTextSpacing': 'הגדל ריווח בין אותיות',
+                'decreaseTextSpacing': 'הקטן ריווח בין אותיות',
+                'increaseLineHeight': 'הגדל גובה שורה',
+                'decreaseLineHeight': 'הקטן גובה שורה',
+                'invertColors': 'הפוך צבעים',
+                'grayHues': 'גווני אפור',
+                'underlineLinks': 'הדגש קישורים',
+                'bigCursor': 'סמן גדול',
+                'readingGuide': 'מדריך קריאה',
+                'textToSpeech': 'הקראת טקסט',
+                'speechToText': 'דיבור לטקסט',
+                'screenReader': 'קורא מסך',
+                'highContrast': 'ניגודיות גבוהה',
+                'resetSettings': 'איפוס הגדרות',
+                'close': 'סגור'
+            }
+        };
+    </script>
+    <nagishli></nagishli>
+    <script src="js/nagishli.js"></script>
+    <script src="js/header-inject.js"></script>
+</head>
+
+<body>
+
+    <div id="site-header"></div>
+
+    <!-- Step Navigation -->
+    <nav class="step-nav" aria-label="שלבי ההזמנה" style="background: #222; border-bottom: 1px solid #333; padding: 1rem 0; position: fixed; top: 60px; left: 0; right: 0; z-index: 999;">
+        <div class="step-nav-inner" style="max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: center; align-items: center; gap: 1rem;">
+            <div class="step completed" style="display: flex; align-items: center; gap: 0.5rem; color: #22c55e; font-weight: 500;">
+                <span class="step-number" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #22c55e; color: white; font-weight: 600;">1</span>
+                <span>בחירת חבילה</span>
+            </div>
+            <div class="step-separator" style="width: 40px; height: 2px; background: #22c55e;"></div>
+            <div class="step active" style="display: flex; align-items: center; gap: 0.5rem; color: #ff6b00; font-weight: 500;">
+                <span class="step-number" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #ff6b00; color: white; font-weight: 600;">2</span>
+                <span>פרטי הזמנה</span>
+            </div>
+            <div class="step-separator" style="width: 40px; height: 2px; background: #333;"></div>
+            <div class="step" style="display: flex; align-items: center; gap: 0.5rem; color: #999; font-weight: 500;">
+                <span class="step-number" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #333; color: #999; font-weight: 600;">3</span>
+                <span>כתב ויתור</span>
+            </div>
+            <div class="step-separator" style="width: 40px; height: 2px; background: #333;"></div>
+            <div class="step" style="display: flex; align-items: center; gap: 0.5rem; color: #999; font-weight: 500;">
+                <span class="step-number" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #333; color: #999; font-weight: 600;">4</span>
+                <span>תשלום</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content" tabindex="-1" role="main" style="padding-top: 170px !important;">
+        <!-- Hero Section -->
+        <section class="hero" aria-label="הירו הזמנה">
+            <div class="hero-content fade-in">
+                <h1 class="graffiti-text">הזמן עכשיו</h1>
+                <p class="graffiti-text">מלא את הטופס והתחל את החוויה המדהימה שלך!</p>
+            </div>
+        </section>
+
+        <!-- Order Section -->
+        <section class="section fade-in" id="order">
+            <div class="container">
+                <h2 class="section-title graffiti-text">פרטי הזמנה</h2>
+                <div class="card" style="max-width: 700px; margin: 0 auto; padding: var(--spacing-xl);">
+                    <form class="booking-form" id="order-form">
+                        
+                        <!-- Account Options Section - Combined -->
+                        <div style="margin-bottom: var(--spacing-xl);">
+                            <!-- Existing Account Login Option -->
+                            <div class="form-group" style="margin-bottom: 1rem; padding: var(--spacing-lg); background: rgba(255, 107, 0, 0.1); border-radius: 8px; border: 2px solid rgba(255, 107, 0, 0.3);">
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <input type="checkbox" id="has-account" name="has_account" style="margin-top: 0.25rem; width: 20px; height: 20px; cursor: pointer;">
+                                    <div style="flex: 1;">
+                                        <label for="has-account" style="cursor: pointer; font-weight: 600; color: #ff6b00; margin-bottom: 0.5rem; display: block;">
+                                            יש לי כבר חשבון - טען את הפרטים והויתור שלי
+                                        </label>
+                                        <p style="margin: 0; color: #aaa; font-size: 0.9rem;">
+                                            ⚡ אם כבר יצרת חשבון בעבר, נטען את כל הפרטים שלך אוטומטית כולל כתב הויתור השמור
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Login fields (hidden by default) -->
+                                <div id="login-fields-container" style="display: none; margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid rgba(255, 107, 0, 0.2);">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <label for="login-email">אימייל</label>
+                                            <input type="email" id="login-email" placeholder="המייל שלך">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <label for="login-password">סיסמה</label>
+                                            <input type="password" id="login-password" placeholder="הסיסמה שלך">
+                                        </div>
+                                    </div>
+                                    <button type="button" id="load-account-btn" class="cta-button" style="width: 100%; padding: 0.75rem;">
+                                        טען את הפרטים שלי
+                                    </button>
+                                    <div id="login-status" style="margin-top: 0.5rem; text-align: center; font-size: 0.9rem;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Account Registration Option -->
+                            <div class="form-group" style="margin-bottom: 0; padding: var(--spacing-lg); background: rgba(31, 182, 194, 0.1); border-radius: 8px; border: 2px solid rgba(31, 182, 194, 0.3);">
+                                <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                    <input type="checkbox" id="create-account" name="create_account" style="margin-top: 0.25rem; width: 20px; height: 20px; cursor: pointer;">
+                                    <div style="flex: 1;">
+                                        <label for="create-account" style="cursor: pointer; font-weight: 600; color: #1fb6c2; margin-bottom: 0.5rem; display: block;">
+                                            צור חשבון כדי לשמור את הויתור שלך להזמנות עתידיות
+                                        </label>
+                                        <p style="margin: 0; color: #aaa; font-size: 0.9rem;">
+                                            💡 שמור זמן: כתב הויתור שלך יישמר בחשבון ולא תצטרך למלא אותו שוב בהזמנות הבאות. בנוסף תוכל לעקוב אחרי ההזמנות שלך.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Password field (hidden by default) -->
+                                <div id="password-field-container" style="display: none; margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid rgba(31, 182, 194, 0.2);">
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label for="register-password">בחר סיסמה לחשבון *</label>
+                                        <input type="password" id="register-password" name="register_password" minlength="8" placeholder="לפחות 8 תווים">
+                                        <div style="font-size: 0.85rem; color: #aaa; margin-top: 0.5rem;">
+                                            <p style="margin: 0.5rem 0;">הסיסמה חייבת לכלול:</p>
+                                            <ul id="order-password-requirements" style="margin: 0.5rem 0; padding-right: 1.5rem; list-style: none;">
+                                                <li id="order-req-length" style="margin: 0.25rem 0; color: #f44336;">✗ לפחות 8 תווים</li>
+                                                <li id="order-req-uppercase" style="margin: 0.25rem 0; color: #f44336;">✗ אות גדולה אחת לפחות</li>
+                                                <li id="order-req-lowercase" style="margin: 0.25rem 0; color: #f44336;">✗ אות קטנה אחת לפחות</li>
+                                                <li id="order-req-number" style="margin: 0.25rem 0; color: #f44336;">✗ מספר אחד לפחות</li>
+                                                <li id="order-req-special" style="margin: 0.25rem 0; color: #f44336;">✗ תו מיוחד אחד לפחות (!@#$%^&*)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg);">
+                            <div class="form-group">
+                                <label for="name">שם מלא *</label>
+                                <input type="text" id="name" name="name" required pattern="[a-zA-Zא-ת\s'\-]+" title="שם יכול להכיל רק אותיות, רווחים, מקף (-) ואפוסטרוף (')">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">אימייל *</label>
+                                <input type="email" id="email" name="email" required pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$" title="נא להזין כתובת אימייל חוקית">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">טלפון *</label>
+                                <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}" title="מספר טלפון חייב להכיל בדיוק 10 ספרות" maxlength="10">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="quantity">כמות משתתפים *</label>
+                                <input type="number" id="quantity" name="quantity" min="1" max="20" value="1" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="date">תאריך מועדף *</label>
+                                <input type="date" id="date" name="date" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="time">שעה מועדפת *</label>
+                                <select id="time" name="time" required>
+                                    <option value="">בחר שעה</option>
+                                    <option value="08:00">08:00</option>
+                                    <option value="08:15">08:15</option>
+                                    <option value="08:30">08:30</option>
+                                    <option value="08:45">08:45</option>
+                                    <option value="09:00">09:00</option>
+                                    <option value="09:15">09:15</option>
+                                    <option value="09:30">09:30</option>
+                                    <option value="09:45">09:45</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="10:15">10:15</option>
+                                    <option value="10:30">10:30</option>
+                                    <option value="10:45">10:45</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="11:15">11:15</option>
+                                    <option value="11:30">11:30</option>
+                                    <option value="11:45">11:45</option>
+                                    <option value="12:00">12:00</option>
+                                    <option value="12:15">12:15</option>
+                                    <option value="12:30">12:30</option>
+                                    <option value="12:45">12:45</option>
+                                    <option value="13:00">13:00</option>
+                                    <option value="13:15">13:15</option>
+                                    <option value="13:30">13:30</option>
+                                    <option value="13:45">13:45</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="14:15">14:15</option>
+                                    <option value="14:30">14:30</option>
+                                    <option value="14:45">14:45</option>
+                                    <option value="15:00">15:00</option>
+                                    <option value="15:15">15:15</option>
+                                    <option value="15:30">15:30</option>
+                                    <option value="15:45">15:45</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="16:15">16:15</option>
+                                    <option value="16:30">16:30</option>
+                                    <option value="16:45">16:45</option>
+                                    <option value="17:00">17:00</option>
+                                    <option value="17:15">17:15</option>
+                                    <option value="17:30">17:30</option>
+                                    <option value="17:45">17:45</option>
+                                    <option value="18:00">18:00</option>
+                                    <option value="18:15">18:15</option>
+                                    <option value="18:30">18:30</option>
+                                    <option value="18:45">18:45</option>
+                                    <option value="19:00">19:00</option>
+                                    <option value="19:15">19:15</option>
+                                    <option value="19:30">19:30</option>
+                                    <option value="19:45">19:45</option>
+                                    <option value="20:00">20:00</option>
+                                    <option value="20:15">20:15</option>
+                                    <option value="20:30">20:30</option>
+                                    <option value="20:45">20:45</option>
+                                    <option value="21:00">21:00</option>
+                                    <option value="21:15">21:15</option>
+                                    <option value="21:30">21:30</option>
+                                    <option value="21:45">21:45</option>
+                                    <option value="22:00">22:00</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: var(--spacing-lg);">
+                            <label for="notes">הערות נוספות</label>
+                            <textarea id="notes" name="notes" rows="4" placeholder="הערות מיוחדות או בקשות"></textarea>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: var(--spacing-xl); flex-wrap: wrap;">
+                            <button type="button" onclick="history.back()" class="cta-button" style="padding: 1rem 2rem; font-size: 1.125rem; background: transparent; border: 2px solid #444; color: #999; min-width: 120px;">
+                                חזור
+                            </button>
+                            <button type="submit" class="cta-button" style="padding: 1rem 2rem; font-size: 1.125rem; flex: 1; min-width: 200px; background: linear-gradient(45deg, #ff6b00, #1fb6c2); border: none; color: #fff; font-weight: bold; cursor: pointer; border-radius: 8px; transition: all 0.3s ease;">
+                                המשך לתשלום
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer role="contentinfo">
+        <div class="footer-inner">
+            <p class="graffiti-text" style="font-size: 1.5rem; margin-bottom: 1rem;">SmashLabs - המקום לשחרר לחצים!</p>
+            <p>כל הזכויות שמורות © 2025</p>
+            <div class="social-links">
+                <a href="#" title="פייסבוק" aria-label="פייסבוק">
+                    <img src="icons/facebook.svg" alt="Facebook" width="24" height="24">
+                </a>
+                <a href="#" title="אינסטגרם" aria-label="אינסטגרם">
+                    <img src="icons/instagram.svg" alt="Instagram" width="24" height="24">
+                </a>
+                <a href="#" title="טיקטוק" aria-label="טיקטוק">
+                    <img src="icons/tiktok.svg" alt="TikTok" width="24" height="24">
+                </a>
+                <a href="#" title="יוטיוב" aria-label="יוטיוב">
+                    <img src="icons/youtube.svg" alt="YouTube" width="24" height="24">
+                </a>
+            </div>
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                <p style="font-size: 0.85rem; color: var(--muted); opacity: 0.7;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500;">sand</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/custom-modal.js"></script>
+    <script src="scripts.js"></script>
+    <script src="js/order.js"></script>
+    <script src="js/nagishli.js"></script>
+    <script src="js/whatsapp-widget.js"></script>
+
+    <!-- Hamburger Menu JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set minimum date to today
+            const dateInput = document.getElementById('date');
+            const timeSelect = document.getElementById('time');
+            let currentPackageId = null;
+            let occupiedSlots = [];
+            
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.setAttribute('min', today);
+            }
+            
+            // Get package info from localStorage
+            const orderData = JSON.parse(localStorage.getItem('currentOrder') || '{}');
+            currentPackageId = orderData.service; // This is actually the package ID
+            
+            // When date changes, check availability
+            if (dateInput && timeSelect && currentPackageId) {
+                dateInput.addEventListener('change', async function() {
+                    const selectedDate = this.value;
+                    if (!selectedDate) return;
+                    
+                    // Show loading state
+                    timeSelect.disabled = true;
+                    const originalHTML = timeSelect.innerHTML;
+                    timeSelect.innerHTML = '<option value="">טוען זמינות...</option>';
+                    
+                    try {
+                        const response = await fetch(`/api/calendar/check-availability?packageId=${currentPackageId}&date=${selectedDate}`);
+                        const data = await response.json();
+                        
+                        if (data.occupiedSlots) {
+                            occupiedSlots = data.occupiedSlots;
+                            updateTimeSlots();
+                        }
+                    } catch (error) {
+                        console.error('Failed to check availability:', error);
+                        // Restore original time slots on error
+                        timeSelect.innerHTML = originalHTML;
+                    } finally {
+                        timeSelect.disabled = false;
+                    }
+                });
+            }
+            
+            function updateTimeSlots() {
+                // Get all time options
+                const allTimes = [
+                    '08:00', '08:15', '08:30', '08:45', '09:00', '09:15', '09:30', '09:45',
+                    '10:00', '10:15', '10:30', '10:45', '11:00', '11:15', '11:30', '11:45',
+                    '12:00', '12:15', '12:30', '12:45', '13:00', '13:15', '13:30', '13:45',
+                    '14:00', '14:15', '14:30', '14:45', '15:00', '15:15', '15:30', '15:45',
+                    '16:00', '16:15', '16:30', '16:45', '17:00', '17:15', '17:30', '17:45',
+                    '18:00', '18:15', '18:30', '18:45', '19:00', '19:15', '19:30', '19:45',
+                    '20:00', '20:15', '20:30', '20:45', '21:00', '21:15', '21:30', '21:45', '22:00'
+                ];
+                
+                // Build time slots HTML - only show available times
+                let html = '<option value="">בחר שעה</option>';
+                let availableCount = 0;
+                
+                allTimes.forEach(time => {
+                    const isOccupied = isTimeOccupied(time);
+                    // Only add available times to dropdown (hide occupied times completely)
+                    if (!isOccupied) {
+                        html += `<option value="${time}">${time}</option>`;
+                        availableCount++;
+                    }
+                });
+                
+                // If no times available, show message
+                if (availableCount === 0) {
+                    html += '<option value="" disabled>אין שעות פנויות בתאריך זה</option>';
+                }
+                
+                timeSelect.innerHTML = html;
+            }
+            
+            function isTimeOccupied(time) {
+                const selectedDate = dateInput.value;
+                if (!selectedDate) return false;
+                
+                const checkTime = new Date(`${selectedDate}T${time}:00+02:00`);
+                
+                // Check if this time overlaps with any booked slot
+                return occupiedSlots.some(slot => {
+                    const slotStart = new Date(slot.startTime);
+                    const slotEnd = new Date(slot.endTime);
+                    
+                    // Check if checkTime falls within or overlaps the booked slot
+                    return checkTime >= slotStart && checkTime < slotEnd;
+                });
+            }
+            
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('.nav-links');
+
+            if (hamburger && navLinks) {
+                hamburger.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                    hamburger.setAttribute('aria-expanded',
+                        hamburger.getAttribute('aria-expanded') === 'false' ? 'true' : 'false'
+                    );
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+                        navLinks.classList.remove('active');
+                        hamburger.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                // Close menu on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+                        navLinks.classList.remove('active');
+                        hamburger.setAttribute('aria-expanded', 'false');
+                        hamburger.focus();
+                    }
+                });
+            }
+        });
+    </script>
+<script src="js/user-auth.js"></script>

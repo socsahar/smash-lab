@@ -1,0 +1,704 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>בחירת חבילה - SmashLabs</title>
+    <meta name="description" content="בחר את החבילה המתאימה לך ב-SmashLabs - חדר זעם, צבע, זריקת גרזנים וגרפיטי">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="בחירת חבילה - SmashLabs">
+    <meta property="og:description" content="בחר את החבילה המתאימה לך ב-SmashLabs">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💥</text></svg>">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/cookie-manager.css">
+    <link rel="stylesheet" href="css/nagishli.css">
+    <link rel="stylesheet" href="css/whatsapp-widget.css">
+
+    <style>
+        /* Dark theme matching waiver.html */
+        body {
+            background: #1a1a1a;
+            color: #fff;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .step-nav {
+            background: #222;
+            border-bottom: 1px solid #333;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .step-nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .step.active {
+            color: #ff6b00;
+        }
+
+        .step.completed {
+            color: #22c55e;
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #333;
+            color: #999;
+            font-weight: 600;
+        }
+
+        .step.active .step-number {
+            background: #ff6b00;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #22c55e;
+            color: white;
+        }
+
+        .step-separator {
+            width: 40px;
+            height: 2px;
+            background: #333;
+        }
+
+        .step.completed + .step-separator {
+            background: #22c55e;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .page-title {
+            text-align: center;
+            margin: 2rem 0;
+            color: #ff6b00;
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+        }
+
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .package-card {
+            background: #222;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 2px solid #333;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            padding: 1.5rem;
+            position: relative;
+            min-height: 320px;
+        }
+
+        .package-card:hover,
+        .package-card:focus {
+            border-color: #ff6b00;
+            box-shadow: 0 8px 25px rgba(255, 107, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .package-card.selected {
+            border-color: #ff6b00;
+            background: #2a1a0f;
+        }
+
+        .package-card.recommended::before {
+            content: 'מומלץ';
+            position: absolute;
+            top: -8px;
+            left: 1rem;
+            background: #ff6b00;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .package-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .package-description {
+            color: #aaa;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .package-price {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #ff6b00;
+            margin-bottom: 1rem;
+        }
+
+        .package-includes {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .package-includes li {
+            padding: 0.25rem 0;
+            color: #ccc;
+            position: relative;
+            padding-right: 1.5rem;
+        }
+
+        .package-includes li::before {
+            content: '✓';
+            position: absolute;
+            right: 0;
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .package-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #999;
+        }
+
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-button {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #444;
+            background: #222;
+            color: #fff;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .filter-button:hover,
+        .filter-button:focus {
+            border-color: #ff6b00;
+            background: #2a1a0f;
+        }
+
+        .filter-button.active {
+            background: #ff6b00;
+            color: white;
+            border-color: #ff6b00;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+            border-top: 1px solid #333;
+            margin-top: 3rem;
+        }
+
+        .continue-btn {
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 44px;
+            min-width: 120px;
+        }
+
+        .continue-btn:hover:not(:disabled),
+        .continue-btn:focus:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(255, 107, 0, 0.4);
+        }
+
+        .continue-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #555;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #999;
+            border: 2px solid #444;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.125rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 44px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn:hover,
+        .back-btn:focus {
+            border-color: #ff6b00;
+            color: #fff;
+            background: #2a1a0f;
+        }
+
+        .error-message {
+            background: #2a1a1a;
+            border: 2px solid #dc2626;
+            color: #ff6b6b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        footer {
+            background: #111;
+            color: #999;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 4rem;
+            border-top: 1px solid #333;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        /* Safe area handling for iOS */
+        @supports (padding: env(safe-area-inset-top)) {
+            .header-inner {
+                padding-top: env(safe-area-inset-top);
+            }
+            
+            .action-bar {
+                padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+            }
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .packages-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .filter-bar {
+                gap: 0.5rem;
+            }
+
+            .filter-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .action-bar > * {
+                width: 100%;
+                text-align: center;
+            }
+
+            .step-nav-inner {
+                gap: 0.5rem;
+                font-size: 0.875rem;
+            }
+
+            .step-separator {
+                width: 20px;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .package-card {
+                padding: 1rem;
+                min-height: auto;
+            }
+
+            .page-title {
+                margin: 1rem 0;
+            }
+
+            .container {
+                padding: 0 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Skip to content link -->
+
+    <!-- Step Navigation -->
+    <nav class="step-nav" aria-label="שלבי ההזמנה">
+        <div class="step-nav-inner">
+            <div class="step active">
+                <span class="step-number">1</span>
+                <span>בחירת חבילה</span>
+            </div>
+            <div class="step-separator"></div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <span>פרטי הזמנה</span>
+            </div>
+            <div class="step-separator"></div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <span>כתב ויתור</span>
+            </div>
+            <div class="step-separator"></div>
+            <div class="step">
+                <span class="step-number">4</span>
+                <span>תשלום</span>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main" tabindex="-1">
+        <div class="container">
+            <h1 class="page-title">בחירת חבילה</h1>
+            <p style="text-align: center; color: #aaa; margin-bottom: 2rem;" id="participant-info">
+                <!-- Will be filled by JavaScript -->
+            </p>
+            
+            <!-- Category Filter Buttons -->
+            <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                <button class="filter-button active" data-filter="rage-room" onclick="filterPackages('rage-room')">
+                    חדר זעם
+                </button>
+                <button class="filter-button" data-filter="throwing-axes" onclick="filterPackages('throwing-axes')">
+                    הטלת גרזנים
+                </button>
+                <button class="filter-button" data-filter="paint-room" onclick="filterPackages('paint-room')">
+                    חדר צבע
+                </button>
+                <button class="filter-button" data-filter="combo" onclick="filterPackages('combo')">
+                    משולב
+                </button>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message" role="alert" aria-live="polite">
+                יש לבחור חבילה כדי להמשיך
+            </div>
+
+            <!-- Packages Grid -->
+            <div class="packages-grid" id="packages-grid" role="radiogroup" aria-label="בחירת חבילה">
+                <!-- Packages will be loaded here by JavaScript -->
+            </div>
+
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <button type="button" class="back-btn" onclick="window.location.href='index.html'">חזור</button>
+                <button class="continue-btn" id="continue-btn" disabled onclick="continueToOrder()">
+                    המשך לפרטי הזמנה
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer role="contentinfo">
+        <div class="footer-inner">
+            <p>&copy; 2025 SmashLabs. כל הזכויות שמורות.</p>
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                <p style="font-size: 0.85rem; color: var(--muted); opacity: 0.7;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500;">sand</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="scripts.js"></script>
+    <script src="js/accessibility.js"></script>
+    <script src="js/cookie-manager.js"></script>
+    <script src="js/nagishli.js"></script>
+    <script src="js/whatsapp-widget.js"></script>
+
+    <script>
+        // Order state management
+        const OrderState = {
+            get: function(key) {
+                try {
+                    const data = localStorage.getItem('smashlabs_order');
+                    const order = data ? JSON.parse(data) : {};
+                    return key ? order[key] : order;
+                } catch (e) {
+                    console.error('Error reading order state:', e);
+                    return key ? null : {};
+                }
+            },
+            
+            set: function(key, value) {
+                try {
+                    const order = this.get();
+                    if (typeof key === 'object') {
+                        Object.assign(order, key);
+                    } else {
+                        order[key] = value;
+                    }
+                    localStorage.setItem('smashlabs_order', JSON.stringify(order));
+                    return true;
+                } catch (e) {
+                    console.error('Error saving order state:', e);
+                    return false;
+                }
+            }
+        };
+
+        let packages = [];
+        let selectedPackage = null;
+
+        // Load packages data
+        async function loadPackages() {
+            try {
+                const response = await fetch('data/packages.json');
+                packages = await response.json();
+                
+                // Get participant count from order
+                const orderData = OrderState.get();
+                const participants = parseInt(orderData.participants) || 1;
+                
+                // Filter packages based on participant count
+                const filteredPackages = packages.filter(pkg => {
+                    return pkg.minParticipants <= participants && pkg.maxParticipants >= participants;
+                });
+                
+                packages = filteredPackages;
+                renderPackages();
+                
+                // Pre-select package if coming from order page with room type
+                if (orderData.roomType) {
+                    filterByRoomType(orderData.roomType);
+                }
+            } catch (error) {
+                console.error('Error loading packages:', error);
+                document.getElementById('packages-grid').innerHTML = '<p style="text-align: center; color: #dc2626;">שגיאה בטעינת החבילות. אנא רענן את הדף.</p>';
+            }
+        }
+
+        // Render packages
+        function renderPackages(filteredPackages = null) {
+            const grid = document.getElementById('packages-grid');
+            const packagesToShow = filteredPackages || packages;
+            const orderData = OrderState.get();
+            const participants = parseInt(orderData.participants) || 1;
+            
+            grid.innerHTML = packagesToShow.map(pkg => {
+                // Calculate total price if it's per person
+                const displayPrice = pkg.pricePerPerson 
+                    ? `${pkg.price} ₪ למשתתף`
+                    : `${pkg.price} ₪`;
+                
+                return `
+                <div class="package-card ${pkg.recommended ? 'recommended' : ''}" 
+                     role="radio" 
+                     aria-checked="false"
+                     tabindex="0"
+                     data-package-id="${pkg.id}"
+                     onclick="selectPackage('${pkg.id}')"
+                     onkeydown="handlePackageKeydown(event, '${pkg.id}')">
+                    <div class="package-name">${pkg.name}</div>
+                    <div class="package-description">${pkg.description}</div>
+                    <div class="package-price">${displayPrice}</div>
+                    <ul class="package-includes">
+                        ${pkg.includes.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                    <div class="package-details">
+                        <span>${pkg.duration} דקות</span>
+                        <span>${pkg.pricePerPerson ? `${participants} משתתפים` : `עד ${pkg.maxParticipants} משתתפים`}</span>
+                    </div>
+                </div>
+            `}).join('');
+
+            // Restore selection if package was previously selected
+            const savedPackage = OrderState.get('selectedPackage');
+            if (savedPackage && packagesToShow.find(p => p.id === savedPackage.id)) {
+                selectPackage(savedPackage.id);
+            }
+        }
+
+        // Handle keyboard navigation for packages
+        function handlePackageKeydown(event, packageId) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                selectPackage(packageId);
+            }
+        }
+
+        // Select package
+        function selectPackage(packageId) {
+            // Remove previous selection
+            document.querySelectorAll('.package-card').forEach(card => {
+                card.classList.remove('selected');
+                card.setAttribute('aria-checked', 'false');
+            });
+
+            // Add selection to new package
+            const selectedCard = document.querySelector(`[data-package-id="${packageId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+                selectedCard.setAttribute('aria-checked', 'true');
+                
+                selectedPackage = packages.find(pkg => pkg.id === packageId);
+                OrderState.set('selectedPackage', selectedPackage);
+                
+                // Enable continue button
+                document.getElementById('continue-btn').disabled = false;
+                
+                // Hide error message
+                document.querySelector('.error-message').classList.remove('show');
+                
+                // Scroll to confirmation button smoothly
+                setTimeout(() => {
+                    const continueBtn = document.getElementById('continue-btn');
+                    if (continueBtn) {
+                        continueBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 300);
+            }
+        }
+
+        // Filter packages
+        function filterPackages(roomType) {
+            const buttons = document.querySelectorAll('.filter-button');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+
+            const activeButton = document.querySelector(`[data-filter="${roomType}"]`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+                activeButton.setAttribute('aria-selected', 'true');
+            }
+
+            const filtered = roomType === 'all' ? packages : packages.filter(pkg => pkg.roomType === roomType);
+            renderPackages(filtered);
+        }
+
+        // Continue to order details
+        function continueToOrder() {
+            if (!selectedPackage) {
+                document.querySelector('.error-message').classList.add('show');
+                return;
+            }
+
+            // Save selection and update order with service info
+            OrderState.set('selectedPackage', selectedPackage);
+            
+            // Update currentOrder with the selected package details
+            const currentOrder = JSON.parse(localStorage.getItem('currentOrder') || '{}');
+            currentOrder.service = selectedPackage.id; // Store package ID (e.g., solo-rage-basic)
+            currentOrder.packageId = selectedPackage.id; // Also store as packageId for clarity
+            currentOrder.roomType = selectedPackage.roomType; // Store room type separately
+            currentOrder.packageName = selectedPackage.name;
+            currentOrder.price = selectedPackage.price;
+            currentOrder.duration = selectedPackage.duration;
+            localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+            
+            window.location.href = 'order.html';
+        }
+
+        // Setup filter buttons - DISABLED (filter removed)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Display participant count
+            const orderData = OrderState.get();
+            const participants = parseInt(orderData.participants) || 1;
+            const infoEl = document.getElementById('participant-info');
+            
+            let participantText = '';
+            if (participants === 1) {
+                participantText = 'חבילות ליחיד';
+            } else if (participants === 2) {
+                participantText = 'חבילות לזוג (2 אנשים)';
+            } else if (participants >= 3 && participants <= 5) {
+                participantText = `חבילות לקבוצה (${participants} אנשים - עד 5)`;
+            } else if (participants > 5 && participants <= 10) {
+                participantText = 'חבילות לקבוצה גדולה יותר מ 5 אנשים';
+            }
+            
+            if (infoEl) {
+                infoEl.textContent = participantText;
+            }
+
+            loadPackages();
+            
+            // Apply default filter to show only rage-room packages on initial load
+            setTimeout(() => {
+                filterPackages('rage-room');
+            }, 100);
+        });
+    </script>
+</body>
+
+</html>
+
+
