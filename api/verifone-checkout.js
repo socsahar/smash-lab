@@ -21,12 +21,23 @@ async function createCheckout(orderData) {
     } = orderData;
 
     // Prepare checkout payload according to Verifone Checkout API v2
+    // Verifone REQUIRES return_url to be HTTPS - enforce it
+    let returnUrl = process.env.SUCCESS_URL || `${process.env.APP_URL || 'https://smash-lab.com'}/order-success.html`;
+    // Force HTTPS - Verifone rejects http:// URLs
+    if (returnUrl.startsWith('http://')) {
+        returnUrl = returnUrl.replace('http://', 'https://');
+    }
+    // Replace localhost with production domain
+    if (returnUrl.includes('localhost') || returnUrl.includes('127.0.0.1')) {
+        returnUrl = 'https://smash-lab.com/order-success.html';
+    }
+
     const payload = {
         entity_id: process.env.VERIFONE_ENTITY_ID,
         currency_code: currency,
         amount: Math.round(amount * 100), // Convert to agorot (cents) - minor units
         merchant_reference: orderId,
-        return_url: process.env.SUCCESS_URL || `${process.env.APP_URL || 'https://smash-lab.com'}/order-success.html`,
+        return_url: returnUrl,
         interaction_type: 'IFRAME', // or 'HPP' for hosted page, 'IFRAME' for embedded
         configurations: {
             card: {
