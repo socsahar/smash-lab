@@ -1550,6 +1550,9 @@
                 emergency_phone: waiverData.emergencyContact?.phone || '',
                 emergency_relation: waiverData.emergencyContact?.relation || '',
                 guardian_info: isMinor ? `\n--- פרטי אפוטרופוס ---\nשם: ${waiverData.guardianName}\nת.ז: ${waiverData.guardianId}\nתאריך לידה: ${waiverData.guardianDob}\n(המשתתף מתחת גיל 18 - החתימה היא של האפוטרופוס)` : '',
+                guardian_first_name: isMinor ? (waiverData.guardianName?.split(' ')[0] || '') : '',
+                guardian_last_name: isMinor ? (waiverData.guardianName?.split(' ').slice(1).join(' ') || '') : '',
+                guardian_id: isMinor ? (waiverData.guardianId || '') : '',
                 signature: waiverData.signature,
                 signature_date: waiverData.signatureDate,
                 signature_time: waiverData.signatureTime

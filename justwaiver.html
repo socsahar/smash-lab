@@ -1234,6 +1234,9 @@
                     emergency_phone: waiverData.emergencyContact.phone,
                     emergency_relation: waiverData.emergencyContact.relation,
                     guardian_info: guardianInfo,
+                    guardian_first_name: isMinor ? (waiverData.guardianName?.split(' ')[0] || '') : '',
+                    guardian_last_name: isMinor ? (waiverData.guardianName?.split(' ').slice(1).join(' ') || '') : '',
+                    guardian_id: isMinor ? (waiverData.guardianId || '') : '',
                     signature: waiverData.signature,
                     signature_date: waiverData.signatureDate,
                     signature_time: waiverData.signatureTime
