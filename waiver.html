@@ -540,6 +540,35 @@
                                 <input type="text" id="id-number" name="id-number" required pattern="[0-9]{9}" maxlength="9" inputmode="numeric" title="נא הכנס 9 ספרות בלבד">
                             </div>
                             
+                            <div class="form-group">
+                                <label for="date-of-birth">תאריך לידה *</label>
+                                <input type="date" id="date-of-birth" name="date-of-birth" required>
+                                <span id="age-display" style="display: none; margin-top: 0.5rem; font-size: 0.9rem;"></span>
+                            </div>
+                            
+                            <!-- Legal Guardian Section (shown when participant is under 18) -->
+                            <div id="guardian-section" style="display: none; margin-top: 1.5rem; padding: 1.5rem; background: #2a2a2a; border: 2px solid #ff6b00; border-radius: 10px;">
+                                <h4 style="color: #ff6b00; margin-bottom: 0.5rem;">⚠️ המשתתף/ת מתחת לגיל 18</h4>
+                                <p style="color: #ffcc00; font-size: 0.9rem; margin-bottom: 1rem;">נדרש מילוי פרטי אפוטרופוס חוקי. החתימה תהיה של האפוטרופוס.</p>
+                                
+                                <div class="form-group">
+                                    <label for="guardian-name">שם מלא של אפוטרופוס *</label>
+                                    <input type="text" id="guardian-name" name="guardian-name" pattern="[a-zA-Zא-ת\s'\-]+" title="שם יכול להכיל רק אותיות, רווחים, מקף (-) ואפוסטרוף (')">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="guardian-id">מספר תעודת זהות של אפוטרופוס *</label>
+                                    <input type="text" id="guardian-id" name="guardian-id" pattern="[0-9]{9}" maxlength="9" inputmode="numeric" title="נא הכנס 9 ספרות בלבד">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="guardian-dob">תאריך לידה של אפוטרופוס *</label>
+                                    <input type="date" id="guardian-dob" name="guardian-dob">
+                                    <span id="guardian-age-display" style="display: none; margin-top: 0.5rem; font-size: 0.9rem;"></span>
+                                    <span id="guardian-age-error" style="display: none; margin-top: 0.5rem; font-size: 0.9rem; color: #ef4444;">⚠️ האפוטרופוס חייב להיות מעל גיל 18</span>
+                                </div>
+                            </div>
+                            
                             <div class="form-group" style="position: relative;">
                                 <label for="city">עיר *</label>
                                 <input type="text" id="city" name="city" required autocomplete="off" placeholder="התחל להקליד שם עיר...">
@@ -593,7 +622,7 @@
                             </div>
                             
                             <div class="form-group">
-                                <label>חתימה *</label>
+                                <label id="signature-label">חתימה *</label>
                                 <canvas id="signature-pad" class="signature-pad" width="600" height="200"></canvas>
                                 <input type="hidden" id="signature" name="signature" required>
                                 <div class="signature-controls">
@@ -1125,6 +1154,108 @@
             const minutes = String(now.getMinutes()).padStart(2, '0');
             document.getElementById('signature-time').value = `${hours}:${minutes}`;
             
+            // === Date of Birth & Guardian Logic ===
+            let isMinor = false;
+            let guardianIsMinor = false;
+            const dobInput = document.getElementById('date-of-birth');
+            const ageDisplay = document.getElementById('age-display');
+            const guardianSection = document.getElementById('guardian-section');
+            const guardianNameInput = document.getElementById('guardian-name');
+            const guardianIdInput = document.getElementById('guardian-id');
+            const guardianDobInput = document.getElementById('guardian-dob');
+            const guardianAgeDisplay = document.getElementById('guardian-age-display');
+            const guardianAgeError = document.getElementById('guardian-age-error');
+            const signatureLabel = document.getElementById('signature-label');
+            
+            const todayStr = new Date().toISOString().split('T')[0];
+            dobInput.setAttribute('max', todayStr);
+            guardianDobInput.setAttribute('max', todayStr);
+            
+            function calculateAge(birthDate) {
+                const today = new Date();
+                const birth = new Date(birthDate);
+                let age = today.getFullYear() - birth.getFullYear();
+                const monthDiff = today.getMonth() - birth.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                    age--;
+                }
+                return age;
+            }
+            
+            dobInput.addEventListener('change', function() {
+                const dob = this.value;
+                if (!dob) {
+                    ageDisplay.style.display = 'none';
+                    guardianSection.style.display = 'none';
+                    isMinor = false;
+                    toggleGuardianRequired(false);
+                    checkFormValidity();
+                    return;
+                }
+                const age = calculateAge(dob);
+                ageDisplay.style.display = 'block';
+                if (age < 18) {
+                    isMinor = true;
+                    ageDisplay.innerHTML = `<span style="color: #ffcc00;">\u26a0\ufe0f \u05d2\u05d9\u05dc: ${age} - \u05e0\u05d3\u05e8\u05e9 \u05d0\u05e4\u05d5\u05d8\u05e8\u05d5\u05e4\u05d5\u05e1 \u05d7\u05d5\u05e7\u05d9</span>`;
+                    guardianSection.style.display = 'block';
+                    signatureLabel.textContent = '\u05d7\u05ea\u05d9\u05de\u05ea \u05d0\u05e4\u05d5\u05d8\u05e8\u05d5\u05e4\u05d5\u05e1 *';
+                    toggleGuardianRequired(true);
+                } else {
+                    isMinor = false;
+                    ageDisplay.innerHTML = `<span style="color: #22c55e;">\u2705 \u05d2\u05d9\u05dc: ${age}</span>`;
+                    guardianSection.style.display = 'none';
+                    signatureLabel.textContent = '\u05d7\u05ea\u05d9\u05de\u05d4 *';
+                    toggleGuardianRequired(false);
+                }
+                checkFormValidity();
+            });
+            
+            guardianDobInput.addEventListener('change', function() {
+                const dob = this.value;
+                if (!dob) {
+                    guardianAgeDisplay.style.display = 'none';
+                    guardianAgeError.style.display = 'none';
+                    guardianIsMinor = false;
+                    checkFormValidity();
+                    return;
+                }
+                const age = calculateAge(dob);
+                if (age < 18) {
+                    guardianIsMinor = true;
+                    guardianAgeDisplay.style.display = 'none';
+                    guardianAgeError.style.display = 'block';
+                } else {
+                    guardianIsMinor = false;
+                    guardianAgeError.style.display = 'none';
+                    guardianAgeDisplay.style.display = 'block';
+                    guardianAgeDisplay.innerHTML = `<span style="color: #22c55e;">\u2705 \u05d2\u05d9\u05dc: ${age}</span>`;
+                }
+                checkFormValidity();
+            });
+            
+            function toggleGuardianRequired(required) {
+                guardianNameInput.required = required;
+                guardianIdInput.required = required;
+                guardianDobInput.required = required;
+                if (!required) {
+                    guardianNameInput.value = '';
+                    guardianIdInput.value = '';
+                    guardianDobInput.value = '';
+                    guardianAgeDisplay.style.display = 'none';
+                    guardianAgeError.style.display = 'none';
+                    guardianIsMinor = false;
+                }
+            }
+            
+            // Guardian field validations
+            guardianNameInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^a-zA-Z\u05d0-\u05ea\s'\-]/g, '');
+            });
+            guardianIdInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (this.value.length > 9) this.value = this.value.slice(0, 9);
+            });
+            
             // Restrict ID number to only digits
             const idNumberInput = document.getElementById('id-number');
             idNumberInput.addEventListener('input', function(e) {
@@ -1200,6 +1331,7 @@
             window.checkFormValidity = function() {
                 const fullName = document.getElementById('full-name').value.trim();
                 const idNumber = document.getElementById('id-number').value.trim();
+                const dob = document.getElementById('date-of-birth').value;
                 const city = document.getElementById('city').value.trim();
                 const street = document.getElementById('street').value.trim();
                 const phone = document.getElementById('phone').value.trim();
@@ -1212,9 +1344,21 @@
                 const signatureTime = document.getElementById('signature-time').value;
                 const waiverChecked = waiverCheckbox.checked;
                 
-                if (fullName && idNumber && city && street && phone && email && 
+                let isValid = fullName && idNumber && dob && city && street && phone && email && 
                     emergencyName && emergencyPhone && emergencyRelation && 
-                    signature && signatureDate && signatureTime && waiverChecked) {
+                    signature && signatureDate && signatureTime && waiverChecked;
+                
+                // If minor, check guardian fields
+                if (isMinor) {
+                    const gName = document.getElementById('guardian-name').value.trim();
+                    const gId = document.getElementById('guardian-id').value.trim();
+                    const gDob = document.getElementById('guardian-dob').value;
+                    if (!gName || !gId || !gDob || guardianIsMinor) {
+                        isValid = false;
+                    }
+                }
+                
+                if (isValid) {
                     continueBtn.disabled = false;
                     continueBtn.style.background = 'linear-gradient(45deg, #ff6b00, #1fb6c2)';
                 } else {
@@ -1269,6 +1413,16 @@
         }
         
         async function processWaiver(order) {
+            // Block if guardian is under 18
+            if (isMinor && guardianIsMinor) {
+                if (window.customModal) {
+                    window.customModal.error('\u05d4\u05d0\u05e4\u05d5\u05d8\u05e8\u05d5\u05e4\u05d5\u05e1 \u05d7\u05d9\u05d9\u05d1 \u05dc\u05d4\u05d9\u05d5\u05ea \u05de\u05e2\u05dc \u05d2\u05d9\u05dc 18', '\u05e9\u05d2\u05d9\u05d0\u05d4');
+                } else {
+                    alert('\u05d4\u05d0\u05e4\u05d5\u05d8\u05e8\u05d5\u05e4\u05d5\u05e1 \u05d7\u05d9\u05d9\u05d1 \u05dc\u05d4\u05d9\u05d5\u05ea \u05de\u05e2\u05dc \u05d2\u05d9\u05dc 18');
+                }
+                return;
+            }
+            
             // Ensure signature is captured right before submission
             const canvas = document.getElementById('signature-pad');
             const signatureInput = document.getElementById('signature');
@@ -1283,9 +1437,10 @@
             const waiverData = {
                 fullName: formData.get('full-name'),
                 idNumber: formData.get('id-number'),
+                dateOfBirth: formData.get('date-of-birth'),
                 city: formData.get('city'),
                 street: formData.get('street'),
-                address: formData.get('city') + ', ' + formData.get('street'), // Combined for backward compatibility
+                address: formData.get('city') + ', ' + formData.get('street'),
                 phone: formData.get('phone'),
                 email: formData.get('email'),
                 emergencyContact: {
@@ -1300,6 +1455,13 @@
                 emergencyContactConsent: formData.get('emergency-contact') === 'on',
                 signedAt: new Date().toISOString()
             };
+            
+            // Add guardian data if minor
+            if (isMinor) {
+                waiverData.guardianName = formData.get('guardian-name');
+                waiverData.guardianId = formData.get('guardian-id');
+                waiverData.guardianDob = formData.get('guardian-dob');
+            }
             
             // Add waiver data to order
             const orderWithWaiver = {
@@ -1368,8 +1530,9 @@
             const templateParams = {
                 to_email: window.ENV_CONFIG.EMAIL_TO,
                 order_id: order.orderId || 'ללא מספר',
-                full_name: waiverData.fullName,
+                full_name: waiverData.fullName + (isMinor ? ' (קטין)' : ''),
                 id_number: waiverData.idNumber,
+                date_of_birth: waiverData.dateOfBirth || '',
                 city: waiverData.city || '',
                 street: waiverData.street || '',
                 phone: waiverData.phone,
@@ -1377,6 +1540,7 @@
                 emergency_name: waiverData.emergencyContact?.name || '',
                 emergency_phone: waiverData.emergencyContact?.phone || '',
                 emergency_relation: waiverData.emergencyContact?.relation || '',
+                guardian_info: isMinor ? `\n--- פרטי אפוטרופוס ---\nשם: ${waiverData.guardianName}\nת.ז: ${waiverData.guardianId}\nתאריך לידה: ${waiverData.guardianDob}\n(המשתתף מתחת גיל 18 - החתימה היא של האפוטרופוס)` : '',
                 signature: waiverData.signature,
                 signature_date: waiverData.signatureDate,
                 signature_time: waiverData.signatureTime
