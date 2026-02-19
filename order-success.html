@@ -175,6 +175,64 @@
         
         // Create order in database and user account after successful payment
         document.addEventListener('DOMContentLoaded', async function() {
+            // Check if this is a Verifone return (redirect after payment)
+            const urlParams = new URLSearchParams(window.location.search);
+            const checkoutId = urlParams.get('checkoutId');
+            
+            if (checkoutId) {
+                console.log('🔄 Verifone return detected, checkoutId:', checkoutId);
+                
+                // Retrieve the pending payment order data saved before Verifone redirect
+                const pendingOrderStr = localStorage.getItem('pendingPaymentOrder');
+                if (pendingOrderStr) {
+                    try {
+                        const pendingOrder = JSON.parse(pendingOrderStr);
+                        
+                        // Save as completed order
+                        localStorage.setItem('completedOrder', JSON.stringify({
+                            ...pendingOrder,
+                            paymentMethod: 'credit-card',
+                            paymentDate: new Date().toISOString(),
+                            status: 'paid',
+                            transactionId: checkoutId,
+                        }));
+                        
+                        // Also ensure smashlabs_order has the data for the booking flow below
+                        if (!localStorage.getItem('smashlabs_order')) {
+                            localStorage.setItem('smashlabs_order', JSON.stringify(pendingOrder));
+                        }
+                        
+                        // Track coupon usage if coupon was applied
+                        if (pendingOrder.coupon && pendingOrder.coupon.id) {
+                            try {
+                                const supabaseUrl = window.ENV_CONFIG?.SUPABASE_URL || 'https://aquhidjcuxkhkwosfvgf.supabase.co';
+                                const supabaseKey = window.ENV_CONFIG?.SUPABASE_ANON_KEY || '';
+                                if (window.supabase && supabaseKey) {
+                                    const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+                                    await client.from('coupon_usage').insert([{
+                                        coupon_id: pendingOrder.coupon.id,
+                                        customer_email: pendingOrder.email,
+                                        order_amount: pendingOrder.originalPrice,
+                                        discount_amount: pendingOrder.coupon.discount,
+                                        order_id: pendingOrder.orderId
+                                    }]);
+                                    console.log('✅ Coupon usage tracked');
+                                }
+                            } catch (couponErr) {
+                                console.error('⚠️ Failed to track coupon usage:', couponErr);
+                            }
+                        }
+                        
+                        // Clean up pending data
+                        localStorage.removeItem('pendingPaymentOrder');
+                        
+                        console.log('✅ Verifone payment order processed');
+                    } catch (e) {
+                        console.error('❌ Error processing pending payment order:', e);
+                    }
+                }
+            }
+            
             // Get order data from localStorage
             const orderData = JSON.parse(localStorage.getItem('smashlabs_order') || '{}');
             

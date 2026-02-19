@@ -495,17 +495,53 @@
                     timeSelect.innerHTML = '<option value="">טוען זמינות...</option>';
                     
                     try {
-                        const response = await fetch(`/api/calendar/check-availability?packageId=${currentPackageId}&date=${selectedDate}`);
-                        const data = await response.json();
+                        let data = null;
                         
-                        if (data.occupiedSlots) {
+                        // Try API endpoint first
+                        try {
+                            const response = await fetch(`/api/calendar/check-availability?packageId=${currentPackageId}&date=${selectedDate}`);
+                            if (response.ok) {
+                                data = await response.json();
+                            }
+                        } catch (apiErr) {
+                            console.warn('API endpoint unavailable, falling back to direct query');
+                        }
+                        
+                        // Fallback: query Supabase directly from client
+                        if (!data && window.supabase && window.supabase.from) {
+                            const { data: bookings, error: sbError } = await window.supabase
+                                .from('bookings')
+                                .select('booking_time, booking_datetime, end_datetime, duration_minutes')
+                                .eq('package_id', currentPackageId)
+                                .eq('booking_date', selectedDate)
+                                .eq('status', 'confirmed')
+                                .order('booking_datetime', { ascending: true });
+                            
+                            if (!sbError && bookings) {
+                                data = {
+                                    occupiedSlots: bookings.map(b => ({
+                                        time: b.booking_time,
+                                        startTime: b.booking_datetime,
+                                        endTime: b.end_datetime,
+                                        duration: b.duration_minutes
+                                    }))
+                                };
+                            }
+                        }
+                        
+                        if (data && data.occupiedSlots) {
                             occupiedSlots = data.occupiedSlots;
+                            updateTimeSlots();
+                        } else {
+                            // No occupied slots found or no data - show all times as available
+                            occupiedSlots = [];
                             updateTimeSlots();
                         }
                     } catch (error) {
                         console.error('Failed to check availability:', error);
-                        // Restore original time slots on error
-                        timeSelect.innerHTML = originalHTML;
+                        // Show all time slots as available on error
+                        occupiedSlots = [];
+                        updateTimeSlots();
                     } finally {
                         timeSelect.disabled = false;
                     }

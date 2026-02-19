@@ -26,7 +26,7 @@ async function createCheckout(orderData) {
         currency_code: currency,
         amount: Math.round(amount * 100), // Convert to agorot (cents) - minor units
         merchant_reference: orderId,
-        return_url: (process.env.SUCCESS_URL || 'http://localhost:8000/order-success.html').replace('http://', 'https://'),
+        return_url: process.env.SUCCESS_URL || `${process.env.APP_URL || 'http://localhost:8000'}/order-success.html`,
         interaction_type: 'IFRAME', // or 'HPP' for hosted page, 'IFRAME' for embedded
         configurations: {
             card: {

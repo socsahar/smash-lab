@@ -344,44 +344,9 @@
                         </div>
 
                         <div id="credit-card-fields" style="display: none;">
-                            <div class="form-group">
-                                <label for="card-number">מספר כרטיס *</label>
-                                <input type="text" 
-                                       id="card-number" 
-                                       name="card-number" 
-                                       placeholder="1234 5678 9012 3456"
-                                       maxlength="19"
-                                       autocomplete="cc-number"
-                                       dir="ltr"
-                                       required>
-                            </div>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                <div class="form-group">
-                                    <label for="expiry">תוקף (MM/YY) *</label>
-                                    <input type="text" 
-                                           id="expiry" 
-                                           name="expiry" 
-                                           placeholder="12/26"
-                                           maxlength="5"
-                                           autocomplete="cc-exp"
-                                           dir="ltr"
-                                           required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="cvv">CVV *</label>
-                                    <input type="text" 
-                                           id="cvv" 
-                                           name="cvv" 
-                                           placeholder="123"
-                                           maxlength="4"
-                                           autocomplete="cc-csc"
-                                           dir="ltr"
-                                           required>
-                                </div>
-                            </div>
-                            <div style="background: rgba(31, 182, 194, 0.1); border: 1px solid rgba(31, 182, 194, 0.3); padding: 0.75rem; border-radius: 8px; margin-top: 0.5rem;">
-                                <p style="font-size: 0.85rem; color: #1fb6c2; margin: 0;">🔒 התשלום מאובטח באמצעות Verifone</p>
+                            <div style="background: rgba(31, 182, 194, 0.1); border: 1px solid rgba(31, 182, 194, 0.3); padding: 1rem; border-radius: 8px; text-align: center;">
+                                <p style="font-size: 1rem; color: #1fb6c2; margin: 0 0 0.5rem 0;">🔒 תשלום מאובטח באמצעות Verifone</p>
+                                <p style="font-size: 0.85rem; color: #aaa; margin: 0;">לחיצה על "המשך לתשלום" תפתח טופס תשלום מאובטח</p>
                             </div>
                         </div>
 
@@ -408,8 +373,7 @@
 
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Verifone.js SDK -->
-    <script src="https://cst.test-gsc.vfims.com/verifone/verifone.js" onerror="console.error('Failed to load Verifone.js from primary source')"></script>
+    <!-- Verifone checkout is loaded dynamically per session - no static SDK needed -->
     <script src="js/config.js"></script>
     <script src="js/custom-modal.js"></script>
     <script src="js/verifone-payment.js"></script>
@@ -468,28 +432,6 @@
                 e.preventDefault();
                 await processPayment(order);
             });
-            
-            // Format card number input
-            const cardNumberInput = document.getElementById('card-number');
-            if (cardNumberInput) {
-                cardNumberInput.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\s/g, '');
-                    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
-                    e.target.value = formattedValue;
-                });
-            }
-            
-            // Format expiry input
-            const expiryInput = document.getElementById('expiry');
-            if (expiryInput) {
-                expiryInput.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/\D/g, '');
-                    if (value.length >= 2) {
-                        value = value.substring(0, 2) + '/' + value.substring(2, 4);
-                    }
-                    e.target.value = value;
-                });
-            }
         });
         
         // Global variable to track applied coupon
@@ -721,55 +663,18 @@
             }
         }
         
-        // Process credit card payment with Verifone
+        // Process credit card payment with Verifone Hosted Checkout
         async function processCreditCardPayment(order) {
-            // Validate card inputs
-            const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
-            const expiry = document.getElementById('expiry').value;
-            const cvv = document.getElementById('cvv').value;
-            
-            if (!cardNumber || !expiry || !cvv) {
-                if (window.customModal) {
-                    window.customModal.warning('אנא מלא את כל פרטי הכרטיס', 'פרטים חסרים');
-                } else {
-                    alert('אנא מלא את כל פרטי הכרטיס');
-                }
-                return;
-            }
-            
-            // Validate card number (basic check)
-            if (cardNumber.length < 13 || cardNumber.length > 19) {
-                if (window.customModal) {
-                    window.customModal.error('מספר כרטיס לא תקין', 'שגיאה');
-                } else {
-                    alert('מספר כרטיס לא תקין');
-                }
-                return;
-            }
-            
-            // Parse expiry
-            const [expiryMonth, expiryYear] = expiry.split('/');
-            if (!expiryMonth || !expiryYear || expiryMonth.length !== 2 || expiryYear.length !== 2) {
-                if (window.customModal) {
-                    window.customModal.error('תאריך תפוגה לא תקין (MM/YY)', 'שגיאה');
-                } else {
-                    alert('תאריך תפוגה לא תקין');
-                }
-                return;
-            }
-            
             const button = document.querySelector('#payment-form button[type="submit"]');
             const originalText = button.textContent;
-            button.textContent = 'מעבד תשלום... ⏳';
+            button.textContent = 'מאתחל תשלום... ⏳';
             button.disabled = true;
             
             try {
                 // Initialize Verifone
                 if (!window.verifonePayment) {
-                    throw new Error('Verifone payment system not loaded');
+                    window.verifonePayment = new VerifonePayment();
                 }
-                
-                await window.verifonePayment.init();
                 
                 // Calculate final amount
                 const servicePrices = {
@@ -786,7 +691,7 @@
                 const subtotal = basePrice * parseInt(order.quantity || order.participants || 1);
                 const finalPrice = appliedCoupon ? Math.max(0, subtotal - appliedCoupon.discount) : subtotal;
                 
-                // Prepare order data
+                // Prepare order data for Verifone
                 const orderData = {
                     orderId: order.orderId || `TEMP-${Date.now()}`,
                     amount: finalPrice,
@@ -801,77 +706,26 @@
                     duration: order.duration || 60
                 };
                 
-                // Prepare card data
-                const cardData = {
-                    number: cardNumber,
-                    expiryMonth: expiryMonth,
-                    expiryYear: '20' + expiryYear,
-                    cvv: cvv
-                };
+                // Save order data for post-payment processing
+                localStorage.setItem('pendingPaymentOrder', JSON.stringify({
+                    ...order,
+                    finalPrice: finalPrice,
+                    originalPrice: subtotal,
+                    coupon: appliedCoupon ? {
+                        id: appliedCoupon.id,
+                        code: appliedCoupon.code,
+                        discount: appliedCoupon.discount
+                    } : null
+                }));
                 
-                // Process payment
-                const result = await window.verifonePayment.processPayment(cardData, orderData);
+                // Create checkout session and open Verifone widget
+                // No card data needed - Verifone handles it in the hosted checkout
+                const result = await window.verifonePayment.processPayment(null, orderData);
                 
-                if (result.success) {
-                    // Save to Supabase
-                    try {
-                        const savedBooking = await window.verifonePayment.saveBookingToDatabase(orderData, result);
-                        console.log('✅ Booking saved:', savedBooking);
-                        
-                        // Update order with actual database ID
-                        order.dbOrderId = savedBooking.id;
-                        order.orderId = String(savedBooking.id).padStart(5, '0');
-                    } catch (dbError) {
-                        console.error('⚠️ Database save error:', dbError);
-                        // Continue even if DB save fails - payment succeeded
-                    }
-                    
-                    // Track coupon usage
-                    if (appliedCoupon) {
-                        try {
-                            const client = initSupabase();
-                            await client.from('coupon_usage').insert([{
-                                coupon_id: appliedCoupon.id,
-                                customer_email: order.email,
-                                order_amount: subtotal,
-                                discount_amount: appliedCoupon.discount,
-                                order_id: order.orderId
-                            }]);
-                        } catch (err) {
-                            console.error('Error tracking coupon:', err);
-                        }
-                    }
-                    
-                    // Save completed order
-                    localStorage.setItem('completedOrder', JSON.stringify({
-                        ...order,
-                        paymentMethod: 'credit-card',
-                        paymentDate: new Date().toISOString(),
-                        status: 'paid',
-                        transactionId: result.transactionId,
-                        coupon: appliedCoupon ? {
-                            code: appliedCoupon.code,
-                            discount: appliedCoupon.discount
-                        } : null,
-                        originalPrice: subtotal,
-                        finalPrice: finalPrice
-                    }));
-                    
-                    // Success message
-                    if (window.customModal) {
-                        window.customModal.show({
-                            title: 'תשלום בוצע בהצלחה! 🎉',
-                            message: `התשלום אושר במערכת.\nמספר הזמנה: ${order.orderId}\nמעביר לסיכום ההזמנה...`,
-                            showCloseButton: false
-                        });
-                    }
-                    
-                    setTimeout(() => {
-                        window.location.href = 'order-success.html';
-                    }, 2000);
-                    
-                } else {
-                    throw new Error('Payment failed');
+                if (result.success && result.loading) {
+                    console.log('✅ Verifone checkout widget opened');
+                    // The Verifone widget is now displayed
+                    // Payment completion is handled via postMessage events in verifone-payment.js
                 }
                 
             } catch (error) {
@@ -881,11 +735,11 @@
                 
                 if (window.customModal) {
                     window.customModal.error(
-                        'התשלום נכשל. אנא בדוק את פרטי הכרטיס ונסה שוב.',
+                        'שגיאה בפתיחת טופס התשלום. אנא נסה שוב.',
                         'שגיאה בתשלום'
                     );
                 } else {
-                    alert('התשלום נכשל. אנא נסה שוב.');
+                    alert('שגיאה בפתיחת טופס התשלום. אנא נסה שוב.');
                 }
             }
         }
@@ -902,13 +756,7 @@
                 return;
             }
             
-            // Handle credit card payment with Verifone
-            if (paymentMethod === 'credit-card') {
-                await processCreditCardPayment(order);
-                return;
-            }
-            
-            // Handle credit card payment with Verifone
+            // Handle credit card payment with Verifone hosted checkout
             if (paymentMethod === 'credit-card') {
                 await processCreditCardPayment(order);
                 return;
