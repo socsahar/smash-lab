@@ -177,10 +177,12 @@
         document.addEventListener('DOMContentLoaded', async function() {
             // Check if this is a Verifone return (redirect after payment)
             const urlParams = new URLSearchParams(window.location.search);
-            const checkoutId = urlParams.get('checkoutId');
+            // Verifone uses checkout_id (underscore) in redirect, our JS uses checkoutId (camelCase)
+            const checkoutId = urlParams.get('checkout_id') || urlParams.get('checkoutId');
+            const transactionId = urlParams.get('transaction_id') || urlParams.get('transactionId');
             
             if (checkoutId) {
-                console.log('🔄 Verifone return detected, checkoutId:', checkoutId);
+                console.log('🔄 Verifone return detected, checkoutId:', checkoutId, 'transactionId:', transactionId);
                 
                 // Retrieve the pending payment order data saved before Verifone redirect
                 const pendingOrderStr = localStorage.getItem('pendingPaymentOrder');
@@ -194,7 +196,8 @@
                             paymentMethod: 'credit-card',
                             paymentDate: new Date().toISOString(),
                             status: 'paid',
-                            transactionId: checkoutId,
+                            transactionId: transactionId || checkoutId,
+                            checkoutId: checkoutId,
                         }));
                         
                         // Also ensure smashlabs_order has the data for the booking flow below
