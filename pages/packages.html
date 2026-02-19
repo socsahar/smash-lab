@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
@@ -10,6 +10,8 @@
 </head>
 
 <body>
+    <a href="#main" class="skip-to-content" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--primary,#ff6b00);color:#fff;padding:0.75rem 1.5rem;border-radius:8px;z-index:100000;font-weight:600;text-decoration:none;transition:top 0.3s;" onfocus="this.style.top='1rem'" onblur="this.style.top='-100%'">דלג לתוכן הראשי</a>
+
     <div class="packages-page">
         <header id="site-header"></header>
 
@@ -55,9 +57,9 @@
         </main>
     </div>
 
-    <footer id="site-footer">
+    <footer id="site-footer" role="contentinfo">
         <div style="padding: 1rem; background: rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
-            <p style="font-size: 0.85rem; color: var(--muted); opacity: 0.7; margin: 0;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500;">sand</a></p>
+            <p style="font-size: 0.85rem; color: var(--muted); opacity: 0.7; margin: 0;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500;" aria-label="sand (נפתח בחלון חדש)">sand</a></p>
         </div>
     </footer>
 

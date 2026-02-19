@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
@@ -138,9 +138,18 @@
 </head>
 
 <body>
-    <div class="maintenance-container">
-        <div class="maintenance-content">
-            <div class="maintenance-icon">🚧</div>
+    <a href="#main" class="skip-to-content" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--primary,#ff6b00);color:#fff;padding:0.75rem 1.5rem;border-radius:8px;z-index:100000;font-weight:600;text-decoration:none;transition:top 0.3s;" onfocus="this.style.top='1rem'" onblur="this.style.top='-100%'">דלג לתוכן הראשי</a>
+
+    <header role="banner">
+        <div style="text-align: center; padding: 1rem;">
+            <a href="/" style="color: var(--primary); font-size: 1.5rem; font-weight: 700; text-decoration: none;">SmashLabs</a>
+        </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+        <div class="maintenance-container">
+            <div class="maintenance-content">
+                <div class="maintenance-icon" aria-hidden="true">🚧</div>
             
             <h1 class="maintenance-title graffiti-text">
                 מצטערים על אי הנוחות הזמנית
@@ -158,21 +167,23 @@
                class="whatsapp-button" 
                target="_blank" 
                rel="noopener noreferrer"
-               aria-label="צור קשר בוואטסאפ">
-                <svg class="whatsapp-icon" viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+               aria-label="צור קשר בוואטסאפ (נפתח בחלון חדש)">
+                <svg class="whatsapp-icon" viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                     <path d="M16 0C7.163 0 0 7.163 0 16c0 2.825.738 5.485 2.031 7.794L.05 31.95l8.312-2.131C10.625 31.188 13.238 32 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.25c-2.488 0-4.844-.694-6.844-1.9l-.494-.3-5.106 1.306 1.35-4.95-.325-.512C2.756 21.012 2 18.563 2 16c0-7.731 6.269-14 14-14s14 6.269 14 14-6.269 14-14 14zm7.688-10.456c-.425-.212-2.506-1.238-2.894-1.375-.387-.138-.669-.212-.95.212-.281.425-1.088 1.375-1.331 1.65-.244.281-.494.319-.919.106-.425-.212-1.794-.662-3.419-2.113-1.263-1.125-2.113-2.519-2.356-2.944-.244-.425-.025-.656.188-.869.188-.188.425-.494.637-.744.213-.244.281-.419.419-.7.138-.281.069-.525-.031-.738-.106-.212-.95-2.287-1.3-3.137-.344-.825-.694-.713-.95-.725-.244-.012-.525-.012-.806-.012s-.744.106-1.131.525c-.387.425-1.481 1.45-1.481 3.531s1.519 4.1 1.725 4.381c.213.281 2.988 4.556 7.238 6.387 1.013.438 1.8.7 2.419.894.1.031 1.919.631 3.669.375.563-.081 1.731-.706 1.975-1.387.244-.681.244-1.269.169-1.387-.075-.119-.35-.194-.775-.406z"/>
                 </svg>
                 פתח וואטסאפ
             </a>
 
-            <div class="contact-info">
-                📱 050-442-9195
+                <div class="contact-info">
+                    📱 050-442-9195
+                </div>
             </div>
         </div>
-    </div>
-    <div style="position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem; background: rgba(0,0,0,0.8); border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
-        <p style="font-size: 0.85rem; color: var(--muted); opacity: 0.7; margin: 0;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500;">sand</a></p>
-    </div>
+    </main>
+
+    <footer role="contentinfo" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem; background: rgba(0,0,0,0.8); border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+        <p style="font-size: 0.85rem; color: var(--muted); opacity: 0.7; margin: 0;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500;" aria-label="sand (נפתח בחלון חדש)">sand</a></p>
+    </footer>
 </body>
 
 </html>

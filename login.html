@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 
 <head>
@@ -291,6 +291,8 @@
 </head>
 
 <body>
+    <a href="#main" class="skip-to-content" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--primary,#ff6b00);color:#fff;padding:0.75rem 1.5rem;border-radius:8px;z-index:100000;font-weight:600;text-decoration:none;transition:top 0.3s;" onfocus="this.style.top='1rem'" onblur="this.style.top='-100%'">דלג לתוכן הראשי</a>
+
     <div id="site-header"></div>
 
     <!-- Main Content -->
@@ -469,7 +471,7 @@
     </main>
 
     <!-- Footer -->
-    <footer>
+    <footer role="contentinfo">
         <div class="footer-inner">
             <div class="footer-content">
                 <div class="footer-section">
@@ -500,15 +502,15 @@
                 </p>
             </div>
             <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
-                <p style="font-size: 0.85rem; color: var(--muted); opacity: 0.7;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500;">sand</a></p>
+                <p style="font-size: 0.85rem; color: var(--muted); opacity: 0.7;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 500;" aria-label="sand (נפתח בחלון חדש)">sand</a></p>
             </div>
         </div>
     </footer>
 
     <!-- WhatsApp Widget -->
     <div class="whatsapp-widget" role="region" aria-label="WhatsApp">
-        <a href="https://wa.me/972501234567" target="_blank" rel="noopener noreferrer" class="whatsapp-button" aria-label="צור קשר בוואטסאפ">
-            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <a href="https://wa.me/972501234567" target="_blank" rel="noopener noreferrer" class="whatsapp-button" aria-label="צור קשר בוואטסאפ (נפתח בחלון חדש)">
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                 <path d="M16 0c-8.837 0-16 7.163-16 16 0 2.825 0.737 5.607 2.137 8.048l-2.137 7.952 7.933-2.127c2.42 1.37 5.173 2.127 8.067 2.127 8.837 0 16-7.163 16-16s-7.163-16-16-16zM16 29.467c-2.482 0-4.908-0.646-7.07-1.87l-0.507-0.292-5.155 1.382 1.389-5.165-0.316-0.522c-1.372-2.271-2.008-4.78-2.008-7.467 0-7.513 6.12-13.633 13.633-13.633s13.633 6.12 13.633 13.633-6.087 13.633-13.6 13.633zM21.2 18.267c-0.302-0.151-1.789-0.883-2.065-0.984-0.277-0.101-0.479-0.151-0.681 0.151s-0.783 0.984-0.96 1.186c-0.177 0.202-0.353 0.227-0.655 0.076s-1.279-0.472-2.435-1.502c-0.899-0.803-1.506-1.795-1.683-2.097s-0.019-0.464 0.133-0.614c0.137-0.137 0.302-0.353 0.454-0.531s0.202-0.303 0.303-0.505c0.101-0.202 0.050-0.378-0.025-0.531s-0.681-1.641-0.934-2.245c-0.247-0.589-0.497-0.509-0.681-0.518-0.176-0.008-0.378-0.010-0.58-0.010s-0.531 0.076-0.808 0.378c-0.277 0.303-1.058 1.034-1.058 2.522s1.083 2.925 1.234 3.127c0.151 0.202 2.13 3.253 5.16 4.562 0.721 0.311 1.284 0.497 1.723 0.636 0.724 0.230 1.383 0.197 1.904 0.12 0.581-0.087 1.789-0.731 2.042-1.437s0.253-1.312 0.177-1.437c-0.076-0.126-0.278-0.202-0.58-0.353z" fill="currentColor"/>
             </svg>
         </a>
