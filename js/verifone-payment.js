@@ -9,7 +9,7 @@
     // Verifone configuration
     const VERIFONE_CONFIG = {
         entityId: '48a6cbc3-31f0-45f6-a5fd-5df65d848e51',
-        apiHost: 'https://cst.test-gsc.vfims.com',
+        apiHost: 'https://cst2.test-gsc.vfims.com',
         publicKeyAlias: 'K1571'
     };
 

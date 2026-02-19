@@ -41,10 +41,13 @@ async function createCheckout(orderData) {
         interaction_type: 'IFRAME', // or 'HPP' for hosted page, 'IFRAME' for embedded
         configurations: {
             card: {
-                capture_now: true,
-                dynamic_descriptor: 'SmashLabs',
+                mode: '3DS_PAYMENT',
                 payment_contract_id: process.env.VERIFONE_PAYMENT_CONTRACT_ID,
-                credit_term: 'STANDARD' // STANDARD = regular payment, INSTALMENT_STANDARD = installments
+                threed_secure: {
+                    enabled: true,
+                    threeds_contract_id: process.env.VERIFONE_3DS_CONTRACT_ID
+                },
+                credit_term: 'STANDARD'
             }
         },
         customer_details: {
@@ -53,7 +56,10 @@ async function createCheckout(orderData) {
             phone_number: customerPhone,
             billing: {
                 first_name: customerName?.split(' ')[0] || 'Customer',
-                last_name: customerName?.split(' ').slice(1).join(' ') || 'Name'
+                last_name: customerName?.split(' ').slice(1).join(' ') || 'Name',
+                address_1: 'Israel',
+                city: 'Israel',
+                country_code: 'IL'
             }
         },
         sales_description: description || 'SmashLabs Booking'
