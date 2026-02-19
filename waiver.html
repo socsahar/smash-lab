@@ -960,9 +960,23 @@
         }
         
         // Scroll detection for waiver
-        // These must be at script-level so processWaiver() can access them
+        // These must be at script-level so processWaiver() and sendWaiverEmail() can access them
         var isMinor = false;
         var guardianIsMinor = false;
+        
+        function calculateAge(birthDateStr) {
+            const today = new Date();
+            const parts = birthDateStr.split('-');
+            const birthYear = parseInt(parts[0], 10);
+            const birthMonth = parseInt(parts[1], 10) - 1;
+            const birthDay = parseInt(parts[2], 10);
+            let age = today.getFullYear() - birthYear;
+            const monthDiff = today.getMonth() - birthMonth;
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDay)) {
+                age--;
+            }
+            return age;
+        }
         
         document.addEventListener('DOMContentLoaded', async function() {
             // Load address data
@@ -1174,23 +1188,7 @@
             dobInput.setAttribute('max', todayStr);
             guardianDobInput.setAttribute('max', todayStr);
             
-            function calculateAge(birthDateStr) {
-                const today = new Date();
-                // Parse date string manually to avoid UTC timezone issues
-                const parts = birthDateStr.split('-');
-                const birthYear = parseInt(parts[0], 10);
-                const birthMonth = parseInt(parts[1], 10) - 1; // 0-indexed
-                const birthDay = parseInt(parts[2], 10);
-                
-                let age = today.getFullYear() - birthYear;
-                const monthDiff = today.getMonth() - birthMonth;
-                // If birthday hasn't occurred yet this year, subtract 1
-                // If today IS the birthday, age stays (person is considered that age on their birthday)
-                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDay)) {
-                    age--;
-                }
-                return age;
-            }
+            // calculateAge is now defined at script-level scope above
             
             dobInput.addEventListener('change', function() {
                 const dob = this.value;
@@ -1543,6 +1541,7 @@
                 full_name: waiverData.fullName + (isMinor ? ' (קטין)' : ''),
                 id_number: waiverData.idNumber,
                 date_of_birth: waiverData.dateOfBirth || '',
+                age: waiverData.dateOfBirth ? calculateAge(waiverData.dateOfBirth) : '',
                 city: waiverData.city || '',
                 street: waiverData.street || '',
                 phone: waiverData.phone,

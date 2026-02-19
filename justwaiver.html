@@ -1225,6 +1225,7 @@
                     full_name: waiverData.fullName + (isMinor ? ' (\u05e7\u05d8\u05d9\u05df)' : ''),
                     id_number: waiverData.idNumber,
                     date_of_birth: waiverData.dateOfBirth,
+                    age: waiverData.dateOfBirth ? calculateAge(waiverData.dateOfBirth) : '',
                     city: waiverData.city,
                     street: waiverData.street,
                     phone: waiverData.phone,
