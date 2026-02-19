@@ -350,64 +350,7 @@
                             <div class="form-group">
                                 <label for="time">שעה מועדפת *</label>
                                 <select id="time" name="time" required>
-                                    <option value="">בחר שעה</option>
-                                    <option value="08:00">08:00</option>
-                                    <option value="08:15">08:15</option>
-                                    <option value="08:30">08:30</option>
-                                    <option value="08:45">08:45</option>
-                                    <option value="09:00">09:00</option>
-                                    <option value="09:15">09:15</option>
-                                    <option value="09:30">09:30</option>
-                                    <option value="09:45">09:45</option>
-                                    <option value="10:00">10:00</option>
-                                    <option value="10:15">10:15</option>
-                                    <option value="10:30">10:30</option>
-                                    <option value="10:45">10:45</option>
-                                    <option value="11:00">11:00</option>
-                                    <option value="11:15">11:15</option>
-                                    <option value="11:30">11:30</option>
-                                    <option value="11:45">11:45</option>
-                                    <option value="12:00">12:00</option>
-                                    <option value="12:15">12:15</option>
-                                    <option value="12:30">12:30</option>
-                                    <option value="12:45">12:45</option>
-                                    <option value="13:00">13:00</option>
-                                    <option value="13:15">13:15</option>
-                                    <option value="13:30">13:30</option>
-                                    <option value="13:45">13:45</option>
-                                    <option value="14:00">14:00</option>
-                                    <option value="14:15">14:15</option>
-                                    <option value="14:30">14:30</option>
-                                    <option value="14:45">14:45</option>
-                                    <option value="15:00">15:00</option>
-                                    <option value="15:15">15:15</option>
-                                    <option value="15:30">15:30</option>
-                                    <option value="15:45">15:45</option>
-                                    <option value="16:00">16:00</option>
-                                    <option value="16:15">16:15</option>
-                                    <option value="16:30">16:30</option>
-                                    <option value="16:45">16:45</option>
-                                    <option value="17:00">17:00</option>
-                                    <option value="17:15">17:15</option>
-                                    <option value="17:30">17:30</option>
-                                    <option value="17:45">17:45</option>
-                                    <option value="18:00">18:00</option>
-                                    <option value="18:15">18:15</option>
-                                    <option value="18:30">18:30</option>
-                                    <option value="18:45">18:45</option>
-                                    <option value="19:00">19:00</option>
-                                    <option value="19:15">19:15</option>
-                                    <option value="19:30">19:30</option>
-                                    <option value="19:45">19:45</option>
-                                    <option value="20:00">20:00</option>
-                                    <option value="20:15">20:15</option>
-                                    <option value="20:30">20:30</option>
-                                    <option value="20:45">20:45</option>
-                                    <option value="21:00">21:00</option>
-                                    <option value="21:15">21:15</option>
-                                    <option value="21:30">21:30</option>
-                                    <option value="21:45">21:45</option>
-                                    <option value="22:00">22:00</option>
+                                    <option value="">בחר תאריך תחילה</option>
                                 </select>
                             </div>
                         </div>
@@ -548,52 +491,101 @@
                 });
             }
             
+            // ── Working hours per day of week ──
+            // getDay(): 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+            const workingHours = {
+                0: { open: '11:00', close: '21:00' }, // Sunday
+                1: { open: '11:00', close: '21:00' }, // Monday
+                2: { open: '11:00', close: '21:00' }, // Tuesday
+                3: { open: '11:00', close: '21:00' }, // Wednesday
+                4: { open: '11:00', close: '21:00' }, // Thursday
+                5: { open: '11:00', close: '16:00' }, // Friday
+                6: { open: '11:00', close: '16:00' }  // Saturday
+            };
+
+            // Package duration in minutes (default 30 if unknown)
+            let packageDuration = 30;
+            (async function loadPackageDuration() {
+                try {
+                    const res = await fetch('/data/packages.json');
+                    if (res.ok) {
+                        const packages = await res.json();
+                        const pkg = packages.find(p => p.id === currentPackageId);
+                        if (pkg && pkg.duration) {
+                            packageDuration = pkg.duration;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not load package duration, using default:', packageDuration);
+                }
+            })();
+
+            /**
+             * Build time slots for the selected date based on working hours,
+             * package duration, and occupied bookings.
+             */
             function updateTimeSlots() {
-                // Get all time options
-                const allTimes = [
-                    '08:00', '08:15', '08:30', '08:45', '09:00', '09:15', '09:30', '09:45',
-                    '10:00', '10:15', '10:30', '10:45', '11:00', '11:15', '11:30', '11:45',
-                    '12:00', '12:15', '12:30', '12:45', '13:00', '13:15', '13:30', '13:45',
-                    '14:00', '14:15', '14:30', '14:45', '15:00', '15:15', '15:30', '15:45',
-                    '16:00', '16:15', '16:30', '16:45', '17:00', '17:15', '17:30', '17:45',
-                    '18:00', '18:15', '18:30', '18:45', '19:00', '19:15', '19:30', '19:45',
-                    '20:00', '20:15', '20:30', '20:45', '21:00', '21:15', '21:30', '21:45', '22:00'
-                ];
-                
-                // Build time slots HTML - only show available times
+                const selectedDate = dateInput.value;
+                if (!selectedDate) return;
+
+                // Determine day of week from the selected date
+                const dateObj = new Date(selectedDate + 'T00:00:00');
+                const dayOfWeek = dateObj.getDay(); // 0-6
+                const hours = workingHours[dayOfWeek];
+
+                if (!hours) {
+                    timeSelect.innerHTML = '<option value="" disabled>סגור ביום זה</option>';
+                    return;
+                }
+
+                // Parse open / close into minutes since midnight
+                const [openH, openM] = hours.open.split(':').map(Number);
+                const [closeH, closeM] = hours.close.split(':').map(Number);
+                const openMin  = openH * 60 + openM;
+                const closeMin = closeH * 60 + closeM;
+
+                // Generate slots at package-duration intervals
+                // Last slot must still allow the full session before closing
+                const allTimes = [];
+                for (let m = openMin; m + packageDuration <= closeMin; m += packageDuration) {
+                    const hh = String(Math.floor(m / 60)).padStart(2, '0');
+                    const mm = String(m % 60).padStart(2, '0');
+                    allTimes.push(`${hh}:${mm}`);
+                }
+
+                // Build dropdown – skip occupied times
                 let html = '<option value="">בחר שעה</option>';
                 let availableCount = 0;
-                
+
                 allTimes.forEach(time => {
-                    const isOccupied = isTimeOccupied(time);
-                    // Only add available times to dropdown (hide occupied times completely)
-                    if (!isOccupied) {
+                    if (!isTimeOccupied(time)) {
                         html += `<option value="${time}">${time}</option>`;
                         availableCount++;
                     }
                 });
-                
-                // If no times available, show message
+
                 if (availableCount === 0) {
                     html += '<option value="" disabled>אין שעות פנויות בתאריך זה</option>';
                 }
-                
+
                 timeSelect.innerHTML = html;
             }
-            
+
+            /**
+             * Check if a given time slot overlaps with any occupied booking.
+             */
             function isTimeOccupied(time) {
                 const selectedDate = dateInput.value;
                 if (!selectedDate) return false;
-                
-                const checkTime = new Date(`${selectedDate}T${time}:00+02:00`);
-                
-                // Check if this time overlaps with any booked slot
+
+                const slotStartMs = new Date(`${selectedDate}T${time}:00`).getTime();
+                const slotEndMs   = slotStartMs + packageDuration * 60 * 1000;
+
                 return occupiedSlots.some(slot => {
-                    const slotStart = new Date(slot.startTime);
-                    const slotEnd = new Date(slot.endTime);
-                    
-                    // Check if checkTime falls within or overlaps the booked slot
-                    return checkTime >= slotStart && checkTime < slotEnd;
+                    const bookedStart = new Date(slot.startTime).getTime();
+                    const bookedEnd   = new Date(slot.endTime).getTime();
+                    // Two ranges overlap when one starts before the other ends
+                    return slotStartMs < bookedEnd && slotEndMs > bookedStart;
                 });
             }
             
