@@ -330,29 +330,19 @@
 
                     <!-- Payment Form -->
                     <form id="payment-form">
-                        <h3 style="color: #ff6b00; margin-bottom: 1rem;">פרטי תשלום</h3>
+                        <h3 style="color: #ff6b00; margin-bottom: 1rem;">תשלום מאובטח</h3>
                         
-                        <div class="form-group">
-                            <label for="payment-method">אמצעי תשלום</label>
-                            <select id="payment-method" name="payment-method" required>
-                                <option value="">בחר אמצעי תשלום</option>
-                                <option value="credit-card">כרטיס אשראי</option>
-                                <option value="paypal">PayPal</option>
-                                <option value="bit">Bit</option>
-                                <option value="bank-transfer">העברה בנקאית</option>
-                            </select>
+                        <div style="background: rgba(31, 182, 194, 0.1); border: 1px solid rgba(31, 182, 194, 0.3); padding: 1rem; border-radius: 8px; text-align: center; margin-bottom: 1.5rem;">
+                            <p style="font-size: 1rem; color: #1fb6c2; margin: 0 0 0.5rem 0;">🔒 תשלום מאובטח באמצעות כרטיס אשראי</p>
+                            <p style="font-size: 0.85rem; color: #aaa; margin: 0;">פרטי הכרטיס מעובדים באופן מאובטח ע"י Verifone</p>
                         </div>
 
-                        <div id="credit-card-fields" style="display: none;">
-                            <div style="background: rgba(31, 182, 194, 0.1); border: 1px solid rgba(31, 182, 194, 0.3); padding: 1rem; border-radius: 8px; text-align: center;">
-                                <p style="font-size: 1rem; color: #1fb6c2; margin: 0 0 0.5rem 0;">🔒 תשלום מאובטח באמצעות Verifone</p>
-                                <p style="font-size: 0.85rem; color: #aaa; margin: 0;">לחיצה על "המשך לתשלום" תפתח טופס תשלום מאובטח</p>
-                            </div>
-                        </div>
+                        <!-- Inline Verifone checkout - renders directly on the page -->
+                        <div id="verifone-inline-checkout" style="display: none; min-height: 480px; background: #fff; border-radius: 10px; overflow: hidden; margin-bottom: 1.5rem;"></div>
 
-                        <div style="text-align: center; margin-top: 2rem;">
+                        <div id="payment-buttons" style="text-align: center; margin-top: 2rem;">
                             <button type="button" class="btn btn-secondary" onclick="goBack()">חזור להזמנה</button>
-                            <button type="submit" class="btn">המשך לתשלום</button>
+                            <button type="submit" class="btn" id="pay-button">המשך לתשלום</button>
                         </div>
                     </form>
                 </div>
@@ -415,22 +405,10 @@
             
             displayOrderSummary(order);
             
-            // Handle payment method selection
-            const paymentMethod = document.getElementById('payment-method');
-            const creditCardFields = document.getElementById('credit-card-fields');
-            
-            paymentMethod.addEventListener('change', function() {
-                if (this.value === 'credit-card') {
-                    creditCardFields.style.display = 'block';
-                } else {
-                    creditCardFields.style.display = 'none';
-                }
-            });
-            
-            // Handle payment form submission
+            // Handle payment form submission - credit card only
             document.getElementById('payment-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
-                await processPayment(order);
+                await processCreditCardPayment(order);
             });
         });
         
@@ -663,9 +641,9 @@
             }
         }
         
-        // Process credit card payment with Verifone Hosted Checkout
+        // Process credit card payment with Verifone inline checkout
         async function processCreditCardPayment(order) {
-            const button = document.querySelector('#payment-form button[type="submit"]');
+            const button = document.getElementById('pay-button');
             const originalText = button.textContent;
             button.textContent = 'מאתחל תשלום... ⏳';
             button.disabled = true;
@@ -718,14 +696,20 @@
                     } : null
                 }));
                 
-                // Create checkout session and open Verifone widget
-                // No card data needed - Verifone handles it in the hosted checkout
-                const result = await window.verifonePayment.processPayment(null, orderData);
+                // Get the inline container on the page
+                const inlineContainer = document.getElementById('verifone-inline-checkout');
+                
+                // Create checkout session and render inline
+                const result = await window.verifonePayment.processPayment(null, orderData, inlineContainer);
                 
                 if (result.success && result.loading) {
-                    console.log('✅ Verifone checkout widget opened');
-                    // The Verifone widget is now displayed
-                    // Payment completion is handled via postMessage events in verifone-payment.js
+                    console.log('✅ Verifone checkout loaded inline');
+                    // Show the inline container
+                    inlineContainer.style.display = 'block';
+                    // Hide the pay button (checkout form is now visible)
+                    button.style.display = 'none';
+                    // Scroll to the checkout form
+                    inlineContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
                 
             } catch (error) {
@@ -742,110 +726,6 @@
                     alert('שגיאה בפתיחת טופס התשלום. אנא נסה שוב.');
                 }
             }
-        }
-        
-        async function processPayment(order) {
-            const paymentMethod = document.getElementById('payment-method').value;
-            
-            if (!paymentMethod) {
-                if (window.customModal) {
-                    window.customModal.warning('אנא בחר אמצעי תשלום', 'חסר אמצעי תשלום');
-                } else {
-                    alert('אנא בחר אמצעי תשלום');
-                }
-                return;
-            }
-            
-            // Handle credit card payment with Verifone hosted checkout
-            if (paymentMethod === 'credit-card') {
-                await processCreditCardPayment(order);
-                return;
-            }
-            
-            // Simulate payment processing
-            const processingMessage = 'מעבד תשלום...';
-            const button = document.querySelector('#payment-form button[type="submit"]');
-            const originalText = button.textContent;
-            button.textContent = processingMessage;
-            button.disabled = true;
-            
-            setTimeout(async () => {
-                // Track coupon usage if applied
-                if (appliedCoupon) {
-                    const client = initSupabase();
-                    if (client) {
-                        try {
-                            // Insert usage record into coupon_usage table
-                            await client
-                                .from('coupon_usage')
-                                .insert([{
-                                    coupon_id: appliedCoupon.id,
-                                    customer_email: order.email,
-                                    order_amount: order.price * (order.quantity || order.participants || 1),
-                                    discount_amount: appliedCoupon.discount,
-                                    order_id: order.orderId
-                                }]);
-                            
-                            // Note: used_count is auto-incremented by database trigger
-                        } catch (err) {
-                            console.error('Error tracking coupon usage:', err);
-                        }
-                    }
-                }
-                
-                // Calculate final price with discount
-                const servicePrices = {
-                    'paint-room': 120,
-                    'rage-room': 150,
-                    'throwing-axes': 100,
-                    'graffiti-center': 200,
-                    'birthday': 300,
-                    'rent-lab': 500,
-                    'combo': 200
-                };
-                const serviceKey = order.service || order.roomType || 'not-selected';
-                const basePrice = order.price || servicePrices[serviceKey] || 100;
-                const subtotal = basePrice * parseInt(order.quantity || order.participants || 1);
-                const finalPrice = appliedCoupon ? Math.max(0, subtotal - appliedCoupon.discount) : subtotal;
-                
-                // Simulate successful payment
-                localStorage.setItem('completedOrder', JSON.stringify({
-                    ...order,
-                    paymentMethod: paymentMethod,
-                    paymentDate: new Date().toISOString(),
-                    status: 'paid',
-                    coupon: appliedCoupon ? {
-                        code: appliedCoupon.code,
-                        discount: appliedCoupon.discount,
-                        type: appliedCoupon.type,
-                        value: appliedCoupon.value
-                    } : null,
-                    originalPrice: subtotal,
-                    finalPrice: finalPrice
-                }));
-                
-                if (window.customModal) {
-                    // Show modal without close button
-                    window.customModal.show({
-                        title: 'תשלום בוצע! 🎉',
-                        message: 'התשלום בוצע בהצלחה!\n\nמפנה לדף אישור...',
-                        type: 'success',
-                        icon: '✅',
-                        showCloseButton: false,
-                        buttons: []
-                    });
-                    
-                    // Auto-redirect after 5 seconds
-                    setTimeout(() => {
-                        window.location.href = 'order-success.html';
-                    }, 5000);
-                } else {
-                    alert('התשלום בוצע בהצלחה! מפנה לדף אישור...');
-                    setTimeout(() => {
-                        window.location.href = 'order-success.html';
-                    }, 5000);
-                }
-            }, 2000);
         }
         
         function goBack() {

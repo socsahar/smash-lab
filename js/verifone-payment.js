@@ -105,9 +105,12 @@
         }
 
         /**
-         * Process payment with checkout (hosted payment page in iframe)
+         * Process payment with checkout (hosted payment page)
+         * @param {Object} cardData - Not used (Verifone handles card input)
+         * @param {Object} orderData - Order details
+         * @param {HTMLElement} [inlineContainer] - If provided, render inline instead of modal
          */
-        async processPayment(cardData, orderData) {
+        async processPayment(cardData, orderData, inlineContainer) {
             if (this.isProcessing) {
                 throw new Error('Payment already in progress');
             }
@@ -126,9 +129,16 @@
                 console.log('✅ Checkout session created:', checkoutResult.checkoutId);
                 console.log('🔗 Checkout URL:', checkoutResult.checkoutUrl);
 
-                // Step 2: Load the checkout in an iframe
+                // Step 2: Load the checkout
                 const checkoutUrl = checkoutResult.checkoutUrl || checkoutResult.response.url;
-                this.loadCheckoutIframe(checkoutUrl, checkoutResult.checkoutId);
+                
+                if (inlineContainer) {
+                    // Inline mode: render directly into the provided container
+                    this.loadCheckoutInline(checkoutUrl, checkoutResult.checkoutId, inlineContainer);
+                } else {
+                    // Modal mode: open overlay
+                    this.loadCheckoutIframe(checkoutUrl, checkoutResult.checkoutId);
+                }
 
                 return {
                     success: true,
@@ -144,7 +154,157 @@
         }
 
         /**
-         * Load Verifone checkout using the loader.js script
+         * Load Verifone checkout inline (embedded on the page, no modal)
+         */
+        loadCheckoutInline(checkoutUrl, checkoutId, container) {
+            // Clear the container
+            container.innerHTML = '';
+
+            // Add styles for the inline checkout
+            if (!document.getElementById('verifone-inline-styles')) {
+                const style = document.createElement('style');
+                style.id = 'verifone-inline-styles';
+                style.textContent = `
+                    @keyframes vf-spin { to { transform: rotate(360deg); } }
+                    #verifone-inline-checkout iframe {
+                        width: 100% !important;
+                        height: 100% !important;
+                        min-height: 450px;
+                        border: none !important;
+                        display: block;
+                    }
+                    #verifone-inline-checkout > div {
+                        width: 100% !important;
+                        height: 100% !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            // Loading indicator
+            const loading = document.createElement('div');
+            loading.id = 'verifone-inline-loading';
+            loading.style.cssText = 'text-align: center; padding: 3rem 1rem; color: #333;';
+            loading.innerHTML = `
+                <div style="font-size: 2rem; margin-bottom: 1rem;">🔒</div>
+                <p style="font-size: 1.1rem; font-weight: bold; margin-bottom: 0.5rem;">טוען טופס תשלום מאובטח...</p>
+                <p style="font-size: 0.9rem; color: #666;">Powered by Verifone</p>
+                <div style="margin-top: 1rem;">
+                    <div style="width: 40px; height: 40px; border: 3px solid #e0e0e0; border-top-color: #ff6b00; border-radius: 50%; animation: vf-spin 0.8s linear infinite; margin: 0 auto;"></div>
+                </div>
+            `;
+            container.appendChild(loading);
+
+            // Create inner container for Verifone script
+            const checkoutDiv = document.createElement('div');
+            checkoutDiv.id = 'verifone-checkout';
+            checkoutDiv.style.cssText = 'width: 100%; min-height: 450px; position: relative;';
+            container.appendChild(checkoutDiv);
+
+            // Load the Verifone loader.js
+            const script = document.createElement('script');
+            script.src = checkoutUrl;
+            script.async = true;
+
+            script.onload = () => {
+                console.log('✅ Verifone loader.js loaded inline');
+                const loadingEl = document.getElementById('verifone-inline-loading');
+                if (loadingEl) loadingEl.style.display = 'none';
+            };
+
+            script.onerror = () => {
+                console.error('❌ Failed to load Verifone checkout script');
+                const loadingEl = document.getElementById('verifone-inline-loading');
+                if (loadingEl) {
+                    loadingEl.innerHTML = `
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">⚠️</div>
+                        <p style="font-size: 1.1rem; font-weight: bold; color: #d32f2f;">שגיאה בטעינת טופס התשלום</p>
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">אנא נסה שוב מאוחר יותר</p>
+                    `;
+                }
+                this.isProcessing = false;
+                // Re-enable pay button
+                const payBtn = document.getElementById('pay-button');
+                if (payBtn) {
+                    payBtn.textContent = 'המשך לתשלום';
+                    payBtn.disabled = false;
+                    payBtn.style.display = '';
+                }
+            };
+
+            checkoutDiv.appendChild(script);
+
+            // Listen for postMessage events from Verifone
+            this._messageHandler = (event) => {
+                console.log('📨 Received postMessage:', event.data);
+                const data = event.data;
+                if (!data) return;
+
+                const isCompleted = 
+                    (data.event === 'CHECKOUT_COMPLETED') ||
+                    (data.event === 'checkout_completed') ||
+                    (data.type === 'CHECKOUT_COMPLETED') ||
+                    (data.status === 'COMPLETED') ||
+                    (data.event === 'payment_completed') ||
+                    (data.event === 'PAYMENT_SUCCESS') ||
+                    (typeof data === 'string' && data.includes('COMPLETED'));
+
+                const isFailed =
+                    (data.event === 'CHECKOUT_FAILED') ||
+                    (data.event === 'checkout_failed') ||
+                    (data.event === 'PAYMENT_FAILED') ||
+                    (data.status === 'FAILED');
+
+                const isCancelled =
+                    (data.event === 'CHECKOUT_CANCELLED') ||
+                    (data.event === 'checkout_cancelled');
+
+                if (isCompleted) {
+                    console.log('✅ Payment completed via Verifone!');
+                    window.removeEventListener('message', this._messageHandler);
+                    this.isProcessing = false;
+                    window.location.href = '/order-success.html?checkoutId=' + checkoutId;
+                } else if (isFailed) {
+                    console.error('❌ Payment failed:', data);
+                    window.removeEventListener('message', this._messageHandler);
+                    this.isProcessing = false;
+                    container.innerHTML = '';
+                    container.style.display = 'none';
+
+                    if (window.customModal) {
+                        window.customModal.error('התשלום נכשל. אנא נסה שוב.', 'שגיאה בתשלום');
+                    } else {
+                        alert('התשלום נכשל. אנא נסה שוב.');
+                    }
+
+                    const payBtn = document.getElementById('pay-button');
+                    if (payBtn) {
+                        payBtn.textContent = 'המשך לתשלום';
+                        payBtn.disabled = false;
+                        payBtn.style.display = '';
+                    }
+                } else if (isCancelled) {
+                    console.log('⚠️ Payment cancelled by user');
+                    window.removeEventListener('message', this._messageHandler);
+                    this.isProcessing = false;
+                    container.innerHTML = '';
+                    container.style.display = 'none';
+
+                    const payBtn = document.getElementById('pay-button');
+                    if (payBtn) {
+                        payBtn.textContent = 'המשך לתשלום';
+                        payBtn.disabled = false;
+                        payBtn.style.display = '';
+                    }
+                }
+            };
+
+            window.addEventListener('message', this._messageHandler);
+            console.log('📺 Verifone checkout loading inline...');
+        }
+
+        /**
+         * Load Verifone checkout using the loader.js script (modal overlay mode)
          * The URL from Verifone is a JS loader, not an HTML page
          */
         loadCheckoutIframe(checkoutUrl, checkoutId) {
