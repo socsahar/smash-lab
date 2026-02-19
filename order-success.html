@@ -70,7 +70,54 @@
 
     <!-- Main Content -->
     <main id="main" tabindex="-1" role="main" style="padding-top: 120px !important; padding-bottom: 4rem;">
-        <section class="section" id="success" style="padding: 4rem 0;">
+        <!-- Payment Failed Section (hidden by default) -->
+        <section class="section" id="payment-failed" style="padding: 4rem 0; display: none;">
+            <div class="container" style="text-align: center;">
+                <h1 class="section-title graffiti-text static-text" style="color: #f44336;">התשלום נכשל</h1>
+
+                <div class="card" style="max-width: 600px; margin: 0 auto; margin-bottom: 4rem;">
+                    <div style="color: #f44336; margin-bottom: 2rem;">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 1rem;" aria-hidden="true" focusable="false">
+                            <path d="M12 9v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+
+                    <h2 style="margin-bottom: 1rem; color: #f44336;">התשלום לא אושר</h2>
+                    <p id="payment-failed-reason" style="margin-bottom: 1rem; line-height: 1.6; color: #ff9800;">
+                        העסקה נדחתה על ידי חברת האשראי.
+                    </p>
+                    <p style="margin-bottom: 2rem; line-height: 1.6;">
+                        ההזמנה <strong>לא נוצרה</strong>. לא בוצע חיוב בכרטיס שלך. אנא נסה שוב עם כרטיס אשראי אחר או פנה לחברת האשראי שלך.
+                    </p>
+
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="payment.html" class="cta-button" style="background: linear-gradient(45deg, #ff6b00, #1fb6c2);">נסה לשלם שוב</a>
+                        <a href="order.html" class="btn-primary" style="background: transparent; border: 1px solid var(--accent); color: var(--accent);">חזור לדף ההזמנה</a>
+                    </div>
+
+                    <div style="margin-top: 2rem; padding: 1rem; background: rgba(255, 152, 0, 0.1); border: 1px solid rgba(255, 152, 0, 0.3); border-radius: 8px;">
+                        <p style="font-size: 0.9rem; color: #ff9800; margin: 0;">💡 טיפ: ודא שהכרטיס בתוקף, שיש מסגרת אשראי מספקת, ושהפרטים הוזנו נכון.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payment Verifying Section (shown during verification) -->
+        <section class="section" id="payment-verifying" style="padding: 4rem 0; display: none;">
+            <div class="container" style="text-align: center;">
+                <h1 class="section-title graffiti-text static-text">מאמת תשלום...</h1>
+                <div class="card" style="max-width: 600px; margin: 0 auto;">
+                    <div style="margin: 2rem 0;">
+                        <div style="width: 60px; height: 60px; border: 4px solid #333; border-top-color: #ff6b00; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto;"></div>
+                    </div>
+                    <p style="font-size: 1.1rem;">אנא המתן, אנו מאמתים את התשלום שלך...</p>
+                </div>
+            </div>
+        </section>
+        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+        <!-- Success Section (hidden until payment is verified) -->
+        <section class="section" id="success" style="padding: 4rem 0; display: none;">
             <div class="container" style="text-align: center;">
                 <h1 class="section-title graffiti-text static-text">ההזמנה הושלמה בהצלחה!</h1>
 
@@ -173,6 +220,84 @@
             return false;
         }
         
+        // Helper: Show payment failed UI
+        function showPaymentFailed(reason) {
+            document.getElementById('payment-verifying').style.display = 'none';
+            document.getElementById('success').style.display = 'none';
+            document.getElementById('payment-failed').style.display = 'block';
+            if (reason) {
+                document.getElementById('payment-failed-reason').textContent = reason;
+            }
+            // DON'T remove pendingPaymentOrder - user may want to retry
+        }
+
+        // Helper: Show success UI
+        function showSuccess() {
+            document.getElementById('payment-verifying').style.display = 'none';
+            document.getElementById('payment-failed').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+        }
+
+        // Verify payment status with Verifone API
+        async function verifyPaymentStatus(checkoutId) {
+            try {
+                const response = await fetch('/api/verifone-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'status', checkoutId: checkoutId })
+                });
+                const result = await response.json();
+                
+                if (!result.success) {
+                    console.error('❌ Failed to check payment status:', result);
+                    return { approved: false, reason: 'לא ניתן לאמת את סטטוס התשלום' };
+                }
+                
+                const checkout = result.response;
+                console.log('🔍 Verifone checkout status:', checkout.status);
+                console.log('🔍 Verifone events:', checkout.events);
+                
+                // Check events for transaction status
+                if (checkout.events && checkout.events.length > 0) {
+                    const declined = checkout.events.find(e => e.type === 'TRANSACTION_DECLINED');
+                    const approved = checkout.events.find(e => e.type === 'TRANSACTION_APPROVED');
+                    const cancelled = checkout.events.find(e => e.type === 'CHECKOUT_CANCELLED' || e.type === 'CANCELLED');
+                    
+                    if (declined) {
+                        const gatewayMsg = declined.details?.additional_data?.gateway_response_message || '';
+                        const reason = gatewayMsg || 'העסקה נדחתה על ידי חברת האשראי';
+                        console.log('❌ Transaction DECLINED:', reason);
+                        return { approved: false, reason: reason, transactionId: declined.details?.id };
+                    }
+                    
+                    if (cancelled) {
+                        console.log('⚠️ Transaction CANCELLED');
+                        return { approved: false, reason: 'התשלום בוטל' };
+                    }
+                    
+                    if (approved) {
+                        console.log('✅ Transaction APPROVED');
+                        return { 
+                            approved: true, 
+                            transactionId: approved.details?.id || checkout.transaction_id 
+                        };
+                    }
+                }
+                
+                // If no clear event, check overall status
+                if (checkout.status === 'COMPLETED') {
+                    return { approved: true, transactionId: checkout.transaction_id };
+                }
+                
+                // Status is ACTIVE or other - payment not yet completed
+                return { approved: false, reason: 'התשלום לא הושלם' };
+                
+            } catch (error) {
+                console.error('❌ Error verifying payment:', error);
+                return { approved: false, reason: 'שגיאה באימות התשלום. אנא נסה שוב.' };
+            }
+        }
+
         // Create order in database and user account after successful payment
         document.addEventListener('DOMContentLoaded', async function() {
             // Check if this is a Verifone return (redirect after payment)
@@ -183,6 +308,24 @@
             
             if (checkoutId) {
                 console.log('🔄 Verifone return detected, checkoutId:', checkoutId, 'transactionId:', transactionId);
+                
+                // Show verifying spinner
+                document.getElementById('payment-verifying').style.display = 'block';
+                document.getElementById('success').style.display = 'none';
+                
+                // VERIFY PAYMENT STATUS BEFORE DOING ANYTHING
+                const paymentResult = await verifyPaymentStatus(checkoutId);
+                
+                if (!paymentResult.approved) {
+                    // PAYMENT FAILED/DECLINED/CANCELLED - DO NOT CREATE BOOKING
+                    console.log('❌ Payment not approved, NOT creating booking');
+                    showPaymentFailed(paymentResult.reason);
+                    return; // STOP - don't create any booking or order
+                }
+                
+                // PAYMENT APPROVED - proceed with booking
+                console.log('✅ Payment verified as approved, proceeding with booking...');
+                showSuccess();
                 
                 // Retrieve the pending payment order data saved before Verifone redirect
                 const pendingOrderStr = localStorage.getItem('pendingPaymentOrder');
@@ -196,7 +339,7 @@
                             paymentMethod: 'credit-card',
                             paymentDate: new Date().toISOString(),
                             status: 'paid',
-                            transactionId: transactionId || checkoutId,
+                            transactionId: paymentResult.transactionId || transactionId || checkoutId,
                             checkoutId: checkoutId,
                         }));
                         
@@ -234,6 +377,9 @@
                         console.error('❌ Error processing pending payment order:', e);
                     }
                 }
+            } else {
+                // No checkoutId - this is a direct visit or non-Verifone flow, show success
+                document.getElementById('success').style.display = 'block';
             }
             
             // Get order data from localStorage
