@@ -960,6 +960,10 @@
         }
         
         // Scroll detection for waiver
+        // These must be at script-level so processWaiver() can access them
+        var isMinor = false;
+        var guardianIsMinor = false;
+        
         document.addEventListener('DOMContentLoaded', async function() {
             // Load address data
             fetchAddressData();
@@ -1155,8 +1159,7 @@
             document.getElementById('signature-time').value = `${hours}:${minutes}`;
             
             // === Date of Birth & Guardian Logic ===
-            let isMinor = false;
-            let guardianIsMinor = false;
+            // isMinor and guardianIsMinor are declared at script-level scope above
             const dobInput = document.getElementById('date-of-birth');
             const ageDisplay = document.getElementById('age-display');
             const guardianSection = document.getElementById('guardian-section');
