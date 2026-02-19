@@ -538,7 +538,7 @@
                 
                 // Pre-select package if coming from order page with room type
                 if (orderData.roomType) {
-                    filterByRoomType(orderData.roomType);
+                    filterPackages(orderData.roomType);
                 }
             } catch (error) {
                 console.error('Error loading packages:', error);
