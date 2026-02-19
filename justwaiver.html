@@ -973,12 +973,19 @@
             dobInput.setAttribute('max', todayStr);
             guardianDobInput.setAttribute('max', todayStr);
             
-            function calculateAge(birthDate) {
+            function calculateAge(birthDateStr) {
                 const today = new Date();
-                const birth = new Date(birthDate);
-                let age = today.getFullYear() - birth.getFullYear();
-                const monthDiff = today.getMonth() - birth.getMonth();
-                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                // Parse date string manually to avoid UTC timezone issues
+                const parts = birthDateStr.split('-');
+                const birthYear = parseInt(parts[0], 10);
+                const birthMonth = parseInt(parts[1], 10) - 1; // 0-indexed
+                const birthDay = parseInt(parts[2], 10);
+                
+                let age = today.getFullYear() - birthYear;
+                const monthDiff = today.getMonth() - birthMonth;
+                // If birthday hasn't occurred yet this year, subtract 1
+                // If today IS the birthday, age stays (person is considered that age on their birthday)
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDay)) {
                     age--;
                 }
                 return age;
