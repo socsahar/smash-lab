@@ -6,10 +6,10 @@
 (function() {
     'use strict';
 
-    // Verifone configuration
+    // Verifone configuration - PRODUCTION
     const VERIFONE_CONFIG = {
-        entityId: '48a6cbc3-31f0-45f6-a5fd-5df65d848e51',
-        apiHost: 'https://cst2.test-gsc.vfims.com',
+        entityId: '88537de0-ce98-4659-9944-b8ec39e87b34',
+        apiHost: 'https://emea.gsc.verifone.cloud',
         publicKeyAlias: 'K1571'
     };
 

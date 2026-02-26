@@ -1018,7 +1018,8 @@
                         <label style="display: block; color: #ccc; font-size: 0.8rem; margin-bottom: 0.25rem;">שם מלא של ילד/ה *</label>
                         <input type="text" class="child-name" placeholder="שם מלא" required
                             style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #555; background: #333; color: #fff; font-family: inherit; font-size: 0.9rem; box-sizing: border-box;"
-                            oninput="this.value = this.value.replace(/[^a-zA-Z\u05d0-\u05ea\s'\-]/g, ''); checkFormValidity();">
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\u05d0-\u05ea\s'\-]/g, ''); checkFormValidity();"
+                            onkeydown="if(event.key===' '||event.code==='Space') event.stopPropagation();">
                     </div>
                     <div style="flex: 1; min-width: 140px;">
                         <label style="display: block; color: #ccc; font-size: 0.8rem; margin-bottom: 0.25rem;">מספר תעודת זהות *</label>
@@ -1109,6 +1110,12 @@
             guardianNameInput.addEventListener('input', function() {
                 this.value = this.value.replace(/[^a-zA-Z\u05d0-\u05ea\s'\-]/g, '');
             });
+            // Prevent space key from being intercepted by parent/document-level handlers (NagishLi, etc.)
+            guardianNameInput.addEventListener('keydown', function(e) {
+                if (e.key === ' ' || e.code === 'Space') {
+                    e.stopPropagation();
+                }
+            });
             guardianIdInput.addEventListener('input', function() {
                 this.value = this.value.replace(/[^0-9]/g, '');
                 if (this.value.length > 9) this.value = this.value.slice(0, 9);
@@ -1132,6 +1139,10 @@
                     // Remove any characters that aren't letters, spaces, hyphens, or apostrophes
                     this.value = this.value.replace(/[^a-zA-Zא-ת\s'\-]/g, '');
                 });
+                // Prevent space key from being intercepted by parent/document-level handlers
+                fullNameInput.addEventListener('keydown', function(e) {
+                    if (e.key === ' ' || e.code === 'Space') e.stopPropagation();
+                });
             }
             
             // Add real-time validation for phone field
@@ -1153,6 +1164,10 @@
                 emergencyNameInput.addEventListener('input', function(e) {
                     // Remove any characters that aren't letters, spaces, hyphens, or apostrophes
                     this.value = this.value.replace(/[^a-zA-Zא-ת\s'\-]/g, '');
+                });
+                // Prevent space key from being intercepted by parent/document-level handlers
+                emergencyNameInput.addEventListener('keydown', function(e) {
+                    if (e.key === ' ' || e.code === 'Space') e.stopPropagation();
                 });
             }
             
