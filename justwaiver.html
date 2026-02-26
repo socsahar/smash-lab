@@ -502,6 +502,18 @@
                             <span id="guardian-age-display" style="display: none; margin-top: 0.5rem; font-size: 0.9rem;"></span>
                             <span id="guardian-age-error" style="display: none; margin-top: 0.5rem; font-size: 0.9rem; color: #ef4444;">⚠️ האפוטרופוס חייב להיות מעל גיל 18</span>
                         </div>
+                        
+                        <!-- Additional Children Section -->
+                        <div id="additional-children-section" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #444;">
+                            <h4 style="color: #ff6b00; margin-bottom: 0.5rem;">👶 ילדים נוספים המשתתפים בפעילות</h4>
+                            <p style="color: #aaa; font-size: 0.85rem; margin-bottom: 1rem;">אם יש ילדים נוספים תחת אפוטרופסות זו, ניתן להוסיף אותם כאן במקום למלא טופס נפרד לכל ילד.</p>
+                            
+                            <div id="additional-children-list"></div>
+                            
+                            <button type="button" id="add-child-btn" onclick="addChildRow()" style="background: linear-gradient(45deg, #ff6b00, #e55d00); color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-family: inherit; margin-top: 0.5rem; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                                + הוסף ילד/ה נוסף/ת
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -991,6 +1003,39 @@
                 return age;
             }
             
+            // Additional children management
+            var childCounter = 0;
+            window.addChildRow = function() {
+                childCounter++;
+                const list = document.getElementById('additional-children-list');
+                const row = document.createElement('div');
+                row.className = 'additional-child-row';
+                row.id = 'child-row-' + childCounter;
+                row.style.cssText = 'display: flex; gap: 0.5rem; align-items: flex-start; margin-bottom: 0.75rem; flex-wrap: wrap;';
+                row.innerHTML = `
+                    <div style="flex: 1; min-width: 140px;">
+                        <label style="display: block; color: #ccc; font-size: 0.8rem; margin-bottom: 0.25rem;">שם מלא של ילד/ה *</label>
+                        <input type="text" class="child-name" placeholder="שם מלא" required
+                            style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #555; background: #333; color: #fff; font-family: inherit; font-size: 0.9rem; box-sizing: border-box;"
+                            oninput="this.value = this.value.replace(/[^a-zA-Z\u05d0-\u05ea\s'\-]/g, ''); checkFormValidity();">
+                    </div>
+                    <div style="flex: 1; min-width: 140px;">
+                        <label style="display: block; color: #ccc; font-size: 0.8rem; margin-bottom: 0.25rem;">מספר תעודת זהות *</label>
+                        <input type="text" class="child-id" placeholder="9 ספרות" maxlength="9" inputmode="numeric" required
+                            style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #555; background: #333; color: #fff; font-family: inherit; font-size: 0.9rem; box-sizing: border-box;"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length > 9) this.value = this.value.slice(0,9); checkFormValidity();">
+                    </div>
+                    <button type="button" onclick="removeChildRow('child-row-${childCounter}')" style="background: #ef4444; color: #fff; border: none; padding: 0.5rem 0.7rem; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-top: 1.4rem; line-height: 1;" title="הסר">🗑️</button>
+                `;
+                list.appendChild(row);
+                checkFormValidity();
+            };
+            window.removeChildRow = function(rowId) {
+                const row = document.getElementById(rowId);
+                if (row) row.remove();
+                checkFormValidity();
+            };
+            
             dobInput.addEventListener('change', function() {
                 const dob = this.value;
                 if (!dob) {
@@ -1053,6 +1098,9 @@
                     guardianAgeDisplay.style.display = 'none';
                     guardianAgeError.style.display = 'none';
                     guardianIsMinor = false;
+                    // Clear additional children
+                    const childList = document.getElementById('additional-children-list');
+                    if (childList) childList.innerHTML = '';
                 }
             }
             
@@ -1151,6 +1199,15 @@
                     if (!gName || !gId || !gDob || guardianIsMinor) {
                         isValid = false;
                     }
+                    // Validate additional children fields
+                    const childRows = document.querySelectorAll('.additional-child-row');
+                    childRows.forEach(row => {
+                        const name = row.querySelector('.child-name').value.trim();
+                        const id = row.querySelector('.child-id').value.trim();
+                        if (!name || !id || id.length !== 9) {
+                            isValid = false;
+                        }
+                    });
                 }
                 
                 if (isValid) {
@@ -1215,7 +1272,17 @@
                     waiverData.guardianName = formData.get('guardian-name');
                     waiverData.guardianId = formData.get('guardian-id');
                     waiverData.guardianDob = formData.get('guardian-dob');
-                    guardianInfo = `\n--- \u05e4\u05e8\u05d8\u05d9 \u05d0\u05e4\u05d5\u05d8\u05e8\u05d5\u05e4\u05d5\u05e1 ---\n\u05e9\u05dd: ${waiverData.guardianName}\n\u05ea.\u05d6: ${waiverData.guardianId}\n\u05ea\u05d0\u05e8\u05d9\u05da \u05dc\u05d9\u05d3\u05d4: ${waiverData.guardianDob}\n(\u05d4\u05de\u05e9\u05ea\u05ea\u05e3 \u05de\u05ea\u05d7\u05ea \u05d2\u05d9\u05dc 18 - \u05d4\u05d7\u05ea\u05d9\u05de\u05d4 \u05d4\u05d9\u05d0 \u05e9\u05dc \u05d4\u05d0\u05e4\u05d5\u05d8\u05e8\u05d5\u05e4\u05d5\u05e1)`;
+                    // Collect additional children
+                    waiverData.additionalChildren = [];
+                    document.querySelectorAll('.additional-child-row').forEach(row => {
+                        const name = row.querySelector('.child-name').value.trim();
+                        const id = row.querySelector('.child-id').value.trim();
+                        if (name && id) {
+                            waiverData.additionalChildren.push({ name, id });
+                        }
+                    });
+                    const childrenText = waiverData.additionalChildren.length > 0 ? '\n\n--- \u05d9\u05dc\u05d3\u05d9\u05dd \u05e0\u05d5\u05e1\u05e4\u05d9\u05dd ---\n' + waiverData.additionalChildren.map((c, i) => `\u05d9\u05dc\u05d3 ${i + 1}: ${c.name} | \u05ea.\u05d6: ${c.id}`).join('\n') : '';
+                    guardianInfo = `\n--- \u05e4\u05e8\u05d8\u05d9 \u05d0\u05e4\u05d5\u05d8\u05e8\u05d5\u05e4\u05d5\u05e1 ---\n\u05e9\u05dd: ${waiverData.guardianName}\n\u05ea.\u05d6: ${waiverData.guardianId}\n\u05ea\u05d0\u05e8\u05d9\u05da \u05dc\u05d9\u05d3\u05d4: ${waiverData.guardianDob}\n(\u05d4\u05de\u05e9\u05ea\u05ea\u05e3 \u05de\u05ea\u05d7\u05ea \u05d2\u05d9\u05dc 18 - \u05d4\u05d7\u05ea\u05d9\u05de\u05d4 \u05d4\u05d9\u05d0 \u05e9\u05dc \u05d4\u05d0\u05e4\u05d5\u05d8\u05e8\u05d5\u05e4\u05d5\u05e1)${childrenText}`;
                 }
                 
                 // Send email
@@ -1237,6 +1304,8 @@
                     guardian_first_name: isMinor ? (waiverData.guardianName?.split(' ')[0] || '') : '',
                     guardian_last_name: isMinor ? (waiverData.guardianName?.split(' ').slice(1).join(' ') || '') : '',
                     guardian_id: isMinor ? (waiverData.guardianId || '') : '',
+                    additional_children_html: (isMinor && waiverData.additionalChildren && waiverData.additionalChildren.length > 0) ? waiverData.additionalChildren.map((c, i) => `<tr><td style="padding: 10px 12px; font-weight: bold; border-bottom: 1px solid #ffe0b2;${i % 2 === 1 ? ' background-color: #fff8f0;' : ''}">${c.name}</td><td style="padding: 10px 12px; border-bottom: 1px solid #ffe0b2;${i % 2 === 1 ? ' background-color: #fff8f0;' : ''}">${c.id}</td></tr>`).join('') : '',
+                    additional_children_count: (isMinor && waiverData.additionalChildren) ? waiverData.additionalChildren.length : 0,
                     signature: waiverData.signature,
                     signature_date: waiverData.signatureDate,
                     signature_time: waiverData.signatureTime
