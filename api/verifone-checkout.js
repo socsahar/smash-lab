@@ -17,7 +17,8 @@ async function createCheckout(orderData) {
         customerName,
         customerEmail,
         customerPhone,
-        description
+        description,
+        lineItems
     } = orderData;
 
     // Prepare checkout payload according to Verifone Checkout API v2
@@ -62,8 +63,29 @@ async function createCheckout(orderData) {
                 country_code: 'IL'
             }
         },
-        sales_description: description || 'SmashLabs Booking'
+        sales_description: description || 'SmashLabs Booking',
+        // Invoice support - line items and receipt type
+        display_line_items: true,
+        receipt_type: 'INVOICE_RECEIPT'
     };
+
+    // Add line items if provided
+    if (lineItems && Array.isArray(lineItems) && lineItems.length > 0) {
+        payload.line_items = lineItems.map(item => ({
+            name: item.name,
+            quantity: item.quantity || 1,
+            unit_price: Math.round((item.unitPrice || item.unit_price) * 100), // Convert to minor units (agorot)
+            total_amount: Math.round((item.totalAmount || item.total_amount) * 100) // Convert to minor units
+        }));
+    } else {
+        // Fallback: create a single line item from the total amount
+        payload.line_items = [{
+            name: description || 'SmashLabs Booking',
+            quantity: 1,
+            unit_price: Math.round(amount * 100),
+            total_amount: Math.round(amount * 100)
+        }];
+    }
 
     // Use Basic Auth with user-uid:api-key (as per Verifone documentation)
     const authString = `${process.env.VERIFONE_USER_ID}:${process.env.VERIFONE_API_KEY}`;

@@ -85,7 +85,8 @@
                         customerName: orderData.customerName,
                         customerEmail: orderData.customerEmail,
                         customerPhone: orderData.customerPhone,
-                        description: orderData.description
+                        description: orderData.description,
+                        lineItems: orderData.lineItems
                     })
                 });
 

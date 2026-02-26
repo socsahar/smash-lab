@@ -669,6 +669,25 @@
                 const subtotal = basePrice * parseInt(order.quantity || order.participants || 1);
                 const finalPrice = appliedCoupon ? Math.max(0, subtotal - appliedCoupon.discount) : subtotal;
                 
+                // Build line items for Verifone invoice
+                const quantity = parseInt(order.quantity || order.participants || 1);
+                const itemName = order.packageName || order.serviceName || 'SmashLabs Booking';
+                const lineItems = [{
+                    name: itemName,
+                    quantity: quantity,
+                    unitPrice: basePrice,
+                    totalAmount: subtotal
+                }];
+                // If a coupon discount was applied, add it as a negative line item
+                if (appliedCoupon && appliedCoupon.discount > 0) {
+                    lineItems.push({
+                        name: `הנחה - קוד קופון ${appliedCoupon.code}`,
+                        quantity: 1,
+                        unitPrice: -appliedCoupon.discount,
+                        totalAmount: -appliedCoupon.discount
+                    });
+                }
+
                 // Prepare order data for Verifone
                 const orderData = {
                     orderId: order.orderId || `TEMP-${Date.now()}`,
@@ -681,7 +700,8 @@
                     packageName: order.packageName || order.serviceName,
                     date: order.date,
                     time: order.time,
-                    duration: order.duration || 60
+                    duration: order.duration || 60,
+                    lineItems: lineItems
                 };
                 
                 // Save order data for post-payment processing
