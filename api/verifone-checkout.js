@@ -56,8 +56,8 @@ async function createCheckout(orderData) {
             email_address: customerEmail,
             phone_number: customerPhone,
             billing: {
-                first_name: customerName?.split(' ')[0] || 'Customer',
-                last_name: customerName?.split(' ').slice(1).join(' ') || 'Name',
+                first_name: customerName ? .split(' ')[0] || 'Customer',
+                last_name: customerName ? .split(' ').slice(1).join(' ') || 'Name',
                 address_1: 'Israel',
                 city: 'Israel',
                 country_code: 'IL'
@@ -70,35 +70,37 @@ async function createCheckout(orderData) {
     };
 
     // Add line items if provided
-    // Verifone requires unit_price and total_amount >= 0; skip negative discount lines
+    // Verifone requires: unit_price/total_amount >= 0, and sum of total_amounts must equal top-level amount.
+    // When a coupon discount is present (negative item), we collapse to one line item = actual charged amount.
+    const amountInMinorUnits = Math.round(amount * 100);
     if (lineItems && Array.isArray(lineItems) && lineItems.length > 0) {
-        const positiveItems = lineItems.filter(item => {
+        const hasNegativeItem = lineItems.some(item => {
             const price = item.unitPrice ?? item.unit_price ?? 0;
-            return price >= 0;
+            return price < 0;
         });
-        if (positiveItems.length > 0) {
-            payload.line_items = positiveItems.map(item => ({
+        if (hasNegativeItem) {
+            // Collapse to a single line item matching the actual charged amount
+            payload.line_items = [{
+                name: description || 'SmashLabs Booking',
+                quantity: 1,
+                unit_price: amountInMinorUnits,
+                total_amount: amountInMinorUnits
+            }];
+        } else {
+            payload.line_items = lineItems.map(item => ({
                 name: item.name,
                 quantity: item.quantity || 1,
                 unit_price: Math.round((item.unitPrice ?? item.unit_price) * 100),
                 total_amount: Math.round((item.totalAmount ?? item.total_amount) * 100)
             }));
-        } else {
-            // All items were discounts — fall through to fallback below
-            payload.line_items = [{
-                name: description || 'SmashLabs Booking',
-                quantity: 1,
-                unit_price: Math.round(amount * 100),
-                total_amount: Math.round(amount * 100)
-            }];
         }
     } else {
         // Fallback: create a single line item from the total amount
         payload.line_items = [{
             name: description || 'SmashLabs Booking',
             quantity: 1,
-            unit_price: Math.round(amount * 100),
-            total_amount: Math.round(amount * 100)
+            unit_price: amountInMinorUnits,
+            total_amount: amountInMinorUnits
         }];
     }
 
@@ -110,7 +112,7 @@ async function createCheckout(orderData) {
 
     return new Promise((resolve, reject) => {
         const postData = JSON.stringify(payload);
-        
+
         const options = {
             hostname: new URL(process.env.VERIFONE_HOST).hostname,
             port: 443,
@@ -136,10 +138,10 @@ async function createCheckout(orderData) {
             res.on('end', () => {
                 console.log('📥 Verifone Response Status:', res.statusCode);
                 console.log('📥 Verifone Response Body:', data);
-                
+
                 try {
                     const response = JSON.parse(data);
-                    
+
                     if (res.statusCode >= 200 && res.statusCode < 300) {
                         resolve({
                             success: true,
@@ -207,7 +209,7 @@ async function getCheckoutStatus(checkoutId) {
             res.on('end', () => {
                 try {
                     const response = JSON.parse(data);
-                    
+
                     if (res.statusCode >= 200 && res.statusCode < 300) {
                         resolve({
                             success: true,
@@ -246,7 +248,7 @@ async function getCheckoutStatus(checkoutId) {
 /**
  * Netlify/Express handler
  */
-exports.handler = async (event, context) => {
+exports.handler = async(event, context) => {
     // Handle CORS
     if (event.httpMethod === 'OPTIONS') {
         return {
@@ -269,7 +271,7 @@ exports.handler = async (event, context) => {
             console.error('VERIFONE_API_KEY:', process.env.VERIFONE_API_KEY ? 'Set' : 'MISSING');
             console.error('VERIFONE_HOST:', process.env.VERIFONE_HOST || 'MISSING');
             console.error('VERIFONE_PAYMENT_CONTRACT_ID:', process.env.VERIFONE_PAYMENT_CONTRACT_ID ? 'Set' : 'MISSING');
-            
+
             return {
                 statusCode: 500,
                 headers: {
@@ -290,7 +292,7 @@ exports.handler = async (event, context) => {
         if (action === 'create') {
             // Create checkout session
             const result = await createCheckout(body);
-            
+
             return {
                 statusCode: 200,
                 headers: {
@@ -310,15 +312,15 @@ exports.handler = async (event, context) => {
                     'Access-Control-Allow-Origin': '*',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     success: true,
-                    message: 'Payment submitted' 
+                    message: 'Payment submitted'
                 })
             };
         } else if (action === 'status') {
             // Get checkout status
             const result = await getCheckoutStatus(body.checkoutId);
-            
+
             return {
                 statusCode: 200,
                 headers: {
@@ -340,7 +342,7 @@ exports.handler = async (event, context) => {
     } catch (error) {
         console.error('❌ Verifone Checkout Error:', error);
         console.error('Error stack:', error.stack);
-        
+
         return {
             statusCode: 500,
             headers: {
