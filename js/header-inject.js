@@ -1,5 +1,16 @@
 // Inject canonical header markup and set active nav link
 (function(){
+  // Auto-inject navbar.css if not already present
+  if (!document.querySelector('link[href*="navbar.css"]')) {
+    const cssLink = document.createElement('link');
+    cssLink.rel = 'stylesheet';
+    // Detect if we're in a subfolder (e.g. pages/)
+    const depth = location.pathname.split('/').filter(Boolean).length;
+    const isSubfolder = document.querySelector('script[src*="../js/header-inject"]');
+    cssLink.href = isSubfolder ? '../css/navbar.css' : 'css/navbar.css';
+    document.head.appendChild(cssLink);
+  }
+
   const headerHTML = `
     <div class="mobile-overlay"></div>
     <header role="banner">
@@ -73,25 +84,99 @@
     if (!hamburger || !navLinks || !overlay) {
       return;
     }
+
+    let savedScrollY = 0;
+    
+    // iOS-safe body scroll lock
+    function lockBody() {
+      savedScrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = '-' + savedScrollY + 'px';
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function unlockBody() {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, savedScrollY);
+    }
+
+    function openMenu() {
+      navLinks.classList.add('menu-open');
+      overlay.classList.add('show');
+      hamburger.classList.add('active');
+      hamburger.setAttribute('aria-expanded', 'true');
+      navLinks.setAttribute('aria-hidden', 'false');
+      lockBody();
+      trapFocus();
+    }
+
+    function closeMenu() {
+      navLinks.classList.remove('menu-open');
+      overlay.classList.remove('show');
+      hamburger.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', 'false');
+      navLinks.setAttribute('aria-hidden', 'true');
+      unlockBody();
+      hamburger.focus();
+    }
     
     // Toggle menu function
     function toggleMenu() {
       const isOpen = navLinks.classList.contains('menu-open');
-      
       if (isOpen) {
-        // Close menu
-        navLinks.classList.remove('menu-open');
-        overlay.classList.remove('show');
-        hamburger.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
+        closeMenu();
       } else {
-        // Open menu
-        navLinks.classList.add('menu-open');
-        overlay.classList.add('show');
-        hamburger.setAttribute('aria-expanded', 'true');
-        document.body.style.overflow = 'hidden';
+        openMenu();
       }
     }
+
+    // Focus trapping inside open menu
+    function trapFocus() {
+      const focusables = navLinks.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])');
+      if (focusables.length > 0) {
+        focusables[0].focus();
+      }
+      navLinks.addEventListener('keydown', function onTab(e) {
+        if (e.key !== 'Tab') return;
+        if (!navLinks.classList.contains('menu-open')) {
+          navLinks.removeEventListener('keydown', onTab);
+          return;
+        }
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      });
+    }
+
+    // Swipe-to-close gesture
+    let touchStartX = 0;
+    let touchStartY = 0;
+    navLinks.addEventListener('touchstart', function(e) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    navLinks.addEventListener('touchend', function(e) {
+      if (!navLinks.classList.contains('menu-open')) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      // Swipe right (for RTL sites, this closes the menu) — also handle left swipe
+      if (Math.abs(dx) > 80 && Math.abs(dx) > Math.abs(dy)) {
+        closeMenu();
+      }
+    }, { passive: true });
     
     // Hamburger click
     hamburger.addEventListener('click', function(e) {
@@ -101,19 +186,29 @@
     });
     
     // Overlay click - close menu
-    overlay.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', closeMenu);
     
     // Close menu when clicking a link
     navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', toggleMenu);
+      link.addEventListener('click', closeMenu);
     });
     
     // Close menu on escape key
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && navLinks.classList.contains('menu-open')) {
-        toggleMenu();
+        closeMenu();
       }
     });
+
+    // Close menu on resize to desktop width
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768 && navLinks.classList.contains('menu-open')) {
+        closeMenu();
+      }
+    });
+
+    // Set initial aria-hidden
+    navLinks.setAttribute('aria-hidden', 'true');
   }
 
   if (document.readyState === 'loading') {
@@ -121,4 +216,11 @@
   } else {
     inject();
   }
+
+  // Load participant popup script (intercepts select-package links)
+  var ppScript = document.createElement('script');
+  ppScript.src = (document.currentScript && document.currentScript.src)
+    ? document.currentScript.src.replace('header-inject.js', 'participant-popup.js')
+    : 'js/participant-popup.js';
+  document.head.appendChild(ppScript);
 })();

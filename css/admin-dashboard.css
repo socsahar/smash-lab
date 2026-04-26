@@ -495,12 +495,23 @@
         overflow-x: auto;
     }
     
+    .admin-tab {
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+    }
+    
     .stats-grid {
         grid-template-columns: 1fr;
     }
     
     .calendar-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(7, 1fr);
+        font-size: 0.75rem;
+    }
+    
+    .calendar-day {
+        min-height: 60px;
+        padding: 0.25rem;
     }
     
     .bookings-table {
@@ -514,6 +525,23 @@
     
     .search-box {
         flex-direction: column;
+    }
+    
+    .btn-action {
+        padding: 0.5rem 0.75rem;
+        min-height: 44px;
+        min-width: 44px;
+        font-size: 1.2rem;
+    }
+    
+    .action-btn {
+        padding: 0.5rem 1rem;
+        min-height: 44px;
+    }
+    
+    .modal-content {
+        max-width: 100%;
+        margin: 1rem;
     }
 }
 /* Bookings Filters */

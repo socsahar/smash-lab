@@ -156,6 +156,24 @@ function initializeLogin() {
             try {
                 showSuccess('מתחבר...', true);
                 
+                // LOCAL TEST USER BYPASS (remove before production)
+                if ((email === 'dani' || email === 'dani@test.com') && password === 'dani') {
+                    const testUser = {
+                        id: 'test-local-dani',
+                        name: 'Dani (Test)',
+                        email: 'dani@test.com',
+                        is_admin: true,
+                        loginTime: Date.now()
+                    };
+                    sessionStorage.setItem('smashlabs_current_user', JSON.stringify(testUser));
+                    localStorage.setItem('smashlabs_current_user', JSON.stringify(testUser));
+                    sessionStorage.setItem('smashlabs_admin_logged_in', 'true');
+                    localStorage.setItem('smashlabs_admin_logged_in', 'true');
+                    showSuccess('התחברת בהצלחה!', true);
+                    setTimeout(() => { window.location.href = 'index.html'; }, 500);
+                    return;
+                }
+                
                 // Check if bcrypt is loaded
                 if (typeof bcrypt === 'undefined') {
                     showError('טוען מערכת אבטחה, נסה שוב...', true);

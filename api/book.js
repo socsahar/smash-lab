@@ -53,7 +53,7 @@ export default async function handler(req, res) {
                     { method: 'popup', minutes: 30 }, // 30 minutes before
                 ],
             },
-            location: 'SmashLabs, רחוב הגרפיטי 15, תל אביב',
+            location: 'SmashLabs, ולפסון 9, נהריה',
             status: 'confirmed'
         };
 

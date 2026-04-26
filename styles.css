@@ -47,28 +47,7 @@ h6,
 /* Accessibility Widget Styles */
 
 .a11y-trigger {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    z-index: 5000;
-    background: #fff200;
-    color: #111;
-    border: 2px solid #ff6b00;
-    border-radius: 50%;
-    width: 56px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    transition: box-shadow 0.2s;
-}
-
-.a11y-trigger:focus {
-    outline: 3px solid #ff6b00;
-    box-shadow: 0 0 0 4px #fff20099;
+    display: none !important;
 }
 
 .a11y-panel {
@@ -1434,43 +1413,7 @@ body::after {
         padding-right: 1.5rem;
     }
     
-    /* Show hamburger on mobile */
-    .hamburger {
-        display: flex;
-    }
-    
-    /* Mobile navigation menu */
-    .nav-links {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 280px;
-        height: 100vh;
-        background: rgba(11, 11, 11, 0.98);
-        backdrop-filter: blur(20px);
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        padding-top: 80px;
-        gap: 20px;
-        border-left: 1px solid var(--border);
-        z-index: 1000;
-        overflow-y: auto;
-        transition: right 0.3s ease;
-    }
-    
-    .nav-links.menu-open {
-        right: 0;
-    }
-    
-    .mobile-overlay.show {
-        display: block;
-    }
-    
-    .nav-links a {
-        font-size: var(--font-size-xl);
-        padding: var(--spacing-md) var(--spacing-lg);
-    }
+    /* Hamburger & nav handled by navbar.css */
     
     .section {
         padding: var(--spacing-xl) var(--spacing-lg);
@@ -1551,7 +1494,12 @@ body::after {
         max-width: 100vw !important;
         position: relative;
     }
-    * {
+    img,
+    video,
+    iframe,
+    table,
+    .container,
+    .section {
         max-width: 100% !important;
     }
     /* Ensure containers don't exceed viewport */
@@ -1570,57 +1518,7 @@ body::after {
         line-height: 1.5;
     }
     
-    /* Show hamburger on mobile */
-    .hamburger {
-        display: flex;
-    }
-    
-    /* Mobile navigation menu */
-    .nav-links {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 250px;
-        height: 100vh;
-        background: rgba(11, 11, 11, 0.98);
-        backdrop-filter: blur(20px);
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        padding-top: 80px;
-        gap: 15px;
-        z-index: 1000;
-        overflow-y: auto;
-        transition: right 0.3s ease;
-    }
-    
-    .nav-links.menu-open,
-    .nav-links.active {
-        right: 0;
-    }
-    
-    .mobile-overlay.show {
-        display: block;
-    }
-    
-    .nav-links a {
-        font-size: var(--font-size-lg);
-        padding: var(--spacing-md) var(--spacing-lg);
-        width: 100%;
-        text-align: center;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .header-inner {
-        padding: 0 var(--spacing-md);
-        height: var(--header-height);
-    }
-    .logo {
-        font-size: var(--font-size-lg);
-    }
+    /* Hamburger & nav handled by navbar.css */
     .hero {
         min-height: 60vh;
         padding: var(--header-height) var(--spacing-sm) var(--spacing-lg);

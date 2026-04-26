@@ -89,7 +89,8 @@ body {
   }
   
   body .site-nav {
-    display: none !important;
+    position: static !important;
+    display: block !important;
   }
   
   body .nav-links {
@@ -99,7 +100,8 @@ body {
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
-    width: 100vw !important;
+    width: 100% !important;
+    height: 100dvh !important;
     height: 100vh !important;
     background: #222 !important;
     flex-direction: column !important;
@@ -133,25 +135,6 @@ body {
     color: #fff !important;
   }
   
-  body .hamburger { 
-    display: flex !important;
-    flex-direction: column !important;
-    background: transparent !important;
-    border: none !important;
-    cursor: pointer !important;
-    padding: 0.5rem !important;
-    position: relative !important;
-    z-index: 1000000 !important;
-    gap: 5px !important;
-  }
-  
-  body .hamburger span {
-    display: block !important;
-    width: 25px !important;
-    height: 3px !important;
-    background: #fff !important;
-    border-radius: 2px !important;
-  }
 }
 
 .cta-button {
@@ -169,19 +152,22 @@ body {
 
 /* Mobile Overlay */
 .mobile-overlay {
-  display: none;
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
+  height: 100dvh;
   height: 100vh;
   background: rgba(0, 0, 0, 0.7);
   z-index: 999998;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
 }
 
 .mobile-overlay.show {
-  display: block;
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }

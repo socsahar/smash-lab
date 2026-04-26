@@ -426,6 +426,12 @@
             const orderData = JSON.parse(localStorage.getItem('currentOrder') || '{}');
             currentPackageId = orderData.service; // This is actually the package ID
             
+            // Pre-fill quantity from participant popup selection
+            const quantityInput = document.getElementById('quantity');
+            if (quantityInput && orderData.quantity) {
+                quantityInput.value = orderData.quantity;
+            }
+            
             // When date changes, check availability
             if (dateInput && timeSelect && currentPackageId) {
                 dateInput.addEventListener('change', async function() {

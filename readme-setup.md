@@ -175,4 +175,4 @@ MIT License - see LICENSE file for details.
 
 ## Support
 
-For issues or questions, contact: info@smashlabs.co.il
+For issues or questions, contact: Smashlab.nahariya@gmail.com

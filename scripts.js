@@ -1,4 +1,4 @@
-// Main JavaScript for Rage Room Website
+﻿// Main JavaScript for Rage Room Website
 
 // Order Modal Functions
 function openOrderModal() {
@@ -355,7 +355,7 @@ function showBookingError(message = 'אנא בדקו שכל השדות מולא�
             <div style="font-size: 3rem; margin-bottom: 1rem;">❌</div>
             <h3 style="margin-bottom: 1rem;">שגיאה בהזמנה</h3>
             <p style="margin-bottom: 1rem;">${message}</p>
-            <p style="font-size: 0.9rem;">או התקשרו: <strong>052-123-4567</strong></p>
+            <p style="font-size: 0.9rem;">או התקשרו: <strong>050-442-9195</strong></p>
         </div>
     `, 'error');
     

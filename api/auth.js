@@ -465,7 +465,7 @@ async function sendVerificationEmail(email, name, verificationCode) {
     const verificationUrl = `${process.env.SITE_URL || 'http://localhost:8000'}/verify.html?code=${verificationCode}`;
 
     const mailOptions = {
-        from: process.env.EMAIL_FROM || 'noreply@smashlabs.co.il',
+        from: process.env.EMAIL_FROM || 'Smashlab.nahariya@gmail.com',
         to: email,
         subject: 'אימות כתובת מייל - SmashLabs',
         html: `
@@ -516,7 +516,7 @@ async function sendPasswordResetEmail(email, name, resetToken) {
     const resetUrl = `${process.env.SITE_URL || 'http://localhost:8000'}/reset-password.html?token=${resetToken}`;
 
     const mailOptions = {
-        from: process.env.EMAIL_FROM || 'noreply@smashlabs.co.il',
+        from: process.env.EMAIL_FROM || 'Smashlab.nahariya@gmail.com',
         to: email,
         subject: 'איפוס סיסמה - SmashLabs',
         html: `

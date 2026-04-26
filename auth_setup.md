@@ -30,7 +30,7 @@ JWT_SECRET=your_super_secret_key_here_change_this
 SITE_URL=http://localhost:8000
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASSWORD=your-gmail-app-password
-EMAIL_FROM=noreply@smashlabs.co.il
+EMAIL_FROM=Smashlab.nahariya@gmail.com
 ```
 
 **Important:** For Gmail, you need to create an App Password:

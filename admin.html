@@ -1689,6 +1689,79 @@
                 padding: 10px 8px;
             }
         }
+
+        /* Admin mobile header */
+        @media (max-width: 768px) {
+            .admin-header {
+                padding: 0.75rem 1rem;
+                flex-wrap: wrap;
+            }
+            .admin-header .hamburger {
+                display: flex;
+                flex-direction: column;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                padding: 0.5rem;
+                gap: 5px;
+                z-index: 1001;
+                order: -1;
+            }
+            .admin-header .hamburger span {
+                display: block;
+                width: 25px;
+                height: 3px;
+                background: #fff;
+                border-radius: 2px;
+                transition: all 0.3s ease;
+            }
+            .admin-header-right {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem 0;
+                border-top: 1px solid #333;
+                margin-top: 0.75rem;
+            }
+            .admin-header-right.show,
+            .admin-header-right.active {
+                display: flex;
+            }
+            .admin-header .hamburger[aria-expanded="true"] span:nth-child(1) {
+                transform: rotate(45deg) translate(6px, 6px);
+            }
+            .admin-header .hamburger[aria-expanded="true"] span:nth-child(2) {
+                opacity: 0;
+            }
+            .admin-header .hamburger[aria-expanded="true"] span:nth-child(3) {
+                transform: rotate(-45deg) translate(6px, -6px);
+            }
+            .btn-action {
+                padding: 0.5rem 0.75rem;
+                min-height: 44px;
+                min-width: 44px;
+            }
+            .action-btn {
+                padding: 0.5rem 1rem;
+                min-height: 44px;
+            }
+            .admin-tab {
+                padding: 0.75rem 1rem;
+                min-height: 44px;
+            }
+            .modal-content {
+                max-width: 100%;
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .admin-header .hamburger {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
