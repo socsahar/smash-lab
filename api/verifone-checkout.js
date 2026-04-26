@@ -70,13 +70,28 @@ async function createCheckout(orderData) {
     };
 
     // Add line items if provided
+    // Verifone requires unit_price and total_amount >= 0; skip negative discount lines
     if (lineItems && Array.isArray(lineItems) && lineItems.length > 0) {
-        payload.line_items = lineItems.map(item => ({
-            name: item.name,
-            quantity: item.quantity || 1,
-            unit_price: Math.round((item.unitPrice || item.unit_price) * 100), // Convert to minor units (agorot)
-            total_amount: Math.round((item.totalAmount || item.total_amount) * 100) // Convert to minor units
-        }));
+        const positiveItems = lineItems.filter(item => {
+            const price = item.unitPrice ?? item.unit_price ?? 0;
+            return price >= 0;
+        });
+        if (positiveItems.length > 0) {
+            payload.line_items = positiveItems.map(item => ({
+                name: item.name,
+                quantity: item.quantity || 1,
+                unit_price: Math.round((item.unitPrice ?? item.unit_price) * 100),
+                total_amount: Math.round((item.totalAmount ?? item.total_amount) * 100)
+            }));
+        } else {
+            // All items were discounts — fall through to fallback below
+            payload.line_items = [{
+                name: description || 'SmashLabs Booking',
+                quantity: 1,
+                unit_price: Math.round(amount * 100),
+                total_amount: Math.round(amount * 100)
+            }];
+        }
     } else {
         // Fallback: create a single line item from the total amount
         payload.line_items = [{
