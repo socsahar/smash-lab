@@ -56,8 +56,8 @@ async function createCheckout(orderData) {
             email_address: customerEmail,
             phone_number: customerPhone,
             billing: {
-                first_name: customerName ? .split(' ')[0] || 'Customer',
-                last_name: customerName ? .split(' ').slice(1).join(' ') || 'Name',
+                first_name: customerName?.split(' ')[0] || 'Customer',
+                last_name: customerName?.split(' ').slice(1).join(' ') || 'Name',
                 address_1: 'Israel',
                 city: 'Israel',
                 country_code: 'IL'
