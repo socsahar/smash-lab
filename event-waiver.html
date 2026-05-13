@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>כתב ויתור - אירוע קבוצתי | SMASH LAB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Heebo', Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.6;
+            direction: rtl;
+        }
+        
+        .page-header {
+            background: #222;
+            border-bottom: 3px solid #ff6b00;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .page-header .logo {
+            color: #ff6b00;
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 0 1.5rem 4rem;
+        }
+        
+        .event-banner {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid #ff6b00;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .event-banner .label {
+            color: #ff6b00;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        
+        .event-banner .title {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .event-banner .meta {
+            color: #aaa;
+            font-size: 0.82rem;
+            margin-top: 6px;
+        }
+        
+        .waiver-box {
+            background: #222;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #333;
+        }
+        
+        .waiver-box h2 {
+            color: #ff6b00;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #333;
+        }
+        
+        .waiver-text {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 0.88rem;
+            color: #ccc;
+            max-height: 260px;
+            overflow-y: auto;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        
+        .waiver-text p {
+            margin-bottom: 0.75rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #ff6b00;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #444;
+            background: #2a2a2a;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff6b00;
+        }
+        
+        .sig-wrap {
+            margin-bottom: 1.1rem;
+        }
+        
+        .sig-wrap label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #ff6b00;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        #sig-canvas {
+            display: block;
+            width: 100%;
+            height: 160px;
+            background: #fff;
+            border-radius: 8px;
+            border: 2px solid #ff6b00;
+            cursor: crosshair;
+            touch-action: none;
+        }
+        
+        .sig-clear {
+            margin-top: 6px;
+            background: none;
+            border: 1px solid #555;
+            color: #aaa;
+            padding: 4px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .sig-status {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 4px;
+        }
+        
+        .sig-status.signed {
+            color: #22c55e;
+        }
+        
+        .agree-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            background: #2a2a2a;
+            border: 2px solid #ff6b00;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .agree-row input[type="checkbox"] {
+            margin-top: 3px;
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+        
+        .agree-row label {
+            font-size: 0.9rem;
+            color: #ddd;
+            cursor: pointer;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.2s;
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+        
+        .error-box {
+            background: #2a1010;
+            border: 2px solid #e53e3e;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            color: #fc8181;
+        }
+        
+        .success-box {
+            background: #0d2310;
+            border: 2px solid #22c55e;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-box .icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .success-box h2 {
+            color: #22c55e;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .success-box p {
+            color: #ccc;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 0 1rem 3rem;
+            }
+            .page-header {
+                padding: 0.8rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="page-header">
+        <a href="index.html" class="logo">💥 SMASH LAB</a>
+    </header>
+
+    <div class="container" id="main-container">
+        <!-- filled by JS -->
+    </div>
+
+    <script>
+        (function() {
+            const EVENTS_KEY = 'smashlabs_events';
+            const params = new URLSearchParams(window.location.search);
+            const eventId = params.get('event');
+            const eventName = params.get('name') ? decodeURIComponent(params.get('name')) : '';
+            const container = document.getElementById('main-container');
+
+            // ── No event param → error ──────────────────────────────────────────────
+            if (!eventId) {
+                container.innerHTML = `
+            <div class="error-box">
+                <div style="font-size:2rem;margin-bottom:.5rem">⚠️</div>
+                <h2>קישור לא תקין</h2>
+                <p>לא נמצא מזהה אירוע בקישור זה. אנא פנה למארגן האירוע לקבלת הקישור הנכון.</p>
+            </div>`;
+                return;
+            }
+
+            // ── Build page ───────────────────────────────────────────────────────────
+            container.innerHTML = `
+        <div class="event-banner">
+            <div class="label">🎉 כתב ויתור לאירוע קבוצתי</div>
+            <div class="title">${escHtml(eventName || 'אירוע')}</div>
+            <div class="meta">מזהה אירוע: ${escHtml(eventId)}</div>
+        </div>
+
+        <div id="form-wrap">
+            <div class="waiver-box">
+                <h2>📜 תנאי כתב הוויתור</h2>
+                <div class="waiver-text">
+                    <p>אני, החתום/ה מטה, מצהיר/ה כי קראתי את כתב הוויתור זה, הבנתי את תוכנו, ואני חותם/ת עליו מרצוני החופשי.</p>
+                    <p>אני מאשר/ת כי אני כשיר/ה פיזית ובריאותית להשתתף בפעילות. ידוע לי כי הפעילות כרוכה בסיכון גופני.</p>
+                    <p>אני מוותר/ת בזאת על כל תביעה ו/או דרישה ו/או טענה כנגד SMASH LAB ו/או מי מטעמה, בגין כל נזק, גופני או אחר, שייגרם לי עקב השתתפותי בפעילות.</p>
+                    <p>הנני מאשר/ת כי קראתי את כל ההוראות ואת כללי הבטיחות וכי אפעל על פיהם.</p>
+                    <p>Smash Lab לא תישא באחריות לכל נזק שעלול להיגרם כתוצאה מאי עמידה בכללי הבטיחות.</p>
+                </div>
+            </div>
+
+            <div class="waiver-box">
+                <h2>👤 פרטים אישיים</h2>
+                <div class="form-group">
+                    <label for="f-name">שם מלא *</label>
+                    <input type="text" id="f-name" placeholder="ישראל ישראלי" required />
+                </div>
+                <div class="form-group">
+                    <label for="f-id">מספר ת.ז. *</label>
+                    <input type="text" id="f-id" inputmode="numeric" maxlength="9" placeholder="123456789" required />
+                </div>
+                <div class="form-group">
+                    <label for="f-phone">טלפון *</label>
+                    <input type="tel" id="f-phone" inputmode="numeric" placeholder="050-0000000" required />
+                </div>
+                <div class="form-group">
+                    <label for="f-email">אימייל</label>
+                    <input type="email" id="f-email" placeholder="email@example.com" />
+                </div>
+            </div>
+
+            <div class="waiver-box">
+                <h2>✍️ חתימה</h2>
+                <div class="sig-wrap">
+                    <label>חתום/י כאן (בעכבר / אצבע)</label>
+                    <canvas id="sig-canvas"></canvas>
+                    <button type="button" class="sig-clear" onclick="clearSig()">נקה חתימה</button>
+                    <div class="sig-status" id="sig-status">טרם חתמת</div>
+                </div>
+            </div>
+
+            <div class="agree-row">
+                <input type="checkbox" id="f-agree" />
+                <label for="f-agree">קראתי את כתב הוויתור, הבנתי את תוכנו, ואני מסכים/ה לכל תנאיו.</label>
+            </div>
+
+            <button class="submit-btn" id="submit-btn" onclick="submitWaiver()" disabled>חתום על כתב הוויתור</button>
+        </div>
+
+        <div class="success-box" id="success-box">
+            <div class="icon">✅</div>
+            <h2>כתב הוויתור נחתם בהצלחה!</h2>
+            <p id="success-msg"></p>
+            <p style="margin-top:1rem;color:#888;font-size:0.85rem;">ניתן לסגור את הדף.</p>
+        </div>`;
+
+            // ── Signature pad ────────────────────────────────────────────────────────
+            const canvas = document.getElementById('sig-canvas');
+            const ctx = canvas.getContext('2d');
+            let drawing = false;
+            let hasSig = false;
+
+            function resizeCanvas() {
+                const data = canvas.toDataURL();
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                ctx.strokeStyle = '#111';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                if (hasSig) {
+                    const img = new Image();
+                    img.onload = () => ctx.drawImage(img, 0, 0);
+                    img.src = data;
+                }
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            function pos(e) {
+                const r = canvas.getBoundingClientRect();
+                const src = e.touches ? e.touches[0] : e;
+                return {
+                    x: src.clientX - r.left,
+                    y: src.clientY - r.top
+                };
+            }
+            canvas.addEventListener('mousedown', e => {
+                drawing = true;
+                const p = pos(e);
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+            });
+            canvas.addEventListener('mousemove', e => {
+                if (!drawing) return;
+                const p = pos(e);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+                markSigned();
+            });
+            canvas.addEventListener('mouseup', () => {
+                drawing = false;
+            });
+            canvas.addEventListener('mouseleave', () => {
+                drawing = false;
+            });
+            canvas.addEventListener('touchstart', e => {
+                e.preventDefault();
+                drawing = true;
+                const p = pos(e);
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+            }, {
+                passive: false
+            });
+            canvas.addEventListener('touchmove', e => {
+                e.preventDefault();
+                if (!drawing) return;
+                const p = pos(e);
+                ctx.lineTo(p.x, p.y);
+                ctx.stroke();
+                markSigned();
+            }, {
+                passive: false
+            });
+            canvas.addEventListener('touchend', () => {
+                drawing = false;
+            });
+
+            function markSigned() {
+                hasSig = true;
+                const el = document.getElementById('sig-status');
+                el.textContent = '✔ חתמת';
+                el.className = 'sig-status signed';
+                checkReady();
+            }
+
+            window.clearSig = function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                hasSig = false;
+                const el = document.getElementById('sig-status');
+                el.textContent = 'טרם חתמת';
+                el.className = 'sig-status';
+                checkReady();
+            };
+
+            // ── Enable submit ────────────────────────────────────────────────────────
+            document.getElementById('f-name').addEventListener('input', checkReady);
+            document.getElementById('f-id').addEventListener('input', checkReady);
+            document.getElementById('f-phone').addEventListener('input', checkReady);
+            document.getElementById('f-agree').addEventListener('change', checkReady);
+
+            function checkReady() {
+                const ready = document.getElementById('f-name').value.trim() &&
+                    document.getElementById('f-id').value.trim() &&
+                    document.getElementById('f-phone').value.trim() &&
+                    document.getElementById('f-agree').checked &&
+                    hasSig;
+                document.getElementById('submit-btn').disabled = !ready;
+            }
+
+            // ── Submit ───────────────────────────────────────────────────────────────
+            window.submitWaiver = function() {
+                const sig = {
+                    fullName: document.getElementById('f-name').value.trim(),
+                    idNumber: document.getElementById('f-id').value.trim(),
+                    phone: document.getElementById('f-phone').value.trim(),
+                    email: document.getElementById('f-email').value.trim(),
+                    signature: canvas.toDataURL('image/png', 0.7),
+                    signedAt: new Date().toISOString()
+                };
+
+                // Save into the matching event record
+                const events = JSON.parse(localStorage.getItem(EVENTS_KEY) || '[]');
+                const evRecord = events.find(function(e) {
+                    return e.id === eventId;
+                });
+                if (evRecord) {
+                    if (!evRecord.signatures) evRecord.signatures = [];
+                    evRecord.signatures.push(sig);
+                    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+                }
+
+                // Show success
+                document.getElementById('form-wrap').style.display = 'none';
+                const sb = document.getElementById('success-box');
+                sb.style.display = 'block';
+                document.getElementById('success-msg').textContent =
+                    sig.fullName + ', כתב הוויתור עבור האירוע "' + (eventName || eventId) + '" נחתם בהצלחה.';
+            };
+
+            // ── Helpers ──────────────────────────────────────────────────────────────
+            function escHtml(s) {
+                return String(s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+        })();
+    </script>
+
+</body>
+
+</html>
