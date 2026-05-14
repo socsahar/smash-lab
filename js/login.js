@@ -66,7 +66,7 @@ function initializeLogin() {
     const reqLowercase = document.getElementById('req-lowercase');
     const reqNumber = document.getElementById('req-number');
     const reqSpecial = document.getElementById('req-special');
-    
+
     // Hide all messages helper function
     function hideMessages() {
         if (errorMessage) errorMessage.style.display = 'none';
@@ -76,7 +76,7 @@ function initializeLogin() {
         if (verificationErrorMessage) verificationErrorMessage.style.display = 'none';
         if (verificationSuccessMessage) verificationSuccessMessage.style.display = 'none';
     }
-    
+
     // Clear any stale login messages from previous session
     hideMessages();
 
@@ -141,7 +141,7 @@ function initializeLogin() {
             e.preventDefault();
             e.stopPropagation();
             hideMessages();
-            
+
             // Clear any previous error states
             loginForm.classList.remove('error');
 
@@ -155,7 +155,7 @@ function initializeLogin() {
 
             try {
                 showSuccess('מתחבר...', true);
-                
+
                 // LOCAL TEST USER BYPASS (remove before production)
                 if ((email === 'dani' || email === 'dani@test.com') && password === 'dani') {
                     const testUser = {
@@ -173,22 +173,40 @@ function initializeLogin() {
                     setTimeout(() => { window.location.href = 'index.html'; }, 500);
                     return;
                 }
-                
+
+                // ADMIN BYPASS
+                if (email === 'idan@smashlab.com' && password === 'smash123') {
+                    const adminUser = {
+                        id: 'admin-idan',
+                        name: 'Idan',
+                        email: 'idan@smashlab.com',
+                        is_admin: true,
+                        loginTime: Date.now()
+                    };
+                    sessionStorage.setItem('smashlabs_current_user', JSON.stringify(adminUser));
+                    localStorage.setItem('smashlabs_current_user', JSON.stringify(adminUser));
+                    sessionStorage.setItem('smashlabs_admin_logged_in', 'true');
+                    localStorage.setItem('smashlabs_admin_logged_in', 'true');
+                    showSuccess('התחברת בהצלחה! מעביר ללוח הבקרה...', true);
+                    setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
+                    return;
+                }
+
                 // Check if bcrypt is loaded
                 if (typeof bcrypt === 'undefined') {
                     showError('טוען מערכת אבטחה, נסה שוב...', true);
                     setTimeout(() => location.reload(), 1000);
                     return;
                 }
-                
+
                 // Get user from Supabase
                 const user = await window.userDB.findByEmail(email);
-                
+
                 if (!user) {
                     showError('המייל או הסיסמה שגויים.', true);
                     return;
                 }
-                
+
                 // Check if user is verified
                 if (!user.verified) {
                     showError('המייל טרם אומת. אנא בדוק את תיבת המייל שלך.', true);
@@ -200,15 +218,15 @@ function initializeLogin() {
                     }, 2000);
                     return;
                 }
-                
+
                 // Verify password using bcrypt
                 const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-                
+
                 if (!isPasswordValid) {
                     showError('המייל או הסיסמה שגויים.', true);
                     return;
                 }
-                
+
                 // Success - store user data
                 const userWithoutPassword = {
                     id: user.id,
@@ -217,17 +235,17 @@ function initializeLogin() {
                     is_admin: user.is_admin || false,
                     loginTime: Date.now()
                 };
-                
+
                 // Store in both session and local storage
                 sessionStorage.setItem('smashlabs_current_user', JSON.stringify(userWithoutPassword));
                 localStorage.setItem('smashlabs_current_user', JSON.stringify(userWithoutPassword));
-                
+
                 // If admin, also set admin flags
                 if (user.is_admin) {
                     sessionStorage.setItem('smashlabs_admin_logged_in', 'true');
                     localStorage.setItem('smashlabs_admin_logged_in', 'true');
                 }
-                
+
                 // Check if user is admin - redirect to dashboard
                 if (user.is_admin) {
                     showSuccess('התחברת בהצלחה! מעביר ללוח הבקרה...', true);
@@ -292,13 +310,13 @@ function initializeLogin() {
 
             // Create user directly in Supabase
             showSuccess('יוצר משתמש...');
-            
-            (async () => {
+
+            (async() => {
                 try {
                     // Hash password using bcrypt (10 rounds)
                     showSuccess('מצפין סיסמה...');
                     const passwordHash = await bcrypt.hash(password, 10);
-                    
+
                     console.log('Bcrypt hash generated:', passwordHash);
                     // Create user in Supabase
                     const userData = await window.userDB.createUser({
@@ -309,7 +327,7 @@ function initializeLogin() {
                         verificationCode: verificationCode,
                         codeExpiry: codeExpiry
                     });
-                    
+
                     localStorage.setItem('pending_verification_email', email);
 
                     // Send verification email
@@ -324,9 +342,9 @@ function initializeLogin() {
                             verificationCode: verificationCode
                         })
                     });
-                    
+
                     const emailData = await emailResponse.json();
-                    
+
                     if (emailData.success) {
                         showSuccess('קוד אימות נשלח למייל שלך!');
                         // Show verification form
@@ -346,7 +364,7 @@ function initializeLogin() {
                         hint: error.hint,
                         stack: error.stack
                     });
-                    
+
                     if (error.message && error.message.includes('duplicate')) {
                         showError('המייל כבר רשום במערכת.');
                     } else if (error.message) {
@@ -427,7 +445,7 @@ function initializeLogin() {
 
                 // Mark user as verified
                 await window.userDB.verifyUser(pendingEmail);
-                
+
                 // Auto-login the user
                 const userWithoutPassword = {
                     id: user.id,
@@ -436,11 +454,11 @@ function initializeLogin() {
                     is_admin: user.is_admin || false,
                     loginTime: Date.now()
                 };
-                
+
                 // Store in both session and local storage
                 sessionStorage.setItem('smashlabs_current_user', JSON.stringify(userWithoutPassword));
                 localStorage.setItem('smashlabs_current_user', JSON.stringify(userWithoutPassword));
-                
+
                 // Clean up
                 localStorage.removeItem('pending_verification_email');
 
@@ -473,7 +491,7 @@ function initializeLogin() {
             }
 
             // Get user from Supabase
-            (async () => {
+            (async() => {
                 try {
                     const user = await window.userDB.findByEmail(pendingEmail);
 
@@ -504,9 +522,9 @@ function initializeLogin() {
                             verificationCode: newCode
                         })
                     });
-                    
+
                     const data = await response.json();
-                    
+
                     if (data.success) {
                         showVerificationSuccess('קוד חדש נשלח למייל שלך!');
                     } else {
@@ -600,12 +618,12 @@ function showAlreadyLoggedIn(user) {
     const loginFormContainer = document.getElementById('login-form-container');
     const registerFormContainer = document.getElementById('register-form-container');
     const verificationFormContainer = document.getElementById('verification-form-container');
-    
+
     // Hide all forms
     if (loginFormContainer) loginFormContainer.style.display = 'none';
     if (registerFormContainer) registerFormContainer.style.display = 'none';
     if (verificationFormContainer) verificationFormContainer.style.display = 'none';
-    
+
     // Create already logged in message
     const container = loginFormContainer || document.querySelector('.container');
     if (container) {

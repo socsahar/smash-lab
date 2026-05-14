@@ -2473,7 +2473,7 @@
                 <!-- Create Event Form -->
                 <div class="event-form-card">
                     <h3>➕ צור אירוע חדש</h3>
-                    <form id="createEventForm" onsubmit="createEvent(event)">
+                    <form id="createEventForm" onsubmit="submitNewEvent(event)">
                         <div class="form-row">
                             <div class="form-group">
                                 <label>כותרת האירוע *</label>
@@ -3679,7 +3679,7 @@
             return Math.random().toString(36).substring(2, 10).toUpperCase();
         }
 
-        function createEvent(e) {
+        function submitNewEvent(e) {
             e.preventDefault();
             const title        = document.getElementById('eventTitle').value.trim();
             const datetime     = document.getElementById('eventDatetime').value;
