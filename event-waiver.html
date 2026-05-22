@@ -1280,15 +1280,41 @@
                         return;
                     }
 
+                    // Try to decode event payload from the URL first (works on ANY device).
+                    // Falls back to localStorage only for backward compatibility with old links.
+                    let evRecord = null;
+                    const dataParam = urlParams.get('data');
+                    if (dataParam) {
+                        try {
+                            const b64 = dataParam.replace(/-/g, '+').replace(/_/g, '/');
+                            const pad = b64.length % 4 === 0 ? '' : '='.repeat(4 - (b64.length % 4));
+                            const json = decodeURIComponent(escape(atob(b64 + pad)));
+                            evRecord = JSON.parse(json);
+                        } catch (err) {
+                            console.error('Failed to decode event payload:', err);
+                            evRecord = null;
+                        }
+                    }
+
                     const EVENTS_KEY = 'smashlabs_events';
-                    const events = JSON.parse(localStorage.getItem(EVENTS_KEY) || '[]');
-                    const evRecord = events.find(e => e.id === eventId);
+                    const localEvents = JSON.parse(localStorage.getItem(EVENTS_KEY) || '[]');
+                    const localRecord = localEvents.find(e => e.id === eventId);
+
+                    // Prefer local record if it exists (has live signature count); merge with URL data otherwise
+                    if (localRecord) {
+                        evRecord = Object.assign({}, evRecord || {}, localRecord);
+                    } else if (evRecord) {
+                        // First time signing on this device — seed localStorage so the per-device counter works
+                        evRecord.signatures = evRecord.signatures || [];
+                        localEvents.push(evRecord);
+                        localStorage.setItem(EVENTS_KEY, JSON.stringify(localEvents));
+                    }
 
                     if (!evRecord) {
                         showEventError('אירוע לא נמצא', 'האירוע המבוקש לא נמצא במערכת. ייתכן שהוא נמחק או שהקישור שגוי.');
                         return;
                     }
-                    if (evRecord.status !== 'active') {
+                    if (evRecord.status && evRecord.status !== 'active') {
                         showEventError('האירוע סגור', 'לא ניתן יותר לחתום על כתב הוויתור עבור אירוע זה.');
                         return;
                     }
