@@ -1258,8 +1258,39 @@
 
                     // === Load EVENT from URL params (not order) ===
                     const urlParams = new URLSearchParams(window.location.search);
-                    const eventId = urlParams.get('event');
-                    const eventNameParam = urlParams.get('name') ? decodeURIComponent(urlParams.get('name')) : '';
+                    // Support BOTH formats:
+                    //   New short:  ?d=<base64>      (payload has all fields with short keys)
+                    //   Legacy:     ?event=<id>&name=<title>&data=<base64>
+                    let eventId = urlParams.get('event') || '';
+                    let eventNameParam = urlParams.get('name') ? decodeURIComponent(urlParams.get('name')) : '';
+                    const dataParam = urlParams.get('d') || urlParams.get('data');
+
+                    // Decode payload from URL (works on ANY device — no localStorage needed)
+                    let evRecord = null;
+                    if (dataParam) {
+                        try {
+                            const b64 = dataParam.replace(/-/g, '+').replace(/_/g, '/');
+                            const pad = b64.length % 4 === 0 ? '' : '='.repeat(4 - (b64.length % 4));
+                            const json = decodeURIComponent(escape(atob(b64 + pad)));
+                            const parsed = JSON.parse(json);
+                            // Normalize short keys (i,t,k,d,r,n) and long keys (id,title,...)
+                            evRecord = {
+                                id:           parsed.i           || parsed.id           || eventId,
+                                title:        parsed.t           || parsed.title        || eventNameParam,
+                                type:         parsed.k           || parsed.type         || '',
+                                datetime:     parsed.d           || parsed.datetime     || '',
+                                responsible: parsed.r           || parsed.responsible  || '',
+                                participants: parsed.n           || parsed.participants || 0,
+                                status:       parsed.s           || parsed.status       || 'active'
+                            };
+                            if (!eventId) eventId = evRecord.id;
+                            if (!eventNameParam) eventNameParam = evRecord.title;
+                        } catch (err) {
+                            console.error('Failed to decode event payload:', err);
+                            evRecord = null;
+                        }
+                    }
+
                     window.__currentEventId = eventId;
                     window.__currentEventName = eventNameParam;
 
@@ -1278,22 +1309,6 @@
                     if (!eventId) {
                         showEventError('קישור לא תקין', 'לא נמצא מזהה אירוע בקישור. אנא פנה למארגן האירוע לקבלת הקישור הנכון.');
                         return;
-                    }
-
-                    // Try to decode event payload from the URL first (works on ANY device).
-                    // Falls back to localStorage only for backward compatibility with old links.
-                    let evRecord = null;
-                    const dataParam = urlParams.get('data');
-                    if (dataParam) {
-                        try {
-                            const b64 = dataParam.replace(/-/g, '+').replace(/_/g, '/');
-                            const pad = b64.length % 4 === 0 ? '' : '='.repeat(4 - (b64.length % 4));
-                            const json = decodeURIComponent(escape(atob(b64 + pad)));
-                            evRecord = JSON.parse(json);
-                        } catch (err) {
-                            console.error('Failed to decode event payload:', err);
-                            evRecord = null;
-                        }
                     }
 
                     const EVENTS_KEY = 'smashlabs_events';

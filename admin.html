@@ -3714,27 +3714,22 @@
 
         function buildWaiverLink(id, title) {
             const base = window.location.origin;
-            // Look up the full event so the payload can travel inside the URL —
-            // this lets ANY device (phone/tablet/PC) open the link, not just
-            // the admin's browser where localStorage holds the events list.
+            // Compact payload (short keys, only fields the waiver page uses).
+            // Goes through /e endpoint so WhatsApp/FB previews show the event title.
             const events = getEvents();
-            const ev = events.find(e => e.id === id) || { id, title, status: 'active' };
+            const ev = events.find(e => e.id === id) || { id, title };
             const payload = {
-                id: ev.id,
-                title: ev.title,
-                type: ev.type || '',
-                datetime: ev.datetime || '',
-                responsible: ev.responsible || '',
-                phone: ev.phone || '',
-                participants: ev.participants || 0,
-                notes: ev.notes || '',
-                status: ev.status || 'active'
+                i: ev.id,
+                t: ev.title,
+                k: ev.type || '',
+                d: ev.datetime || '',
+                r: ev.responsible || '',
+                n: ev.participants || 0
             };
-            // Base64-url encode (UTF-8 safe via encodeURIComponent trick)
             const json = JSON.stringify(payload);
             const b64 = btoa(unescape(encodeURIComponent(json)))
                 .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-            return `${base}/event-waiver.html?event=${id}&name=${encodeURIComponent(title)}&data=${b64}`;
+            return `${base}/e?d=${b64}`;
         }
 
         function loadEvents() {

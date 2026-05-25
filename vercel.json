@@ -30,6 +30,10 @@
     {
       "source": "/order",
       "destination": "/order.html"
+    },
+    {
+      "source": "/e",
+      "destination": "/api/e"
     }
   ]
 }
