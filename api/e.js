@@ -1,5 +1,5 @@
 /**
- * Event waiver link preview + redirect — Vercel serverless function.
+ * Event waiver link preview + redirect — Express handler.
  *
  * Purpose: When someone shares an event-waiver link on WhatsApp/Facebook/Twitter,
  * those platforms fetch the URL with a "scraper" that does NOT execute JavaScript.
@@ -9,7 +9,7 @@
  * Real visitors receive the same HTML but are immediately redirected to
  * /event-waiver.html via a meta-refresh + JS redirect.
  *
- * URL format: /api/e?d=<base64url-encoded JSON payload>
+ * URL format: /e?d=<base64url-encoded JSON payload>
  *   payload short keys: i=id, t=title, k=type, d=datetime, r=responsible, n=participants
  */
 
@@ -35,16 +35,14 @@ function decodeData(d) {
     }
 }
 
-export default async function handler(req, res) {
+async function eventPreviewHandler(req, res) {
     const d = (req.query && req.query.d) || '';
     const payload = decodeData(d) || {};
 
-    // Support both new short-key and legacy long-key payloads
+    // Support both short-key (new) and long-key (legacy) payloads
     const title = payload.t || payload.title || 'אירוע SMASH LAB';
-    const eventId = payload.i || payload.id || '';
 
-    // Build the destination URL — pass `d` through so event-waiver.html
-    // can decode the same payload (saves a duplicate base64 in the URL).
+    // Real visitors get redirected to the actual signing page (carries `d` along)
     const dest = '/event-waiver.html?d=' + encodeURIComponent(d);
 
     const safeTitle = escapeHtml(title);
@@ -96,3 +94,6 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
     res.status(200).send(html);
 }
+
+module.exports = eventPreviewHandler;
+module.exports.handler = eventPreviewHandler;

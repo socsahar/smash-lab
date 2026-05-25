@@ -89,6 +89,11 @@ app.get('/api/calendar/stats', calendarAPI.getDashboardStats);
 app.post('/api/register', netlifyToExpress(registerHandler));
 app.post('/api/login', netlifyToExpress(loginHandler));
 
+// Event waiver short-link / preview endpoint — handles /e and /api/e
+const eventPreviewHandler = require('./api/e');
+app.get('/e', eventPreviewHandler);
+app.get('/api/e', eventPreviewHandler);
+
 // Verifone payment routes
 const verifoneCheckoutHandler = require('./api/verifone-checkout').handler;
 const verifoneWebhookHandler = require('./api/verifone-webhook').handler;
