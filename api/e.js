@@ -46,8 +46,8 @@ async function eventPreviewHandler(req, res) {
     const dest = '/event-waiver.html?d=' + encodeURIComponent(d);
 
     const safeTitle = escapeHtml(title);
-    const ogTitle = escapeHtml('כתב ויתור: ' + title);
-    const ogDesc = escapeHtml('לחץ לחתימה על כתב הוויתור לאירוע - SMASH LAB');
+    const ogTitle = escapeHtml('טופס בטיחות: ' + title);
+    const ogDesc = escapeHtml('לחץ למילוי טופס הבטיחות לאירוע - SMASH LAB');
     const safeDest = escapeHtml(dest);
 
     const html = `<!DOCTYPE html>
