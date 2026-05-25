@@ -1275,13 +1275,13 @@
                             const parsed = JSON.parse(json);
                             // Normalize short keys (i,t,k,d,r,n) and long keys (id,title,...)
                             evRecord = {
-                                id:           parsed.i           || parsed.id           || eventId,
-                                title:        parsed.t           || parsed.title        || eventNameParam,
-                                type:         parsed.k           || parsed.type         || '',
-                                datetime:     parsed.d           || parsed.datetime     || '',
-                                responsible: parsed.r           || parsed.responsible  || '',
-                                participants: parsed.n           || parsed.participants || 0,
-                                status:       parsed.s           || parsed.status       || 'active'
+                                id: parsed.i || parsed.id || eventId,
+                                title: parsed.t || parsed.title || eventNameParam,
+                                type: parsed.k || parsed.type || '',
+                                datetime: parsed.d || parsed.datetime || '',
+                                responsible: parsed.r || parsed.responsible || '',
+                                participants: parsed.n || parsed.participants || 0,
+                                status: parsed.s || parsed.status || 'active'
                             };
                             if (!eventId) eventId = evRecord.id;
                             if (!eventNameParam) eventNameParam = evRecord.title;
@@ -1538,17 +1538,8 @@
                 });
             }
             
-            // Pre-fill fields from order
-            if (order.name) {
-                document.getElementById('full-name').value = order.name;
-            }
-            if (order.phone) {
-                document.getElementById('phone').value = order.phone;
-            }
-            if (order.email) {
-                document.getElementById('email').value = order.email;
-            }
-            
+            // (No order pre-fill for event waivers — each participant enters their own details)
+
             // Enable continue button only when all required fields are filled
             const form = document.getElementById('waiver-form');
             const continueBtn = document.getElementById('continue-btn');
