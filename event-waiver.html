@@ -650,8 +650,8 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="email">דוא"ל (אופציונלי)</label>
-                                <input type="email" id="email" name="email" pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$" title="נא להזין כתובת אימייל חוקית" placeholder="email@example.com">
+                                <label for="email">דוא"ל *</label>
+                                <input type="email" id="email" name="email" required pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$" title="נא להזין כתובת אימייל חוקית" placeholder="email@example.com">
                             </div>
 
                             <!-- Emergency Contact Section -->
@@ -1562,8 +1562,7 @@
                 const signatureTime = document.getElementById('signature-time').value;
                 const waiverChecked = waiverCheckbox.checked;
                 
-                // Email is OPTIONAL for event waivers (but if entered, must match pattern via browser validation)
-                let isValid = fullName && idNumber && dob && city && street && phone && 
+                let isValid = fullName && idNumber && dob && city && street && phone && email &&
                     emergencyName && emergencyPhone && emergencyRelation && 
                     signature && signatureDate && signatureTime && waiverChecked;
                 
@@ -1809,12 +1808,34 @@
                 event_total_participants: totalParticipants
             };
 
-            emailjs.send(window.ENV_CONFIG.EMAILJS_SERVICE_ID, window.ENV_CONFIG.EMAILJS_TEMPLATE_ID, templateParams)
-                .then(function(response) {
-                    console.log('Event-waiver email sent!', response.status);
-                }, function(error) {
-                    console.error('Failed to send event-waiver email:', error);
-                });
+            const adminEmailParams = {
+                ...templateParams,
+                to_email: window.ENV_CONFIG.EMAIL_TO
+            };
+            const customerEmailParams = {
+                ...templateParams,
+                to_email: waiverData.email
+            };
+
+            Promise.allSettled([
+                emailjs.send(window.ENV_CONFIG.EMAILJS_SERVICE_ID, window.ENV_CONFIG.EMAILJS_TEMPLATE_ID, adminEmailParams),
+                emailjs.send(window.ENV_CONFIG.EMAILJS_SERVICE_ID, window.ENV_CONFIG.EMAILJS_TEMPLATE_ID, customerEmailParams)
+            ]).then(function(results) {
+                const adminResult = results[0];
+                const customerResult = results[1];
+
+                if (adminResult.status === 'fulfilled') {
+                    console.log('Event-waiver admin email sent!', adminResult.value.status);
+                } else {
+                    console.error('Failed to send event-waiver admin email:', adminResult.reason);
+                }
+
+                if (customerResult.status === 'fulfilled') {
+                    console.log('Event-waiver customer email sent!', customerResult.value.status);
+                } else {
+                    console.error('Failed to send event-waiver customer email:', customerResult.reason);
+                }
+            });
         }
 
         // Legacy stub kept for safety; unused.
