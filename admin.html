@@ -3732,13 +3732,38 @@
             return `${base}/e?d=${b64}`;
         }
 
-        function loadEvents() {
+        function escapeEventHtml(s) {
+            return String(s || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        async function fetchSharedSignaturesSummary(eventId) {
+            try {
+                const res = await fetch(`/api/events/${encodeURIComponent(eventId)}/signatures`);
+                if (!res.ok) return null;
+                return await res.json();
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function loadEvents() {
             const events = getEvents();
             const container = document.getElementById('eventsListContainer');
             if (!events.length) {
                 container.innerHTML = '<p style="color:#888; text-align:center; padding:20px;">אין אירועים עדיין. צור אירוע חדש למעלה.</p>';
                 return;
             }
+
+            const sharedByEvent = {};
+            await Promise.all(events.map(async(ev) => {
+                const data = await fetchSharedSignaturesSummary(ev.id);
+                if (data) sharedByEvent[ev.id] = data;
+            }));
 
             const typeLabels = {
                 birthday: '🎂 יום הולדת',
@@ -3749,11 +3774,20 @@
             };
 
             container.innerHTML = events.map(ev => {
-                const signed = ev.signatures ? ev.signatures.length : 0;
+                const shared = sharedByEvent[ev.id] || null;
+                const sharedSignatures = shared && Array.isArray(shared.signatures) ? shared.signatures : null;
+                const signed = sharedSignatures ? sharedSignatures.length : (ev.signatures ? ev.signatures.length : 0);
                 const total  = ev.participants || 0;
                 const pct    = total > 0 ? Math.min(100, Math.round(signed / total * 100)) : 0;
                 const date   = ev.datetime ? new Date(ev.datetime).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' }) : '-';
                 const link   = buildWaiverLink(ev.id, ev.title);
+                const recentSignatures = (sharedSignatures || ev.signatures || []).slice(-5).reverse();
+                const signerItemsHtml = recentSignatures.length
+                    ? `<div style="margin-top:10px; color:#cfd8dc; font-size:0.85rem; line-height:1.5;">${recentSignatures.map(s => `• ${escapeEventHtml(s.fullName || 'ללא שם')}<span style="color:#888;"> (${new Date(s.signedAt || Date.now()).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' })})</span>`).join('<br>')}</div>`
+                    : '<div style="margin-top:10px; color:#888; font-size:0.85rem;">עדיין אין חתימות</div>';
+                const lastSignerHtml = recentSignatures.length
+                    ? `<div style="margin-top:8px; font-weight:bold; color:#4caf50;">✅ ${escapeEventHtml(recentSignatures[0].fullName || 'משתתף')} חתם/ה</div>`
+                    : '';
                 const badge  = ev.status === 'active'
                     ? '<span class="event-badge active">פעיל</span>'
                     : '<span class="event-badge closed">סגור</span>';
@@ -3777,6 +3811,8 @@
                         <div class="event-progress-bar" style="width:${pct}%"></div>
                     </div>
                     <div class="event-progress-label">חתמו: ${signed} מתוך ${total} (${pct}%)</div>
+                    ${lastSignerHtml}
+                    ${signerItemsHtml}
                     <div class="event-link-box" onclick="copyEventLink('${ev.id}','${ev.title.replace(/'/g,"\\'")}')">
                         🔗 לחץ להעתקת קישור חתימה — ${link}
                     </div>
@@ -3827,6 +3863,14 @@
             saveEvents(events);
             loadEvents();
         }
+
+        // Keep refreshing the events list while the events tab is open
+        setInterval(() => {
+            const eventsSection = document.getElementById('events-section');
+            if (eventsSection && eventsSection.classList.contains('active')) {
+                loadEvents();
+            }
+        }, 10000);
     </script>
     <footer role="contentinfo" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem; background: rgba(0,0,0,0.9); border-top: 1px solid rgba(255,107,0,0.3); text-align: center; z-index: 999;">
         <p style="font-size: 0.85rem; color: #888; opacity: 0.7; margin: 0;">Developed by <a href="https://sanda-uinc.onrender.com/" target="_blank" rel="noopener noreferrer" style="color: #ff6b00; text-decoration: none; font-weight: 500;" aria-label="sand (נפתח בחלון חדש)">sand</a></p>

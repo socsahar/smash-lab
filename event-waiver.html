@@ -1329,6 +1329,14 @@
                         showEventError('אירוע לא נמצא', 'האירוע המבוקש לא נמצא במערכת. ייתכן שהוא נמחק או שהקישור שגוי.');
                         return;
                     }
+
+                    const sharedData = await fetchSharedEventSignatures(eventId);
+                    if (sharedData && Array.isArray(sharedData.signatures)) {
+                        evRecord.signatures = sharedData.signatures;
+                        if (!evRecord.participants && sharedData.participants) {
+                            evRecord.participants = sharedData.participants;
+                        }
+                    }
                     if (evRecord.status && evRecord.status !== 'active') {
                         showEventError('האירוע סגור', 'לא ניתן יותר לחתום על כתב הוויתור עבור אירוע זה.');
                         return;
@@ -1638,6 +1646,44 @@
         async function goBack() {
             window.location.href = 'select-package.html';
         }
+
+        async function fetchSharedEventSignatures(eventId) {
+            try {
+                const res = await fetch(`/api/events/${encodeURIComponent(eventId)}/signatures`);
+                if (!res.ok) return null;
+                return await res.json();
+            } catch (e) {
+                console.warn('Shared event signature fetch failed:', e);
+                return null;
+            }
+        }
+
+        async function publishSharedEventSignature(eventId, waiverData, evRecord) {
+            try {
+                const res = await fetch(`/api/events/${encodeURIComponent(eventId)}/signatures`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        eventTitle: (evRecord && evRecord.title) || '',
+                        participants: (evRecord && evRecord.participants) || 0,
+                        signature: {
+                            fullName: waiverData.fullName,
+                            idNumber: waiverData.idNumber,
+                            phone: waiverData.phone,
+                            email: waiverData.email,
+                            signatureDate: waiverData.signatureDate,
+                            signatureTime: waiverData.signatureTime,
+                            signedAt: waiverData.signedAt
+                        }
+                    })
+                });
+                if (!res.ok) return null;
+                return await res.json();
+            } catch (e) {
+                console.warn('Shared event signature publish failed:', e);
+                return null;
+            }
+        }
         
         async function processEventWaiver() {
             const eventId = window.__currentEventId;
@@ -1715,6 +1761,11 @@
                     evRecord.closedAt = new Date().toISOString();
                 }
                 localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+            }
+
+            const sharedResult = await publishSharedEventSignature(eventId, waiverData, evRecord);
+            if (sharedResult && typeof sharedResult.signedCount === 'number') {
+                signedCount = sharedResult.signedCount;
             }
 
             // Send the same EmailJS message as the regular waiver page
