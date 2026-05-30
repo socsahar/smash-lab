@@ -1768,16 +1768,19 @@
                 signedCount = sharedResult.signedCount;
             }
 
-            // Send the same EmailJS message as the regular waiver page
-            sendEventWaiverEmail(waiverData, evRecord, eventName);
+            // Send emails and wait for actual result (do not fail silently)
+            const emailResult = await sendEventWaiverEmail(waiverData, evRecord, eventName);
 
             // Show success / next participant UI
             const formCard = document.querySelector('.card');
             if (formCard) formCard.style.display = 'none';
             const successBox = document.getElementById('success-box');
             successBox.style.display = 'block';
-            document.getElementById('success-msg').textContent =
-                waiverData.fullName + ', כתב הוויתור עבור האירוע "' + ((evRecord && evRecord.title) || eventName || '-') + '" נחתם בהצלחה.';
+            document.getElementById('success-msg').textContent = 'תודה שחתמתם על טופס בטיחות';
+            if (!emailResult.customerSent) {
+                const reason = emailResult.customerError ? ` (${emailResult.customerError})` : '';
+                document.getElementById('success-msg').textContent += ' שים לב: לא הצלחנו לשלוח אימייל אישור למייל שנרשם' + reason + '.';
+            }
             const progressMsg = document.getElementById('progress-msg');
             if (totalParticipants > 0) {
                 progressMsg.textContent = `חתמו: ${signedCount} מתוך ${totalParticipants} משתתפים`;
@@ -1809,7 +1812,15 @@
         // Legacy stub kept for safety; unused.
         async function processWaiver(order) { return processEventWaiver(); }
         
-        function sendEventWaiverEmail(waiverData, evRecord, eventNameParam) {
+        async function sendEventWaiverEmail(waiverData, evRecord, eventNameParam) {
+            if (typeof emailjs === 'undefined') {
+                return {
+                    adminSent: false,
+                    customerSent: false,
+                    customerError: 'EmailJS לא נטען'
+                };
+            }
+
             const eventTitle = (evRecord && evRecord.title) || eventNameParam || '-';
             const eventId = (evRecord && evRecord.id) || waiverData.eventId || '-';
             const eventTypeLabels = {
@@ -1868,25 +1879,33 @@
                 to_email: waiverData.email
             };
 
-            Promise.allSettled([
+            const results = await Promise.allSettled([
                 emailjs.send(window.ENV_CONFIG.EMAILJS_SERVICE_ID, window.ENV_CONFIG.EMAILJS_TEMPLATE_ID, adminEmailParams),
                 emailjs.send(window.ENV_CONFIG.EMAILJS_SERVICE_ID, window.ENV_CONFIG.EMAILJS_TEMPLATE_ID, customerEmailParams)
-            ]).then(function(results) {
-                const adminResult = results[0];
-                const customerResult = results[1];
+            ]);
 
-                if (adminResult.status === 'fulfilled') {
-                    console.log('Event-waiver admin email sent!', adminResult.value.status);
-                } else {
-                    console.error('Failed to send event-waiver admin email:', adminResult.reason);
-                }
+            const adminResult = results[0];
+            const customerResult = results[1];
 
-                if (customerResult.status === 'fulfilled') {
-                    console.log('Event-waiver customer email sent!', customerResult.value.status);
-                } else {
-                    console.error('Failed to send event-waiver customer email:', customerResult.reason);
-                }
-            });
+            if (adminResult.status === 'fulfilled') {
+                console.log('Event-waiver admin email sent!', adminResult.value.status);
+            } else {
+                console.error('Failed to send event-waiver admin email:', adminResult.reason);
+            }
+
+            if (customerResult.status === 'fulfilled') {
+                console.log('Event-waiver customer email sent!', customerResult.value.status);
+            } else {
+                console.error('Failed to send event-waiver customer email:', customerResult.reason);
+            }
+
+            return {
+                adminSent: adminResult.status === 'fulfilled',
+                customerSent: customerResult.status === 'fulfilled',
+                customerError: customerResult.status === 'rejected'
+                    ? ((customerResult.reason && (customerResult.reason.text || customerResult.reason.message)) || 'שגיאת שליחה')
+                    : ''
+            };
         }
 
         // Legacy stub kept for safety; unused.
