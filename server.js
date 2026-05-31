@@ -123,6 +123,7 @@ async function writeEventSignaturesStore(store) {
 
 function sanitizeSignaturePayload(payload) {
     return {
+        participantName: (payload.participantName || payload.fullName || '').trim(),
         fullName: (payload.fullName || '').trim(),
         idNumber: (payload.idNumber || '').trim(),
         phone: (payload.phone || '').trim(),

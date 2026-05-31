@@ -1605,6 +1605,32 @@
             // Check validity on input changes
             form.addEventListener('input', checkFormValidity);
             form.addEventListener('change', checkFormValidity);
+
+            const resetForNextParticipant = sessionStorage.getItem('smashlabs_event_reset_form') === '1';
+            if (resetForNextParticipant) {
+                sessionStorage.removeItem('smashlabs_event_reset_form');
+                form.reset();
+                clearButton.click();
+                isMinor = false;
+                guardianIsMinor = false;
+                ageDisplay.style.display = 'none';
+                guardianSection.style.display = 'none';
+                guardianAgeDisplay.style.display = 'none';
+                guardianAgeError.style.display = 'none';
+                signatureLabel.textContent = 'חתימה *';
+                const childList = document.getElementById('additional-children-list');
+                if (childList) childList.innerHTML = '';
+                waiverCheckbox.checked = false;
+                waiverCheckbox.disabled = true;
+                waiverCheckbox.parentElement.style.border = '';
+                if (scrollNotice) scrollNotice.style.display = '';
+                if (scrollPrompt) scrollPrompt.style.display = '';
+                document.getElementById('signature-date').value = new Date().toISOString().split('T')[0];
+                const resetNow = new Date();
+                document.getElementById('signature-time').value = `${String(resetNow.getHours()).padStart(2, '0')}:${String(resetNow.getMinutes()).padStart(2, '0')}`;
+                checkFormValidity();
+                window.scrollTo({ top: 0, behavior: 'auto' });
+            }
             
             // Handle form submission
             form.addEventListener('submit', function(e) {
@@ -1667,6 +1693,7 @@
                         eventTitle: (evRecord && evRecord.title) || '',
                         participants: (evRecord && evRecord.participants) || 0,
                         signature: {
+                            participantName: waiverData.fullName,
                             fullName: waiverData.fullName,
                             idNumber: waiverData.idNumber,
                             phone: waiverData.phone,
@@ -1799,7 +1826,8 @@
             } else {
                 nextBtn.style.display = '';
                 nextBtn.onclick = function() {
-                    window.location.reload();
+                    sessionStorage.setItem('smashlabs_event_reset_form', '1');
+                    window.location.href = window.location.pathname + window.location.search;
                 };
             }
             doneBtn.onclick = function() {

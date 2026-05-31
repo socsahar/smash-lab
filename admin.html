@@ -3782,11 +3782,12 @@
                 const date   = ev.datetime ? new Date(ev.datetime).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' }) : '-';
                 const link   = buildWaiverLink(ev.id, ev.title);
                 const recentSignatures = (sharedSignatures || ev.signatures || []).slice(-5).reverse();
+                const getTrackedName = (s) => s.participantName || s.fullName || 'ללא שם';
                 const signerItemsHtml = recentSignatures.length
-                    ? `<div style="margin-top:10px; color:#cfd8dc; font-size:0.85rem; line-height:1.5;">${recentSignatures.map(s => `• ${escapeEventHtml(s.fullName || 'ללא שם')}<span style="color:#888;"> (${new Date(s.signedAt || Date.now()).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' })})</span>`).join('<br>')}</div>`
+                    ? `<div style="margin-top:10px; color:#cfd8dc; font-size:0.85rem; line-height:1.5;">${recentSignatures.map(s => `• ${escapeEventHtml(getTrackedName(s))}<span style="color:#888;"> (${new Date(s.signedAt || Date.now()).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' })})</span>`).join('<br>')}</div>`
                     : '<div style="margin-top:10px; color:#888; font-size:0.85rem;">עדיין אין חתימות</div>';
                 const lastSignerHtml = recentSignatures.length
-                    ? `<div style="margin-top:8px; font-weight:bold; color:#4caf50;">✅ ${escapeEventHtml(recentSignatures[0].fullName || 'משתתף')} חתם/ה</div>`
+                    ? `<div style="margin-top:8px; font-weight:bold; color:#4caf50;">✅ ${escapeEventHtml(getTrackedName(recentSignatures[0]))} חתם/ה</div>`
                     : '';
                 const badge  = ev.status === 'active'
                     ? '<span class="event-badge active">פעיל</span>'
