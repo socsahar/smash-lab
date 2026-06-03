@@ -8,12 +8,18 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const fsPromises = fs.promises;
+const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 const EVENT_SIGNATURES_FILE = path.join(__dirname, 'data', 'event-signatures.json');
 const EVENTS_FILE = path.join(__dirname, 'data', 'events.json');
+const SUPABASE_EVENTS_TABLE = 'smashlab_events';
+const SUPABASE_EVENT_SIGNATURES_TABLE = 'smashlab_event_signatures';
+const supabasePersistence = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY ?
+    createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY) :
+    null;
 
 // Middleware
 app.use(cors());
@@ -107,7 +113,40 @@ async function ensureEventSignaturesStore() {
     }
 }
 
+function hasSupabasePersistence() {
+    return Boolean(supabasePersistence);
+}
+
+function logPersistenceFallback(kind, error) {
+    console.warn(`Supabase ${kind} store unavailable, falling back to local file storage. Deploys may reset this data.`, error && (error.message || error));
+}
+
 async function readEventSignaturesStore() {
+    if (hasSupabasePersistence()) {
+        const { data, error } = await supabasePersistence
+            .from(SUPABASE_EVENT_SIGNATURES_TABLE)
+            .select('event_id, payload, updated_at');
+
+        if (!error) {
+            const store = {};
+            for (const row of data || []) {
+                const payload = row && row.payload && typeof row.payload === 'object' ? row.payload : {};
+                const eventId = String(row.event_id || payload.eventId || '').trim();
+                if (!eventId) continue;
+                store[eventId] = {
+                    eventId,
+                    eventTitle: String(payload.eventTitle || '').trim(),
+                    participants: Number(payload.participants) || 0,
+                    updatedAt: payload.updatedAt || row.updated_at || '',
+                    signatures: Array.isArray(payload.signatures) ? payload.signatures.map(sanitizeSignaturePayload) : []
+                };
+            }
+            return store;
+        }
+
+        logPersistenceFallback('signatures', error);
+    }
+
     await ensureEventSignaturesStore();
     const raw = await fsPromises.readFile(EVENT_SIGNATURES_FILE, 'utf8');
     try {
@@ -118,6 +157,64 @@ async function readEventSignaturesStore() {
 }
 
 async function writeEventSignaturesStore(store) {
+    if (hasSupabasePersistence()) {
+        const rows = Object.entries(store || {}).map(([eventId, rawRecord]) => {
+            const record = rawRecord || {};
+            return {
+                event_id: String(eventId || record.eventId || '').trim(),
+                payload: {
+                    eventId: String(eventId || record.eventId || '').trim(),
+                    eventTitle: String(record.eventTitle || '').trim(),
+                    participants: Number(record.participants) || 0,
+                    updatedAt: record.updatedAt || new Date().toISOString(),
+                    signatures: Array.isArray(record.signatures) ? record.signatures.map(sanitizeSignaturePayload) : []
+                },
+                updated_at: new Date().toISOString()
+            };
+        }).filter((row) => row.event_id);
+
+        const { data: existingRows, error: existingError } = await supabasePersistence
+            .from(SUPABASE_EVENT_SIGNATURES_TABLE)
+            .select('event_id');
+
+        if (!existingError) {
+            if (rows.length) {
+                const { error: upsertError } = await supabasePersistence
+                    .from(SUPABASE_EVENT_SIGNATURES_TABLE)
+                    .upsert(rows, { onConflict: 'event_id' });
+                if (!upsertError) {
+                    const nextIds = new Set(rows.map((row) => row.event_id));
+                    const removedIds = (existingRows || [])
+                        .map((row) => row.event_id)
+                        .filter((eventId) => !nextIds.has(eventId));
+
+                    if (removedIds.length) {
+                        await supabasePersistence
+                            .from(SUPABASE_EVENT_SIGNATURES_TABLE)
+                            .delete()
+                            .in('event_id', removedIds);
+                    }
+                    return;
+                }
+                logPersistenceFallback('signatures', upsertError);
+            } else {
+                const existingIds = (existingRows || []).map((row) => row.event_id);
+                if (existingIds.length) {
+                    const { error: deleteError } = await supabasePersistence
+                        .from(SUPABASE_EVENT_SIGNATURES_TABLE)
+                        .delete()
+                        .in('event_id', existingIds);
+                    if (!deleteError) return;
+                    logPersistenceFallback('signatures', deleteError);
+                } else {
+                    return;
+                }
+            }
+        } else {
+            logPersistenceFallback('signatures', existingError);
+        }
+    }
+
     await ensureEventSignaturesStore();
     await fsPromises.writeFile(EVENT_SIGNATURES_FILE, JSON.stringify(store, null, 2), 'utf8');
 }
@@ -264,6 +361,27 @@ async function ensureEventsStore() {
 }
 
 async function readEventsStore() {
+    if (hasSupabasePersistence()) {
+        const { data, error } = await supabasePersistence
+            .from(SUPABASE_EVENTS_TABLE)
+            .select('event_id, payload, created_at, updated_at')
+            .order('updated_at', { ascending: false });
+
+        if (!error) {
+            return (data || []).map((row) => {
+                const payload = row && row.payload && typeof row.payload === 'object' ? row.payload : {};
+                return normalizeEventRecord({
+                    ...payload,
+                    id: row.event_id || payload.id,
+                    createdAt: payload.createdAt || row.created_at,
+                    updatedAt: payload.updatedAt || row.updated_at
+                });
+            });
+        }
+
+        logPersistenceFallback('events', error);
+    }
+
     await ensureEventsStore();
     const raw = await fsPromises.readFile(EVENTS_FILE, 'utf8');
     try {
@@ -275,6 +393,56 @@ async function readEventsStore() {
 }
 
 async function writeEventsStore(events) {
+    if (hasSupabasePersistence()) {
+        const normalizedEvents = (Array.isArray(events) ? events : []).map((event) => normalizeEventRecord(event));
+        const rows = normalizedEvents.map((event) => ({
+            event_id: event.id,
+            payload: event,
+            updated_at: new Date().toISOString()
+        })).filter((row) => row.event_id);
+
+        const { data: existingRows, error: existingError } = await supabasePersistence
+            .from(SUPABASE_EVENTS_TABLE)
+            .select('event_id');
+
+        if (!existingError) {
+            if (rows.length) {
+                const { error: upsertError } = await supabasePersistence
+                    .from(SUPABASE_EVENTS_TABLE)
+                    .upsert(rows, { onConflict: 'event_id' });
+                if (!upsertError) {
+                    const nextIds = new Set(rows.map((row) => row.event_id));
+                    const removedIds = (existingRows || [])
+                        .map((row) => row.event_id)
+                        .filter((eventId) => !nextIds.has(eventId));
+
+                    if (removedIds.length) {
+                        await supabasePersistence
+                            .from(SUPABASE_EVENTS_TABLE)
+                            .delete()
+                            .in('event_id', removedIds);
+                    }
+                    return;
+                }
+                logPersistenceFallback('events', upsertError);
+            } else {
+                const existingIds = (existingRows || []).map((row) => row.event_id);
+                if (existingIds.length) {
+                    const { error: deleteError } = await supabasePersistence
+                        .from(SUPABASE_EVENTS_TABLE)
+                        .delete()
+                        .in('event_id', existingIds);
+                    if (!deleteError) return;
+                    logPersistenceFallback('events', deleteError);
+                } else {
+                    return;
+                }
+            }
+        } else {
+            logPersistenceFallback('events', existingError);
+        }
+    }
+
     await ensureEventsStore();
     await fsPromises.writeFile(EVENTS_FILE, JSON.stringify(events, null, 2), 'utf8');
 }
