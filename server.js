@@ -202,6 +202,35 @@ function signatureIdentityKey(s) {
     ].join('|');
 }
 
+function signatureDedupKey(s) {
+    if (!s) return '';
+    const idNumber = String(s.idNumber || '').trim();
+    if (idNumber) return 'id:' + idNumber;
+
+    const name = String(s.fullName || s.participantName || '').trim().toLowerCase();
+    const phone = String(s.phone || '').replace(/\D/g, '');
+    const dob = String(s.dateOfBirth || '').trim();
+    if (name || phone || dob) return ['n', name, phone, dob].join('|');
+
+    return signatureIdentityKey(s);
+}
+
+function dedupeSignatures(signatures) {
+    const list = Array.isArray(signatures) ? signatures : [];
+    const seen = new Set();
+    const result = [];
+
+    for (const raw of list) {
+        const sig = sanitizeSignaturePayload(raw);
+        const key = signatureDedupKey(sig) || ('fallback:' + signatureIdentityKey(sig));
+        if (seen.has(key)) continue;
+        seen.add(key);
+        result.push(sig);
+    }
+
+    return result;
+}
+
 function normalizeEventRecord(payload) {
     const safe = payload || {};
     return {
@@ -308,7 +337,14 @@ app.get('/api/events/:eventId/signatures', async(req, res) => {
         const { eventId } = req.params;
         const store = await readEventSignaturesStore();
         const record = store[eventId] || { eventId, signatures: [] };
-        const signatures = Array.isArray(record.signatures) ? record.signatures : [];
+        const rawSignatures = Array.isArray(record.signatures) ? record.signatures : [];
+        const signatures = dedupeSignatures(rawSignatures);
+        if (signatures.length !== rawSignatures.length) {
+            record.signatures = signatures;
+            record.updatedAt = new Date().toISOString();
+            store[eventId] = record;
+            await writeEventSignaturesStore(store);
+        }
         const lastSignature = signatures.length ? signatures[signatures.length - 1] : null;
 
         res.json({
@@ -456,8 +492,13 @@ app.post('/api/events/:eventId/signatures', async(req, res) => {
         existing.eventTitle = (req.body && req.body.eventTitle) || existing.eventTitle || '';
         existing.participants = (req.body && Number(req.body.participants)) || existing.participants || 0;
         existing.updatedAt = new Date().toISOString();
-        existing.signatures = Array.isArray(existing.signatures) ? existing.signatures : [];
-        existing.signatures.push(signature);
+        existing.signatures = dedupeSignatures(existing.signatures);
+
+        const incomingKey = signatureDedupKey(signature);
+        const exists = existing.signatures.some((s) => signatureDedupKey(s) === incomingKey);
+        if (!exists) {
+            existing.signatures.push(signature);
+        }
 
         store[eventId] = existing;
         await writeEventSignaturesStore(store);
@@ -465,6 +506,7 @@ app.post('/api/events/:eventId/signatures', async(req, res) => {
         const lastSignature = existing.signatures[existing.signatures.length - 1] || null;
         res.json({
             success: true,
+            duplicate: Boolean(exists),
             eventId,
             signedCount: existing.signatures.length,
             lastSignerName: lastSignature ? lastSignature.fullName || '' : '',
@@ -477,7 +519,7 @@ app.post('/api/events/:eventId/signatures', async(req, res) => {
 });
 
 // Bulk import of historic signatures (one-time migration from localStorage).
-// Deduplicates by (fullName + idNumber + signedAt) so the same signature is never imported twice.
+// Deduplicates by participant identity so the same person is not imported twice.
 app.post('/api/events/:eventId/signatures/import', async(req, res) => {
     try {
         const { eventId } = req.params;
@@ -493,13 +535,13 @@ app.post('/api/events/:eventId/signatures/import', async(req, res) => {
         existing.eventId = eventId;
         existing.eventTitle = (req.body && req.body.eventTitle) || existing.eventTitle || '';
         existing.participants = (req.body && Number(req.body.participants)) || existing.participants || 0;
-        existing.signatures = Array.isArray(existing.signatures) ? existing.signatures : [];
+        existing.signatures = dedupeSignatures(existing.signatures);
 
-        const existingKeys = new Set(existing.signatures.map(signatureIdentityKey));
+        const existingKeys = new Set(existing.signatures.map(signatureDedupKey));
         let imported = 0;
         let skipped = 0;
         for (const sig of incoming) {
-            const key = signatureIdentityKey(sig);
+            const key = signatureDedupKey(sig);
             if (existingKeys.has(key)) {
                 skipped++;
                 continue;
