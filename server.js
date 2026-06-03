@@ -13,6 +13,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 const EVENT_SIGNATURES_FILE = path.join(__dirname, 'data', 'event-signatures.json');
+const EVENTS_FILE = path.join(__dirname, 'data', 'events.json');
 
 // Middleware
 app.use(cors());
@@ -121,17 +122,185 @@ async function writeEventSignaturesStore(store) {
     await fsPromises.writeFile(EVENT_SIGNATURES_FILE, JSON.stringify(store, null, 2), 'utf8');
 }
 
-function sanitizeSignaturePayload(payload) {
+function normalizeEventPayload(payload) {
+    const safe = payload || {};
     return {
-        participantName: (payload.participantName || payload.fullName || '').trim(),
-        fullName: (payload.fullName || '').trim(),
-        idNumber: (payload.idNumber || '').trim(),
-        phone: (payload.phone || '').trim(),
-        email: (payload.email || '').trim(),
-        signedAt: payload.signedAt || new Date().toISOString(),
-        signatureDate: payload.signatureDate || '',
-        signatureTime: payload.signatureTime || ''
+        id: String(safe.id || '').trim(),
+        title: String(safe.title || '').trim(),
+        datetime: String(safe.datetime || '').trim(),
+        responsible: String(safe.responsible || '').trim(),
+        phone: String(safe.phone || '').trim(),
+        participants: Number(safe.participants) || 0,
+        type: String(safe.type || '').trim(),
+        notes: String(safe.notes || '').trim(),
+        status: safe.status === 'closed' ? 'closed' : 'active',
+        createdAt: safe.createdAt || new Date().toISOString(),
+        closedAt: safe.closedAt || ''
     };
+}
+
+function mergeEventRecord(existing, incoming) {
+    const normalized = normalizeEventPayload({...existing, ...incoming });
+    return {
+        ...existing,
+        ...normalized,
+        id: existing.id || normalized.id,
+        createdAt: existing.createdAt || normalized.createdAt,
+        closedAt: normalized.status === 'closed' ? (normalized.closedAt || existing.closedAt || new Date().toISOString()) : ''
+    };
+}
+
+function sortEventsDescending(events) {
+    return [...events].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+}
+
+function sanitizeSignaturePayload(payload) {
+    const safe = payload || {};
+    const emergency = safe.emergencyContact || {};
+    const additionalChildren = Array.isArray(safe.additionalChildren) ?
+        safe.additionalChildren
+        .filter((c) => c && (c.name || c.id))
+        .map((c) => ({ name: String(c.name || '').trim(), id: String(c.id || '').trim() })) : [];
+
+    return {
+        signatureId: safe.signatureId || ('SIG-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8)),
+        participantName: String(safe.participantName || safe.fullName || '').trim(),
+        fullName: String(safe.fullName || '').trim(),
+        idNumber: String(safe.idNumber || '').trim(),
+        dateOfBirth: String(safe.dateOfBirth || '').trim(),
+        city: String(safe.city || '').trim(),
+        street: String(safe.street || '').trim(),
+        address: String(safe.address || '').trim(),
+        phone: String(safe.phone || '').trim(),
+        email: String(safe.email || '').trim(),
+        emergencyContact: {
+            name: String(emergency.name || '').trim(),
+            phone: String(emergency.phone || '').trim(),
+            relation: String(emergency.relation || '').trim()
+        },
+        isMinor: Boolean(safe.isMinor),
+        guardianName: String(safe.guardianName || '').trim(),
+        guardianId: String(safe.guardianId || '').trim(),
+        guardianDob: String(safe.guardianDob || '').trim(),
+        additionalChildren,
+        waiverAgreed: Boolean(safe.waiverAgreed),
+        emergencyContactConsent: Boolean(safe.emergencyContactConsent),
+        signature: typeof safe.signature === 'string' ? safe.signature : '',
+        signedAt: safe.signedAt || new Date().toISOString(),
+        signatureDate: String(safe.signatureDate || '').trim(),
+        signatureTime: String(safe.signatureTime || '').trim()
+    };
+}
+
+function signatureIdentityKey(s) {
+    if (!s) return '';
+    if (s.signatureId) return 's:' + s.signatureId;
+    return [
+        (s.fullName || '').trim().toLowerCase(),
+        (s.idNumber || '').trim(),
+        (s.signedAt || '').slice(0, 19)
+    ].join('|');
+}
+
+function normalizeEventRecord(payload) {
+    const safe = payload || {};
+    return {
+        id: String(safe.id || safe.eventId || '').trim() || ('EVT-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8).toUpperCase()),
+        title: String(safe.title || '').trim(),
+        datetime: String(safe.datetime || '').trim(),
+        responsible: String(safe.responsible || '').trim(),
+        phone: String(safe.phone || '').trim(),
+        participants: Number(safe.participants) || 0,
+        type: String(safe.type || 'other').trim(),
+        notes: String(safe.notes || '').trim(),
+        status: String(safe.status || 'active').trim(),
+        createdAt: safe.createdAt || new Date().toISOString(),
+        updatedAt: safe.updatedAt || new Date().toISOString(),
+        closedAt: safe.closedAt || '',
+        signatures: Array.isArray(safe.signatures) ? safe.signatures.map(sanitizeSignaturePayload) : []
+    };
+}
+
+function eventIdentityKey(event) {
+    return String(event && (event.id || event.eventId) || '').trim();
+}
+
+async function ensureEventsStore() {
+    await fsPromises.mkdir(path.dirname(EVENTS_FILE), { recursive: true });
+    try {
+        await fsPromises.access(EVENTS_FILE);
+    } catch {
+        await fsPromises.writeFile(EVENTS_FILE, '[]', 'utf8');
+    }
+}
+
+async function readEventsStore() {
+    await ensureEventsStore();
+    const raw = await fsPromises.readFile(EVENTS_FILE, 'utf8');
+    try {
+        const parsed = JSON.parse(raw || '[]');
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+}
+
+async function writeEventsStore(events) {
+    await ensureEventsStore();
+    await fsPromises.writeFile(EVENTS_FILE, JSON.stringify(events, null, 2), 'utf8');
+}
+
+async function upsertEventRecord(payload) {
+    const record = normalizeEventRecord(payload);
+    const events = await readEventsStore();
+    const index = events.findIndex((e) => eventIdentityKey(e) === record.id);
+    if (index >= 0) {
+        events[index] = {...events[index], ...record, id: record.id };
+    } else {
+        events.unshift(record);
+    }
+    await writeEventsStore(events);
+    return record;
+}
+
+async function deleteEventRecord(eventId) {
+    const id = String(eventId || '').trim();
+    const events = await readEventsStore();
+    const next = events.filter((e) => eventIdentityKey(e) !== id);
+    await writeEventsStore(next);
+    return next;
+}
+
+async function appendSignatureToEventRecord(eventId, signature, meta = {}) {
+    const id = String(eventId || '').trim();
+    if (!id) return null;
+
+    const events = await readEventsStore();
+    const index = events.findIndex((e) => eventIdentityKey(e) === id);
+    const record = index >= 0 ? events[index] : {
+        id,
+        title: meta.eventTitle || '',
+        participants: meta.participants || 0,
+        status: 'active',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        signatures: []
+    };
+
+    record.signatures = Array.isArray(record.signatures) ? record.signatures : [];
+    record.signatures.push(signature);
+    record.title = meta.eventTitle || record.title || '';
+    record.participants = meta.participants || record.participants || 0;
+    record.updatedAt = new Date().toISOString();
+
+    if (index >= 0) {
+        events[index] = record;
+    } else {
+        events.unshift(record);
+    }
+
+    await writeEventsStore(events);
+    return record;
 }
 
 app.get('/api/events/:eventId/signatures', async(req, res) => {
@@ -154,6 +323,119 @@ app.get('/api/events/:eventId/signatures', async(req, res) => {
     } catch (error) {
         console.error('Failed loading event signatures:', error);
         res.status(500).json({ error: 'Failed to load event signatures' });
+    }
+});
+
+app.get('/api/events', async(req, res) => {
+    try {
+        const events = await readEventsStore();
+        res.json(sortEventsDescending(events));
+    } catch (error) {
+        console.error('Failed loading events:', error);
+        res.status(500).json({ error: 'Failed loading events' });
+    }
+});
+
+app.get('/api/events/:eventId', async(req, res) => {
+    try {
+        const { eventId } = req.params;
+        const events = await readEventsStore();
+        const event = events.find((e) => e.id === eventId);
+        if (!event) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
+        res.json(event);
+    } catch (error) {
+        console.error('Failed loading event:', error);
+        res.status(500).json({ error: 'Failed loading event' });
+    }
+});
+
+app.post('/api/events', async(req, res) => {
+    try {
+        const payload = normalizeEventPayload(req.body && req.body.event ? req.body.event : req.body);
+        const events = await readEventsStore();
+        const id = payload.id || Math.random().toString(36).substring(2, 10).toUpperCase();
+        const incoming = {...payload, id };
+        const idx = events.findIndex((e) => e.id === id);
+        const saved = idx >= 0 ? mergeEventRecord(events[idx], incoming) : mergeEventRecord({ id, createdAt: incoming.createdAt }, incoming);
+
+        if (idx >= 0) {
+            events[idx] = saved;
+        } else {
+            events.unshift(saved);
+        }
+
+        await writeEventsStore(events);
+        res.json({ success: true, event: saved });
+    } catch (error) {
+        console.error('Failed saving event:', error);
+        res.status(500).json({ error: 'Failed saving event' });
+    }
+});
+
+app.put('/api/events/:eventId', async(req, res) => {
+    try {
+        const { eventId } = req.params;
+        const events = await readEventsStore();
+        const idx = events.findIndex((e) => e.id === eventId);
+        if (idx < 0) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
+
+        const updated = mergeEventRecord(events[idx], {...req.body, id: eventId });
+        events[idx] = updated;
+        await writeEventsStore(events);
+        res.json({ success: true, event: updated });
+    } catch (error) {
+        console.error('Failed updating event:', error);
+        res.status(500).json({ error: 'Failed updating event' });
+    }
+});
+
+app.delete('/api/events/:eventId', async(req, res) => {
+    try {
+        const { eventId } = req.params;
+        const events = await readEventsStore();
+        const filtered = events.filter((e) => e.id !== eventId);
+        await writeEventsStore(filtered);
+        res.json({ success: true, eventId });
+    } catch (error) {
+        console.error('Failed deleting event:', error);
+        res.status(500).json({ error: 'Failed deleting event' });
+    }
+});
+
+app.post('/api/events/import', async(req, res) => {
+    try {
+        const incomingRaw = Array.isArray(req.body && req.body.events) ? req.body.events : [];
+        if (!incomingRaw.length) {
+            return res.json({ success: true, imported: 0, skipped: 0 });
+        }
+
+        const incoming = incomingRaw.map(normalizeEventPayload).filter((e) => e.id && e.title);
+        const events = await readEventsStore();
+        const byId = new Map(events.map((e) => [e.id, e]));
+        let imported = 0;
+        let skipped = 0;
+
+        for (const event of incoming) {
+            const existing = byId.get(event.id);
+            if (existing) {
+                byId.set(event.id, mergeEventRecord(existing, event));
+                skipped++;
+            } else {
+                byId.set(event.id, event);
+                imported++;
+            }
+        }
+
+        const merged = sortEventsDescending(Array.from(byId.values()));
+        await writeEventsStore(merged);
+        res.json({ success: true, imported, skipped, total: merged.length });
+    } catch (error) {
+        console.error('Failed importing events:', error);
+        res.status(500).json({ error: 'Failed importing events' });
     }
 });
 
@@ -191,6 +473,56 @@ app.post('/api/events/:eventId/signatures', async(req, res) => {
     } catch (error) {
         console.error('Failed saving event signature:', error);
         res.status(500).json({ error: 'Failed saving event signature' });
+    }
+});
+
+// Bulk import of historic signatures (one-time migration from localStorage).
+// Deduplicates by (fullName + idNumber + signedAt) so the same signature is never imported twice.
+app.post('/api/events/:eventId/signatures/import', async(req, res) => {
+    try {
+        const { eventId } = req.params;
+        const incomingRaw = Array.isArray(req.body && req.body.signatures) ? req.body.signatures : [];
+        if (!incomingRaw.length) {
+            return res.json({ success: true, eventId, imported: 0, skipped: 0 });
+        }
+
+        const incoming = incomingRaw.map(sanitizeSignaturePayload).filter((s) => s.fullName);
+
+        const store = await readEventSignaturesStore();
+        const existing = store[eventId] || { eventId, signatures: [] };
+        existing.eventId = eventId;
+        existing.eventTitle = (req.body && req.body.eventTitle) || existing.eventTitle || '';
+        existing.participants = (req.body && Number(req.body.participants)) || existing.participants || 0;
+        existing.signatures = Array.isArray(existing.signatures) ? existing.signatures : [];
+
+        const existingKeys = new Set(existing.signatures.map(signatureIdentityKey));
+        let imported = 0;
+        let skipped = 0;
+        for (const sig of incoming) {
+            const key = signatureIdentityKey(sig);
+            if (existingKeys.has(key)) {
+                skipped++;
+                continue;
+            }
+            existing.signatures.push(sig);
+            existingKeys.add(key);
+            imported++;
+        }
+
+        existing.updatedAt = new Date().toISOString();
+        store[eventId] = existing;
+        await writeEventSignaturesStore(store);
+
+        res.json({
+            success: true,
+            eventId,
+            imported,
+            skipped,
+            signedCount: existing.signatures.length
+        });
+    } catch (error) {
+        console.error('Failed importing event signatures:', error);
+        res.status(500).json({ error: 'Failed importing event signatures' });
     }
 });
 

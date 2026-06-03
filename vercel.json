@@ -1,39 +1,37 @@
 {
-  "redirects": [
-    {
-      "source": "/order.html",
-      "destination": "/order",
-      "permanent": true
-    },
-    {
-      "source": "/buy",
-      "destination": "/order",
-      "permanent": true
-    },
-    {
-      "source": "/checkout",
-      "destination": "/order",
-      "permanent": true
-    },
-    {
-      "source": "/shop/order",
-      "destination": "/order",
-      "permanent": true
-    },
-    {
-      "source": "/purchase",
-      "destination": "/order",
-      "permanent": true
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/order",
-      "destination": "/order.html"
-    },
-    {
-      "source": "/e",
-      "destination": "/api/e"
-    }
-  ]
+    "redirects": [{
+            "source": "/order.html",
+            "destination": "/order",
+            "permanent": true
+        },
+        {
+            "source": "/buy",
+            "destination": "/order",
+            "permanent": true
+        },
+        {
+            "source": "/checkout",
+            "destination": "/order",
+            "permanent": true
+        },
+        {
+            "source": "/shop/order",
+            "destination": "/order",
+            "permanent": true
+        },
+        {
+            "source": "/purchase",
+            "destination": "/order",
+            "permanent": true
+        }
+    ],
+    "rewrites": [{
+            "source": "/order",
+            "destination": "/order.html"
+        },
+        {
+            "source": "/e",
+            "destination": "/api/e"
+        }
+    ]
 }

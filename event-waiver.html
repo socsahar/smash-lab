@@ -1337,6 +1337,7 @@
                             evRecord.participants = sharedData.participants;
                         }
                     }
+                    await migrateLegacyEventSignatures(eventId, evRecord);
                     if (evRecord.status && evRecord.status !== 'active') {
                         showEventError('האירוע סגור', 'לא ניתן יותר לחתום על כתב הוויתור עבור אירוע זה.');
                         return;
@@ -1686,28 +1687,76 @@
 
         async function publishSharedEventSignature(eventId, waiverData, evRecord) {
             try {
+                const signaturePayload = {
+                    signatureId: 'SIG-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+                    participantName: waiverData.fullName,
+                    fullName: waiverData.fullName,
+                    idNumber: waiverData.idNumber,
+                    dateOfBirth: waiverData.dateOfBirth,
+                    city: waiverData.city,
+                    street: waiverData.street,
+                    address: waiverData.address,
+                    phone: waiverData.phone,
+                    email: waiverData.email,
+                    emergencyContact: waiverData.emergencyContact || {},
+                    isMinor: Boolean(waiverData.guardianName),
+                    guardianName: waiverData.guardianName || '',
+                    guardianId: waiverData.guardianId || '',
+                    guardianDob: waiverData.guardianDob || '',
+                    additionalChildren: Array.isArray(waiverData.additionalChildren) ? waiverData.additionalChildren : [],
+                    waiverAgreed: waiverData.waiverAgreed,
+                    emergencyContactConsent: waiverData.emergencyContactConsent,
+                    signature: waiverData.signature,
+                    signatureDate: waiverData.signatureDate,
+                    signatureTime: waiverData.signatureTime,
+                    signedAt: waiverData.signedAt
+                };
+
                 const res = await fetch(`/api/events/${encodeURIComponent(eventId)}/signatures`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         eventTitle: (evRecord && evRecord.title) || '',
                         participants: (evRecord && evRecord.participants) || 0,
-                        signature: {
-                            participantName: waiverData.fullName,
-                            fullName: waiverData.fullName,
-                            idNumber: waiverData.idNumber,
-                            phone: waiverData.phone,
-                            email: waiverData.email,
-                            signatureDate: waiverData.signatureDate,
-                            signatureTime: waiverData.signatureTime,
-                            signedAt: waiverData.signedAt
-                        }
+                        signature: signaturePayload
                     })
                 });
                 if (!res.ok) return null;
                 return await res.json();
             } catch (e) {
                 console.warn('Shared event signature publish failed:', e);
+                return null;
+            }
+        }
+
+        async function migrateLegacyEventSignatures(eventId, evRecord) {
+            try {
+                const key = 'smashlabs_event_migrated_' + eventId;
+                if (localStorage.getItem(key) === '1') return null;
+                const legacyEvents = JSON.parse(localStorage.getItem('smashlabs_events') || '[]');
+                const legacyRecord = legacyEvents.find((e) => e && e.id === eventId);
+                const signatures = legacyRecord && Array.isArray(legacyRecord.signatures) ? legacyRecord.signatures : [];
+                if (!signatures.length) {
+                    localStorage.setItem(key, '1');
+                    return null;
+                }
+
+                const res = await fetch(`/api/events/${encodeURIComponent(eventId)}/signatures/import`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        eventTitle: (evRecord && evRecord.title) || '',
+                        participants: (evRecord && evRecord.participants) || 0,
+                        signatures
+                    })
+                });
+                if (res.ok) {
+                    localStorage.setItem(key, '1');
+                    return await res.json();
+                }
+                return null;
+            } catch (e) {
+                console.warn('Legacy event signature migration failed:', e);
                 return null;
             }
         }

@@ -2343,6 +2343,16 @@
                     </table>
                 </div>
             </div>
+
+            <div id="signature-details-modal" style="display:none; position:fixed; inset:0; z-index:3000; background:rgba(0,0,0,.72); align-items:center; justify-content:center; padding:1rem;">
+                <div style="width:min(720px, 100%); max-height:90vh; overflow:auto; background:#111; border:1px solid rgba(255,255,255,.14); border-radius:18px; padding:1.25rem; color:#fff; box-shadow:0 30px 80px rgba(0,0,0,.45);">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1rem;">
+                        <h3 id="signature-details-title" style="margin:0; color:#ff6b00; font-size:1.2rem;"></h3>
+                        <button class="btn-copy action-btn" type="button" onclick="closeSignatureDetails()">סגור</button>
+                    </div>
+                    <div id="signature-details-body"></div>
+                </div>
+            </div>
         </section>
 
         <!-- Coupons Section -->
@@ -3666,20 +3676,76 @@
         // ==================== LARGE EVENTS FUNCTIONALITY ====================
 
         const EVENTS_KEY = 'smashlabs_events';
+        const EVENTS_MIGRATION_KEY = 'smashlabs_events_migrated_v2';
 
         function getEvents() {
             return JSON.parse(localStorage.getItem(EVENTS_KEY) || '[]');
         }
 
-        function saveEvents(events) {
+        function saveLocalEvents(events) {
             localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+        }
+
+        async function fetchServerEvents() {
+            try {
+                const res = await fetch('/api/events');
+                if (!res.ok) return null;
+                return await res.json();
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function saveEvents(events) {
+            saveLocalEvents(events);
+            try {
+                const res = await fetch('/api/events/import', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ events })
+                });
+                return res.ok;
+            } catch (e) {
+                return false;
+            }
         }
 
         function generateEventId() {
             return Math.random().toString(36).substring(2, 10).toUpperCase();
         }
 
-        function submitNewEvent(e) {
+        async function migrateLegacyEventsToServer() {
+            if (localStorage.getItem(EVENTS_MIGRATION_KEY) === '1') return;
+            const localEvents = getEvents();
+            if (!localEvents.length) {
+                localStorage.setItem(EVENTS_MIGRATION_KEY, '1');
+                return;
+            }
+
+            const serverSaved = await saveEvents(localEvents);
+            if (serverSaved) {
+                for (const ev of localEvents) {
+                    if (Array.isArray(ev.signatures) && ev.signatures.length) {
+                        try {
+                            await fetch(`/api/events/${encodeURIComponent(ev.id)}/signatures/import`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    eventTitle: ev.title,
+                                    participants: ev.participants || 0,
+                                    signatures: ev.signatures
+                                })
+                            });
+                        } catch (e) {
+                            console.warn('Failed migrating local signatures for event', ev.id, e);
+                        }
+                    }
+                }
+                localStorage.setItem(EVENTS_MIGRATION_KEY, '1');
+            }
+        }
+
+        async function submitNewEvent(e) {
             e.preventDefault();
             const title        = document.getElementById('eventTitle').value.trim();
             const datetime     = document.getElementById('eventDatetime').value;
@@ -3698,12 +3764,11 @@
                 createdAt: new Date().toISOString()
             };
 
-            const events = getEvents();
-            events.unshift(event);
-            saveEvents(events);
+            const events = [event, ...getEvents()];
+            await saveEvents(events);
 
             document.getElementById('createEventForm').reset();
-            loadEvents();
+            await loadEvents();
 
             const link = buildWaiverLink(id, title);
             window.customModal.success(
@@ -3741,6 +3806,44 @@
                 .replace(/'/g, '&#39;');
         }
 
+        function getSignatureDisplayName(s) {
+            return s.participantName || s.fullName || s.guardianName || 'ללא שם';
+        }
+
+        function getSignatureDetailHtml(s) {
+            const children = Array.isArray(s.additionalChildren) && s.additionalChildren.length
+                ? `<div style="margin-top:.75rem;"><strong>ילדים נוספים:</strong><div style="margin-top:.35rem;">${s.additionalChildren.map((c) => `${escapeEventHtml(c.name || '')}${c.id ? ` (${escapeEventHtml(c.id)})` : ''}`).join('<br>')}</div></div>`
+                : '';
+            return `
+                <div style="display:grid; gap:.55rem; text-align:right; line-height:1.6;">
+                    <div><strong>שם:</strong> ${escapeEventHtml(getSignatureDisplayName(s))}</div>
+                    <div><strong>ת.ז:</strong> ${escapeEventHtml(s.idNumber || '-')}</div>
+                    <div><strong>טלפון:</strong> ${escapeEventHtml(s.phone || '-')}</div>
+                    <div><strong>אימייל:</strong> ${escapeEventHtml(s.email || '-')}</div>
+                    <div><strong>תאריך לידה:</strong> ${escapeEventHtml(s.dateOfBirth || '-')}</div>
+                    <div><strong>עיר:</strong> ${escapeEventHtml(s.city || '-')}</div>
+                    <div><strong>רחוב:</strong> ${escapeEventHtml(s.street || '-')}</div>
+                    <div><strong>נחתם:</strong> ${escapeEventHtml(new Date(s.signedAt || Date.now()).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' }))}</div>
+                    ${s.guardianName ? `<div><strong>אפוטרופוס:</strong> ${escapeEventHtml(s.guardianName)}${s.guardianId ? ` · ${escapeEventHtml(s.guardianId)}` : ''}</div>` : ''}
+                    ${children}
+                    ${s.signature ? `<div style="margin-top:.75rem;"><strong>חתימה:</strong><div style="margin-top:.35rem;border:1px solid rgba(255,255,255,.15);padding:.5rem;background:#111;border-radius:8px;"><img src="${escapeEventHtml(s.signature)}" alt="signature" style="max-width:100%;height:auto;display:block;"></div></div>` : ''}
+                </div>`;
+        }
+
+        function openSignatureDetails(eventTitle, signature) {
+            const modal = document.getElementById('signature-details-modal');
+            const titleEl = document.getElementById('signature-details-title');
+            const bodyEl = document.getElementById('signature-details-body');
+            titleEl.textContent = `${eventTitle || 'אירוע'} - ${getSignatureDisplayName(signature)}`;
+            bodyEl.innerHTML = getSignatureDetailHtml(signature);
+            modal.style.display = 'flex';
+        }
+
+        function closeSignatureDetails() {
+            const modal = document.getElementById('signature-details-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
         async function fetchSharedSignaturesSummary(eventId) {
             try {
                 const res = await fetch(`/api/events/${encodeURIComponent(eventId)}/signatures`);
@@ -3752,7 +3855,14 @@
         }
 
         async function loadEvents() {
-            const events = getEvents();
+            await migrateLegacyEventsToServer();
+
+            const serverEvents = await fetchServerEvents();
+            const events = Array.isArray(serverEvents) && serverEvents.length ? serverEvents : getEvents();
+            if (Array.isArray(serverEvents) && serverEvents.length) {
+                saveLocalEvents(serverEvents);
+            }
+
             const container = document.getElementById('eventsListContainer');
             if (!events.length) {
                 container.innerHTML = '<p style="color:#888; text-align:center; padding:20px;">אין אירועים עדיין. צור אירוע חדש למעלה.</p>';
@@ -3781,10 +3891,21 @@
                 const pct    = total > 0 ? Math.min(100, Math.round(signed / total * 100)) : 0;
                 const date   = ev.datetime ? new Date(ev.datetime).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' }) : '-';
                 const link   = buildWaiverLink(ev.id, ev.title);
-                const recentSignatures = (sharedSignatures || ev.signatures || []).slice(-5).reverse();
-                const getTrackedName = (s) => s.participantName || s.fullName || 'ללא שם';
-                const signerItemsHtml = recentSignatures.length
-                    ? `<div style="margin-top:10px; color:#cfd8dc; font-size:0.85rem; line-height:1.5;">${recentSignatures.map(s => `• ${escapeEventHtml(getTrackedName(s))}<span style="color:#888;"> (${new Date(s.signedAt || Date.now()).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' })})</span>`).join('<br>')}</div>`
+                const allSignatures = (sharedSignatures || ev.signatures || []).slice().reverse();
+                const recentSignatures = allSignatures.slice(0, 5);
+                const getTrackedName = (s) => s.participantName || s.fullName || s.guardianName || 'ללא שם';
+                const signerItemsHtml = allSignatures.length
+                    ? `
+                    <details style="margin-top:10px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:.65rem .8rem;">
+                        <summary style="cursor:pointer; color:#ffb87a; font-weight:700;">כל החותמים (${allSignatures.length})</summary>
+                        <div style="margin-top:.75rem; display:grid; gap:.45rem; font-size:0.9rem;">
+                            ${allSignatures.map((s, idx) => `
+                                <button type="button" class="action-btn" style="text-align:right; justify-content:flex-start; padding:.55rem .7rem; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);" onclick='openSignatureDetails(${JSON.stringify(ev.title)}, ${JSON.stringify(s)})'>
+                                    ${idx + 1}. ${escapeEventHtml(getTrackedName(s))} <span style="color:#888;">(${new Date(s.signedAt || Date.now()).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' })})</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </details>`
                     : '<div style="margin-top:10px; color:#888; font-size:0.85rem;">עדיין אין חתימות</div>';
                 const lastSignerHtml = recentSignatures.length
                     ? `<div style="margin-top:8px; font-weight:bold; color:#4caf50;">✅ ${escapeEventHtml(getTrackedName(recentSignatures[0]))} חתם/ה</div>`
@@ -3845,24 +3966,39 @@
             window.open(`https://wa.me/?text=${msg}`, '_blank');
         }
 
-        function closeEvent(id) {
+        async function closeEvent(id) {
             if (!confirm('לסגור את האירוע?')) return;
             const events = getEvents();
             const ev = events.find(e => e.id === id);
-            if (ev) { ev.status = 'closed'; saveEvents(events); loadEvents(); }
+            if (ev) {
+                ev.status = 'closed';
+                ev.closedAt = new Date().toISOString();
+                await saveEvents(events);
+                await loadEvents();
+            }
         }
 
-        function reopenEvent(id) {
+        async function reopenEvent(id) {
             const events = getEvents();
             const ev = events.find(e => e.id === id);
-            if (ev) { ev.status = 'active'; saveEvents(events); loadEvents(); }
+            if (ev) {
+                ev.status = 'active';
+                ev.closedAt = '';
+                await saveEvents(events);
+                await loadEvents();
+            }
         }
 
-        function deleteEvent(id) {
+        async function deleteEvent(id) {
             if (!confirm('למחוק את האירוע לצמיתות?')) return;
             const events = getEvents().filter(e => e.id !== id);
-            saveEvents(events);
-            loadEvents();
+            await saveEvents(events);
+            try {
+                await fetch(`/api/events/${encodeURIComponent(id)}`, { method: 'DELETE' });
+            } catch (e) {
+                console.warn('Failed deleting server event', e);
+            }
+            await loadEvents();
         }
 
         // Keep refreshing the events list while the events tab is open
