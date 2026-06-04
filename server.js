@@ -26,8 +26,9 @@ const supabasePersistence = process.env.SUPABASE_URL && process.env.SUPABASE_SER
 app.use(cors());
 // Increase JSON body limit so waiver payloads carrying a base64 PNG signature
 // image (often 100-500KB) are accepted. Default Express limit is only 100KB.
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Also large enough for admin GETs that aggregate dozens of signatures.
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Serve photos directory with proper MIME types
 app.use('/photos', express.static(path.join(__dirname, 'photos'), {
@@ -722,6 +723,7 @@ app.post('/api/events/:eventId/signatures', async(req, res) => {
         }
 
         const row = buildSignatureRow(eventId, signature, { eventTitle, participants });
+        let supabaseSaved = false;
 
         if (hasSupabasePersistence()) {
             const { error: upsertError } = await supabasePersistence
@@ -729,6 +731,8 @@ app.post('/api/events/:eventId/signatures', async(req, res) => {
                 .upsert([row], { onConflict: 'signature_id' });
             if (upsertError) {
                 logPersistenceFallback('signatures', upsertError);
+            } else {
+                supabaseSaved = true;
             }
         }
 
@@ -739,7 +743,13 @@ app.post('/api/events/:eventId/signatures', async(req, res) => {
         }
 
         store[eventId] = existing;
-        await writeEventSignaturesStore(store);
+
+        // If Supabase already stored the new row, skip the full-store rewrite
+        // (which would re-upload every signature on every POST). Only the file
+        // fallback needs the full snapshot.
+        if (!supabaseSaved) {
+            await writeEventSignaturesStore(store);
+        }
 
         const lastSignature = existing.signatures[existing.signatures.length - 1] || null;
         res.json({
