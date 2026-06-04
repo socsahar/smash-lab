@@ -24,7 +24,10 @@ const supabasePersistence = process.env.SUPABASE_URL && process.env.SUPABASE_SER
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+// Increase JSON body limit so waiver payloads carrying a base64 PNG signature
+// image (often 100-500KB) are accepted. Default Express limit is only 100KB.
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve photos directory with proper MIME types
 app.use('/photos', express.static(path.join(__dirname, 'photos'), {
