@@ -706,19 +706,32 @@ app.post('/api/events/:eventId/signatures', async(req, res) => {
         existing.signatures = dedupeSignatures(existing.signatures);
 
         const incomingKey = signatureDedupKey(signature);
-        const exists = existing.signatures.some((s) => signatureDedupKey(s) === incomingKey);
-        if (!exists) {
-            const row = buildSignatureRow(eventId, signature, { eventTitle, participants });
+        const existingIdx = existing.signatures.findIndex((s) => signatureDedupKey(s) === incomingKey);
+        const replaced = existingIdx >= 0;
 
-            if (hasSupabasePersistence()) {
-                const { error: upsertError } = await supabasePersistence
-                    .from(SUPABASE_EVENT_SIGNATURES_TABLE)
-                    .upsert([row], { onConflict: 'signature_id' });
-                if (upsertError) {
-                    logPersistenceFallback('signatures', upsertError);
-                }
+        // Re-use the existing signatureId when the same person re-signs, so the
+        // Supabase row is updated in place instead of creating a duplicate row.
+        if (replaced) {
+            const prior = existing.signatures[existingIdx] || {};
+            if (prior.signatureId) {
+                signature.signatureId = prior.signatureId;
             }
+        }
 
+        const row = buildSignatureRow(eventId, signature, { eventTitle, participants });
+
+        if (hasSupabasePersistence()) {
+            const { error: upsertError } = await supabasePersistence
+                .from(SUPABASE_EVENT_SIGNATURES_TABLE)
+                .upsert([row], { onConflict: 'signature_id' });
+            if (upsertError) {
+                logPersistenceFallback('signatures', upsertError);
+            }
+        }
+
+        if (replaced) {
+            existing.signatures[existingIdx] = signature;
+        } else {
             existing.signatures.push(signature);
         }
 
@@ -728,7 +741,8 @@ app.post('/api/events/:eventId/signatures', async(req, res) => {
         const lastSignature = existing.signatures[existing.signatures.length - 1] || null;
         res.json({
             success: true,
-            duplicate: Boolean(exists),
+            replaced,
+            duplicate: false,
             eventId,
             signedCount: existing.signatures.length,
             lastSignerName: lastSignature ? lastSignature.fullName || '' : '',
