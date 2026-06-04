@@ -16,7 +16,8 @@ const PORT = process.env.PORT || 8000;
 const EVENT_SIGNATURES_FILE = path.join(__dirname, 'data', 'event-signatures.json');
 const EVENTS_FILE = path.join(__dirname, 'data', 'events.json');
 const SUPABASE_EVENTS_TABLE = 'smashlab_events';
-const SUPABASE_EVENT_SIGNATURES_TABLE = 'smashlab_event_signatures';
+const SUPABASE_EVENT_SIGNATURES_TABLE = 'smashlab_event_signature_entries';
+const SUPABASE_LEGACY_EVENT_SIGNATURES_TABLE = 'smashlab_event_signatures';
 const supabasePersistence = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY ?
     createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY) :
     null;
@@ -121,27 +122,93 @@ function logPersistenceFallback(kind, error) {
     console.warn(`Supabase ${kind} store unavailable, falling back to local file storage. Deploys may reset this data.`, error && (error.message || error));
 }
 
+function buildSignatureRow(eventId, signature, meta = {}) {
+    const sanitized = sanitizeSignaturePayload(signature || {});
+    return {
+        signature_id: sanitized.signatureId || ('SIG-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8)),
+        event_id: String(eventId || '').trim(),
+        payload: {
+            ...sanitized,
+            eventId: String(eventId || '').trim(),
+            eventTitle: String(meta.eventTitle || '').trim(),
+            participants: Number(meta.participants) || 0
+        },
+        created_at: sanitized.signedAt || new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    };
+}
+
+function aggregateSignatureRows(rows) {
+    const store = {};
+    const sortedRows = Array.isArray(rows) ? rows.slice().sort((a, b) => new Date(a.created_at || a.updated_at || 0) - new Date(b.created_at || b.updated_at || 0)) : [];
+
+    for (const row of sortedRows) {
+        const payload = row && row.payload && typeof row.payload === 'object' ? row.payload : {};
+        const eventId = String(row.event_id || payload.eventId || '').trim();
+        if (!eventId) continue;
+
+        if (!store[eventId]) {
+            store[eventId] = {
+                eventId,
+                eventTitle: String(payload.eventTitle || '').trim(),
+                participants: Number(payload.participants) || 0,
+                updatedAt: row.updated_at || payload.updatedAt || '',
+                signatures: []
+            };
+        }
+
+        const signature = sanitizeSignaturePayload({
+            ...payload,
+            signatureId: row.signature_id || payload.signatureId,
+            signedAt: row.created_at || payload.signedAt || row.updated_at || payload.updatedAt
+        });
+
+        store[eventId].eventTitle = String(payload.eventTitle || store[eventId].eventTitle || '').trim();
+        store[eventId].participants = Number(payload.participants) || store[eventId].participants || 0;
+        store[eventId].updatedAt = row.updated_at || payload.updatedAt || store[eventId].updatedAt || '';
+        store[eventId].signatures.push(signature);
+    }
+
+    return store;
+}
+
+function aggregateLegacySignatureRows(rows) {
+    const store = {};
+    for (const row of Array.isArray(rows) ? rows : []) {
+        const payload = row && row.payload && typeof row.payload === 'object' ? row.payload : {};
+        const eventId = String(row.event_id || payload.eventId || '').trim();
+        if (!eventId) continue;
+
+        const signatures = Array.isArray(payload.signatures) ? payload.signatures.map((sig) => sanitizeSignaturePayload(sig)) : [];
+        store[eventId] = {
+            eventId,
+            eventTitle: String(payload.eventTitle || '').trim(),
+            participants: Number(payload.participants) || 0,
+            updatedAt: payload.updatedAt || row.updated_at || '',
+            signatures
+        };
+    }
+    return store;
+}
+
 async function readEventSignaturesStore() {
     if (hasSupabasePersistence()) {
         const { data, error } = await supabasePersistence
             .from(SUPABASE_EVENT_SIGNATURES_TABLE)
-            .select('event_id, payload, updated_at');
+            .select('event_id, signature_id, payload, created_at, updated_at')
+            .order('created_at', { ascending: true });
 
         if (!error) {
-            const store = {};
-            for (const row of data || []) {
-                const payload = row && row.payload && typeof row.payload === 'object' ? row.payload : {};
-                const eventId = String(row.event_id || payload.eventId || '').trim();
-                if (!eventId) continue;
-                store[eventId] = {
-                    eventId,
-                    eventTitle: String(payload.eventTitle || '').trim(),
-                    participants: Number(payload.participants) || 0,
-                    updatedAt: payload.updatedAt || row.updated_at || '',
-                    signatures: Array.isArray(payload.signatures) ? payload.signatures.map(sanitizeSignaturePayload) : []
-                };
+            const store = aggregateSignatureRows(data || []);
+            if (Object.keys(store).length) return store;
+
+            const legacy = await supabasePersistence
+                .from(SUPABASE_LEGACY_EVENT_SIGNATURES_TABLE)
+                .select('event_id, payload, updated_at');
+
+            if (!legacy.error) {
+                return aggregateLegacySignatureRows(legacy.data || []);
             }
-            return store;
         }
 
         logPersistenceFallback('signatures', error);
@@ -158,57 +225,31 @@ async function readEventSignaturesStore() {
 
 async function writeEventSignaturesStore(store) {
     if (hasSupabasePersistence()) {
-        const rows = Object.entries(store || {}).map(([eventId, rawRecord]) => {
+        const rows = [];
+        for (const [eventId, rawRecord] of Object.entries(store || {})) {
             const record = rawRecord || {};
-            return {
-                event_id: String(eventId || record.eventId || '').trim(),
-                payload: {
-                    eventId: String(eventId || record.eventId || '').trim(),
-                    eventTitle: String(record.eventTitle || '').trim(),
-                    participants: Number(record.participants) || 0,
-                    updatedAt: record.updatedAt || new Date().toISOString(),
-                    signatures: Array.isArray(record.signatures) ? record.signatures.map(sanitizeSignaturePayload) : []
-                },
-                updated_at: new Date().toISOString()
-            };
-        }).filter((row) => row.event_id);
+            const signatures = Array.isArray(record.signatures) ? record.signatures : [];
+            for (const signature of signatures) {
+                rows.push(buildSignatureRow(eventId, signature, {
+                    eventTitle: record.eventTitle,
+                    participants: record.participants
+                }));
+            }
+        }
 
         const { data: existingRows, error: existingError } = await supabasePersistence
             .from(SUPABASE_EVENT_SIGNATURES_TABLE)
-            .select('event_id');
+            .select('signature_id');
 
         if (!existingError) {
             if (rows.length) {
                 const { error: upsertError } = await supabasePersistence
                     .from(SUPABASE_EVENT_SIGNATURES_TABLE)
-                    .upsert(rows, { onConflict: 'event_id' });
-                if (!upsertError) {
-                    const nextIds = new Set(rows.map((row) => row.event_id));
-                    const removedIds = (existingRows || [])
-                        .map((row) => row.event_id)
-                        .filter((eventId) => !nextIds.has(eventId));
-
-                    if (removedIds.length) {
-                        await supabasePersistence
-                            .from(SUPABASE_EVENT_SIGNATURES_TABLE)
-                            .delete()
-                            .in('event_id', removedIds);
-                    }
-                    return;
-                }
+                    .upsert(rows, { onConflict: 'signature_id' });
+                if (!upsertError) return;
                 logPersistenceFallback('signatures', upsertError);
             } else {
-                const existingIds = (existingRows || []).map((row) => row.event_id);
-                if (existingIds.length) {
-                    const { error: deleteError } = await supabasePersistence
-                        .from(SUPABASE_EVENT_SIGNATURES_TABLE)
-                        .delete()
-                        .in('event_id', existingIds);
-                    if (!deleteError) return;
-                    logPersistenceFallback('signatures', deleteError);
-                } else {
-                    return;
-                }
+                return;
             }
         } else {
             logPersistenceFallback('signatures', existingError);
@@ -655,16 +696,29 @@ app.post('/api/events/:eventId/signatures', async(req, res) => {
 
         const store = await readEventSignaturesStore();
         const existing = store[eventId] || { eventId, signatures: [] };
+        const eventTitle = (req.body && req.body.eventTitle) || existing.eventTitle || '';
+        const participants = (req.body && Number(req.body.participants)) || existing.participants || 0;
 
         existing.eventId = eventId;
-        existing.eventTitle = (req.body && req.body.eventTitle) || existing.eventTitle || '';
-        existing.participants = (req.body && Number(req.body.participants)) || existing.participants || 0;
+        existing.eventTitle = eventTitle;
+        existing.participants = participants;
         existing.updatedAt = new Date().toISOString();
         existing.signatures = dedupeSignatures(existing.signatures);
 
         const incomingKey = signatureDedupKey(signature);
         const exists = existing.signatures.some((s) => signatureDedupKey(s) === incomingKey);
         if (!exists) {
+            const row = buildSignatureRow(eventId, signature, { eventTitle, participants });
+
+            if (hasSupabasePersistence()) {
+                const { error: upsertError } = await supabasePersistence
+                    .from(SUPABASE_EVENT_SIGNATURES_TABLE)
+                    .upsert([row], { onConflict: 'signature_id' });
+                if (upsertError) {
+                    logPersistenceFallback('signatures', upsertError);
+                }
+            }
+
             existing.signatures.push(signature);
         }
 
