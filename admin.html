@@ -3900,8 +3900,8 @@
                         <summary style="cursor:pointer; color:#ffb87a; font-weight:700;">כל החותמים (${allSignatures.length})</summary>
                         <div style="margin-top:.75rem; display:grid; gap:.45rem; font-size:0.9rem;">
                             ${allSignatures.map((s, idx) => `
-                                <button type="button" class="action-btn" style="text-align:right; justify-content:flex-start; padding:.55rem .7rem; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);" onclick='openSignatureDetails(${JSON.stringify(ev.title)}, ${JSON.stringify(s)})'>
-                                    ${idx + 1}. ${escapeEventHtml(getTrackedName(s))} <span style="color:#888;">(${new Date(s.signedAt || Date.now()).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' })})</span>
+                                <button type="button" class="action-btn" style="text-align:right; justify-content:flex-start; padding:.55rem .7rem; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); color:#fff;" onclick='openSignatureDetails(${JSON.stringify(ev.title)}, ${JSON.stringify(s)})'>
+                                    <span style="color:#fff;">${idx + 1}. ${escapeEventHtml(getTrackedName(s))}</span> <span style="color:#bbb;">(${new Date(s.signedAt || Date.now()).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' })})</span>
                                 </button>
                             `).join('')}
                         </div>
