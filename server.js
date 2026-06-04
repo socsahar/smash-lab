@@ -648,6 +648,38 @@ app.delete('/api/events/:eventId', async(req, res) => {
         const events = await readEventsStore();
         const filtered = events.filter((e) => e.id !== eventId);
         await writeEventsStore(filtered);
+
+        // Cascade: also delete all signatures for this event so they don't
+        // linger in the database wasting space.
+        if (hasSupabasePersistence()) {
+            const sigDelete = await supabasePersistence
+                .from(SUPABASE_EVENT_SIGNATURES_TABLE)
+                .delete()
+                .eq('event_id', eventId);
+            if (sigDelete.error) {
+                logPersistenceFallback('signatures', sigDelete.error);
+            }
+
+            const legacyDelete = await supabasePersistence
+                .from(SUPABASE_LEGACY_EVENT_SIGNATURES_TABLE)
+                .delete()
+                .eq('event_id', eventId);
+            if (legacyDelete.error) {
+                logPersistenceFallback('signatures', legacyDelete.error);
+            }
+        }
+
+        // Also remove from the file-fallback store.
+        try {
+            const sigStore = await readEventSignaturesStore();
+            if (sigStore && sigStore[eventId]) {
+                delete sigStore[eventId];
+                await writeEventSignaturesStore(sigStore);
+            }
+        } catch (cleanupError) {
+            console.warn('Failed cleaning up local signature store on delete:', cleanupError);
+        }
+
         res.json({ success: true, eventId });
     } catch (error) {
         console.error('Failed deleting event:', error);
