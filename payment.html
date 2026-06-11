@@ -668,7 +668,42 @@
                 const basePrice = order.price || servicePrices[serviceKey] || 100;
                 const subtotal = basePrice * parseInt(order.quantity || order.participants || 1);
                 const finalPrice = appliedCoupon ? Math.max(0, subtotal - appliedCoupon.discount) : subtotal;
-                
+
+                // FREE / 100%-off order (e.g. testing coupon): skip the Verifone payment
+                // step entirely and treat it as paid so the booking is created and shows
+                // up in the calendar, exactly as a real paid order would.
+                if (finalPrice <= 0) {
+                    const freeTxnId = `FREE-${Date.now()}`;
+                    const completedFree = {
+                        ...order,
+                        finalPrice: 0,
+                        originalPrice: subtotal,
+                        paymentMethod: 'free',
+                        paymentDate: new Date().toISOString(),
+                        status: 'paid',
+                        transactionId: freeTxnId,
+                        coupon: appliedCoupon ? {
+                            id: appliedCoupon.id,
+                            code: appliedCoupon.code,
+                            discount: appliedCoupon.discount
+                        } : null
+                    };
+                    localStorage.setItem('pendingPaymentOrder', JSON.stringify(completedFree));
+                    localStorage.setItem('completedOrder', JSON.stringify(completedFree));
+                    // Ensure the booking/calendar flow on order-success has the data it needs
+                    localStorage.setItem('smashlabs_order', JSON.stringify({
+                        ...order,
+                        name: order.name || order.customerName,
+                        email: order.email || order.customerEmail,
+                        phone: order.phone || order.customerPhone,
+                        finalPrice: 0,
+                        status: 'paid'
+                    }));
+                    button.textContent = 'מעבר לאישור הזמנה... ⏳';
+                    window.location.href = 'order-success.html?free=1';
+                    return;
+                }
+
                 // Build line items for Verifone invoice
                 const quantity = parseInt(order.quantity || order.participants || 1);
                 const itemName = order.packageName || order.serviceName || 'SmashLabs Booking';
