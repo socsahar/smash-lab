@@ -86,6 +86,11 @@ function renderCalendar() {
                     <h3 class="current-date-label">${getCurrentDateLabel()}</h3>
                     <button class="nav-btn" onclick="navigateDate('next')">▶</button>
                     <button class="nav-btn today-btn" onclick="goToToday()">היום</button>
+                    <input type="month" class="nav-month-jump"
+                           value="${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}"
+                           onchange="jumpToMonth(this.value)"
+                           title="קפוץ לחודש / שנה" aria-label="קפוץ לחודש ושנה"
+                           style="background:#1a1a1a;color:#fff;border:1px solid rgba(255,107,0,0.4);border-radius:6px;padding:6px 10px;font-family:inherit;cursor:pointer;">
                 </div>
             </div>
         </div>
@@ -319,6 +324,17 @@ async function goToToday() {
     renderCalendar();
 }
 
+// Jump straight to a specific month/year (from the month picker in the header)
+async function jumpToMonth(value) {
+    if (!value) return;
+    const [year, month] = value.split('-').map(Number);
+    if (!year || !month) return;
+    currentDate = new Date(year, month - 1, 1);
+    currentView = 'month';
+    await fetchCalendarBookings();
+    renderCalendar();
+}
+
 async function selectDate(dateStr) {
     // Open create booking modal with the selected date
     if (typeof openCreateBookingModal === 'function') {
@@ -453,7 +469,7 @@ function getPaymentStatusText(status) {
     window.switchView = switchView;
     window.navigateDate = navigateDate;
     window.goToToday = goToToday;
-    window.selectDate = selectDate;
+    window.jumpToMonth = jumpToMonth;
     window.selectDate = selectDate;
     
 })();
