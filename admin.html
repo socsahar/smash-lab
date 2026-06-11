@@ -4144,10 +4144,14 @@
             });
         }
 
-        async function loadEvents() {
-            // 1) Render instantly from cached events so the tab opens with no delay
-            eventsCache = { events: getEvents(), sharedByEvent: {} };
-            renderEventsWithSearch();
+        async function loadEvents({ background = false } = {}) {
+            // 1) On a fresh open, render instantly from cached events so the tab opens with no delay.
+            //    On a background auto-refresh, DO NOT wipe the current view (which would make
+            //    signatures flash and disappear) — keep showing current data until fresh data arrives.
+            if (!background) {
+                eventsCache = { events: getEvents(), sharedByEvent: {} };
+                renderEventsWithSearch();
+            }
 
             // 2) Enrich in the background with server data + shared signature summaries
             await migrateLegacyEventsToServer();
@@ -4221,12 +4225,14 @@
         // Keep refreshing the events list while the events tab is open
         setInterval(() => {
             const eventsSection = document.getElementById('events-section');
+            if (!eventsSection || !eventsSection.classList.contains('active')) return;
             const sigModal = document.getElementById('signature-details-modal');
             const modalOpen = sigModal && sigModal.style.display === 'flex';
-            // Don't refresh while the admin is viewing a signer's details
-            if (eventsSection && eventsSection.classList.contains('active') && !modalOpen) {
-                loadEvents();
-            }
+            // Don't refresh while the admin is viewing a signer's details or has a signer list expanded,
+            // otherwise the signatures being viewed would disappear on refresh.
+            const detailsOpen = !!document.querySelector('#eventsListContainer details[open][data-event]');
+            if (modalOpen || detailsOpen) return;
+            loadEvents({ background: true });
         }, 10000);
     </script>
     <footer role="contentinfo" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem; background: rgba(0,0,0,0.9); border-top: 1px solid rgba(255,107,0,0.3); text-align: center; z-index: 999;">
