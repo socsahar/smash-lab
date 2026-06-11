@@ -636,7 +636,8 @@
                                 <p><strong>8.</strong> אני מקבל/ת על עצמי באופן מלא ומוחלט את כל הסיכונים הכרוכים בפעילות, כפי שפורטו לעיל, לרבות סיכונים בלתי צפויים או בלתי ידועים.</p>
 
                                 <p><strong>9.</strong> אני מסכים/ה כי כל נזק, פגיעה, חבלה, אובדן או הפסד שייגרמו לי - בין אם לגוף, לנפש, לרכוש או לכל דבר אחר - לפני הפעילות, במהלכה, מיד לאחריה או בעקיפין כתוצאה ממנה - יהיו באחריותי המלאה והבלעדית, ועל חשבוני
-                                    בלבד.</p>
+                                    בלבד.
+                                </p>
 
                                 <p><strong>10.</strong> אני מצהיר/ה כי ידוע לי שהמפעיל אינו אחראי לכיסוי הוצאות רפואיות, אשפוז, ניתוח, שיקום, פינוי, אמבולנס, תרופות או כל הוצאה אחרת הנובעת מפציעה או נזק במהלך הפעילות.</p>
 
@@ -2122,22 +2123,36 @@
                 event_total_participants: totalParticipants
             };
 
+            const adminEmail = String(window.ENV_CONFIG.EMAIL_TO || '').trim();
+            const customerEmail = String(waiverData.email || '').trim();
+            // Only send a separate copy to the participant when they provided an
+            // email that is different from the admin inbox. Otherwise both copies
+            // would arrive at the admin mailbox (the "waiver received twice" bug).
+            const shouldSendCustomer = customerEmail &&
+                customerEmail.toLowerCase() !== adminEmail.toLowerCase();
+
             const adminEmailParams = {
                 ...templateParams,
-                to_email: window.ENV_CONFIG.EMAIL_TO
-            };
-            const customerEmailParams = {
-                ...templateParams,
-                to_email: waiverData.email
+                to_email: adminEmail
             };
 
-            const results = await Promise.allSettled([
-                emailjs.send(window.ENV_CONFIG.EMAILJS_SERVICE_ID, window.ENV_CONFIG.EMAILJS_TEMPLATE_ID, adminEmailParams),
-                emailjs.send(window.ENV_CONFIG.EMAILJS_SERVICE_ID, window.ENV_CONFIG.EMAILJS_TEMPLATE_ID, customerEmailParams)
-            ]);
+            const sends = [
+                emailjs.send(window.ENV_CONFIG.EMAILJS_SERVICE_ID, window.ENV_CONFIG.EMAILJS_TEMPLATE_ID, adminEmailParams)
+            ];
+            if (shouldSendCustomer) {
+                const customerEmailParams = {
+                    ...templateParams,
+                    to_email: customerEmail
+                };
+                sends.push(emailjs.send(window.ENV_CONFIG.EMAILJS_SERVICE_ID, window.ENV_CONFIG.EMAILJS_TEMPLATE_ID, customerEmailParams));
+            }
+
+            const results = await Promise.allSettled(sends);
 
             const adminResult = results[0];
-            const customerResult = results[1];
+            const customerResult = shouldSendCustomer
+                ? results[1]
+                : { status: 'fulfilled', value: { status: 'skipped' } };
 
             if (adminResult.status === 'fulfilled') {
                 console.log('Event-waiver admin email sent!', adminResult.value.status);
