@@ -1437,7 +1437,7 @@
                         if (!ctrl.required || ctrl.disabled) continue;
                         if (ctrl.type === 'hidden') continue;
                         if (skipValidationIds.indexOf(ctrl.id) !== -1) continue;
-                        if (ctrl.offsetParent === null) continue;
+                        if (ctrl.getClientRects().length === 0) continue;
                         if (typeof ctrl.checkValidity === 'function' && !ctrl.checkValidity()) {
                             if (typeof ctrl.reportValidity === 'function') ctrl.reportValidity();
                             else if (typeof ctrl.focus === 'function') ctrl.focus();
