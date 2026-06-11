@@ -112,7 +112,9 @@ body {
     padding: 2rem !important;
     margin: 0 !important;
     transform: translateX(100%) !important;
-    transition: transform 0.3s ease !important;
+    transition: transform 0.3s ease, visibility 0.3s ease !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
     backdrop-filter: none !important;
     border: none !important;
   }
@@ -120,6 +122,8 @@ body {
   body .nav-links.menu-open,
   body .nav-links.active {
     transform: translateX(0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
   
   body .nav-links li {

@@ -622,12 +622,12 @@
                 <form id="waiver-form">
                     <div class="form-group">
                         <label for="full-name">שם מלא *</label>
-                        <input type="text" id="full-name" name="full-name" required pattern="[a-zA-Zא-ת\s'\-]+" title="שם יכול להכיל רק אותיות, רווחים, מקף (-) ואפוסטרוף (')">
+                        <input type="text" id="full-name" name="full-name" autocomplete="off" required pattern="[a-zA-Zא-ת\s'\-]+" title="שם יכול להכיל רק אותיות, רווחים, מקף (-) ואפוסטרוף (')">
                     </div>
 
                     <div class="form-group">
                         <label for="id-number">מספר תעודת זהות *</label>
-                        <input type="text" id="id-number" name="id-number" required pattern="[0-9]{9}" maxlength="9" inputmode="numeric" title="נא הכנס 9 ספרות בלבד">
+                        <input type="text" id="id-number" name="id-number" autocomplete="off" required pattern="[0-9]{9}" maxlength="9" inputmode="numeric" title="נא הכנס 9 ספרות בלבד">
                     </div>
 
                     <div class="form-group">
@@ -643,12 +643,12 @@
 
                         <div class="form-group">
                             <label for="guardian-name">שם מלא של אפוטרופוס *</label>
-                            <input type="text" id="guardian-name" name="guardian-name" pattern="[a-zA-Zא-ת\s'\-]+" title="שם יכול להכיל רק אותיות, רווחים, מקף (-) ואפוסטרוף (')">
+                            <input type="text" id="guardian-name" name="guardian-name" autocomplete="off" pattern="[a-zA-Zא-ת\s'\-]+" title="שם יכול להכיל רק אותיות, רווחים, מקף (-) ואפוסטרוף (')">
                         </div>
 
                         <div class="form-group">
                             <label for="guardian-id">מספר תעודת זהות של אפוטרופוס *</label>
-                            <input type="text" id="guardian-id" name="guardian-id" pattern="[0-9]{9}" maxlength="9" inputmode="numeric" title="נא הכנס 9 ספרות בלבד">
+                            <input type="text" id="guardian-id" name="guardian-id" autocomplete="off" pattern="[0-9]{9}" maxlength="9" inputmode="numeric" title="נא הכנס 9 ספרות בלבד">
                         </div>
 
                         <div class="form-group">
@@ -686,12 +686,12 @@
 
                     <div class="form-group">
                         <label for="phone">טלפון נייד *</label>
-                        <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}" maxlength="10" title="נא הכנס 10 ספרות">
+                        <input type="tel" id="phone" name="phone" autocomplete="off" required pattern="[0-9]{10}" maxlength="10" title="נא הכנס 10 ספרות">
                     </div>
 
                     <div class="form-group">
                         <label for="email">דוא"ל *</label>
-                        <input type="email" id="email" name="email" required pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$" title="נא להזין כתובת אימייל חוקית">
+                        <input type="email" id="email" name="email" autocomplete="off" required pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$" title="נא להזין כתובת אימייל חוקית">
                     </div>
 
                     <!-- Emergency Contact Section -->
@@ -699,12 +699,12 @@
 
                     <div class="form-group">
                         <label for="emergency-name">שם איש קשר *</label>
-                        <input type="text" id="emergency-name" name="emergency-name" required pattern="[a-zA-Zא-ת\s'\-]+" title="שם יכול להכיל רק אותיות, רווחים, מקף (-) ואפוסטרוף (')">
+                        <input type="text" id="emergency-name" name="emergency-name" autocomplete="off" required pattern="[a-zA-Zא-ת\s'\-]+" title="שם יכול להכיל רק אותיות, רווחים, מקף (-) ואפוסטרוף (')">
                     </div>
 
                     <div class="form-group">
                         <label for="emergency-phone">טלפון איש קשר *</label>
-                        <input type="tel" id="emergency-phone" name="emergency-phone" required pattern="[0-9]{10}" maxlength="10" title="נא הכנס 10 ספרות">
+                        <input type="tel" id="emergency-phone" name="emergency-phone" autocomplete="off" required pattern="[0-9]{10}" maxlength="10" title="נא הכנס 10 ספרות">
                     </div>
 
                     <div class="form-group">
@@ -1173,14 +1173,14 @@
                 row.innerHTML = `
                     <div style="flex: 1; min-width: 140px;">
                         <label style="display: block; color: #ccc; font-size: 0.8rem; margin-bottom: 0.25rem;">שם מלא של ילד/ה *</label>
-                        <input type="text" class="child-name" placeholder="שם מלא" required
+                        <input type="text" class="child-name" placeholder="שם מלא" autocomplete="off" required
                             style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #555; background: #333; color: #fff; font-family: inherit; font-size: 0.9rem; box-sizing: border-box;"
                             oninput="this.value = this.value.replace(/[^a-zA-Z\u05d0-\u05ea\s'\-]/g, ''); checkFormValidity();"
                             onkeydown="if(event.key===' '||event.code==='Space') event.stopPropagation();">
                     </div>
                     <div style="flex: 1; min-width: 140px;">
                         <label style="display: block; color: #ccc; font-size: 0.8rem; margin-bottom: 0.25rem;">מספר תעודת זהות *</label>
-                        <input type="text" class="child-id" placeholder="9 ספרות" maxlength="9" inputmode="numeric" required
+                        <input type="text" class="child-id" placeholder="9 ספרות" maxlength="9" inputmode="numeric" autocomplete="off" required
                             style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #555; background: #333; color: #fff; font-family: inherit; font-size: 0.9rem; box-sizing: border-box;"
                             oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length > 9) this.value = this.value.slice(0,9); checkFormValidity();">
                     </div>
