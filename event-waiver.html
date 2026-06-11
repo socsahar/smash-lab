@@ -1787,7 +1787,35 @@
                 document.body.style.overflow = '';
             }
 
-            if (openGuidelinesBtn) openGuidelinesBtn.addEventListener('click', openGuidelines);
+            if (openGuidelinesBtn) openGuidelinesBtn.addEventListener('click', function () {
+                const emergencyContactEl = document.getElementById('emergency-contact');
+                const waiverFormEl = (emergencyContactEl && emergencyContactEl.form) || openGuidelinesBtn.form || document.getElementById('waiver-form') || document.querySelector('form');
+                if (waiverFormEl) {
+                    const skipValidationIds = ['signature', 'signature-date', 'signature-time', 'waiver-agreement'];
+                    const formControls = waiverFormEl.querySelectorAll('input, select, textarea');
+                    for (let i = 0; i < formControls.length; i++) {
+                        const ctrl = formControls[i];
+                        if (!ctrl.required || ctrl.disabled) continue;
+                        if (ctrl.type === 'hidden') continue;
+                        if (skipValidationIds.indexOf(ctrl.id) !== -1) continue;
+                        if (ctrl.offsetParent === null) continue;
+                        if (typeof ctrl.checkValidity === 'function' && !ctrl.checkValidity()) {
+                            if (typeof ctrl.reportValidity === 'function') ctrl.reportValidity();
+                            else if (typeof ctrl.focus === 'function') ctrl.focus();
+                            return;
+                        }
+                    }
+                }
+                if (emergencyContactEl && !emergencyContactEl.checked) {
+                    if (window.customModal && typeof window.customModal.error === 'function') {
+                        window.customModal.error('יש לאשר יצירת קשר עם איש הקשר בשעת חירום לפני המעבר לתקנון');
+                    } else {
+                        alert('יש לאשר יצירת קשר עם איש הקשר בשעת חירום לפני המעבר לתקנון');
+                    }
+                    return;
+                }
+                openGuidelines();
+            });
             if (closeGuidelinesBtn) closeGuidelinesBtn.addEventListener('click', closeGuidelines);
             if (guidelinesModal) guidelinesModal.addEventListener('click', function(e) {
                 if (e.target === guidelinesModal) closeGuidelines();
