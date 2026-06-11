@@ -1,11 +1,11 @@
 // Participant selection popup — intercepts all links to select-package.html
-(function () {
-  // Inject popup HTML + CSS once
-  function injectPopup() {
-    if (document.getElementById('participant-popup-overlay')) return;
+(function() {
+    // Inject popup HTML + CSS once
+    function injectPopup() {
+        if (document.getElementById('participant-popup-overlay')) return;
 
-    const css = document.createElement('style');
-    css.textContent = `
+        const css = document.createElement('style');
+        css.textContent = `
       #participant-popup-overlay {
         display: none;
         position: fixed;
@@ -122,14 +122,14 @@
         }
       }
     `;
-    document.head.appendChild(css);
+        document.head.appendChild(css);
 
-    const overlay = document.createElement('div');
-    overlay.id = 'participant-popup-overlay';
-    overlay.setAttribute('role', 'dialog');
-    overlay.setAttribute('aria-modal', 'true');
-    overlay.setAttribute('aria-label', 'בחירת מספר משתתפים');
-    overlay.innerHTML = `
+        const overlay = document.createElement('div');
+        overlay.id = 'participant-popup-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-label', 'בחירת מספר משתתפים');
+        overlay.innerHTML = `
       <div id="participant-popup">
         <button class="pp-close" aria-label="סגור">✕</button>
         <h2>כמה אתם מגיעים?</h2>
@@ -145,107 +145,107 @@
             <span class="pp-label">מגיע בזוג</span>
             <span class="pp-desc">2 אנשים</span>
           </button>
-          <button class="pp-option" data-participants="4" aria-label="משפחתי - 4 עד 5 אנשים">
+          <button class="pp-option" data-participants="3" aria-label="שלישיה - 3 אנשים">
             <span class="pp-icon">👨‍👩‍👧‍👦</span>
-            <span class="pp-label">משפחתי</span>
-            <span class="pp-desc">4-5 אנשים</span>
+            <span class="pp-label">שלישיה</span>
+            <span class="pp-desc">3 אנשים</span>
           </button>
-          <button class="pp-option" data-participants="6" aria-label="בנדה - מעל 5 אנשים">
+          <button class="pp-option" data-participants="4" aria-label="רבעיה ומעלה - 4 אנשים ומעלה">
             <span class="pp-icon">🎉</span>
-            <span class="pp-label">בנדה</span>
-            <span class="pp-desc">מעל 5 אנשים</span>
+            <span class="pp-label">רבעיה ומעלה</span>
+            <span class="pp-desc">4 אנשים ומעלה</span>
           </button>
         </div>
       </div>
     `;
-    document.body.appendChild(overlay);
+        document.body.appendChild(overlay);
 
-    // Close on overlay background click
-    overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) closePopup();
-    });
+        // Close on overlay background click
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) closePopup();
+        });
 
-    // Close button
-    overlay.querySelector('.pp-close').addEventListener('click', closePopup);
+        // Close button
+        overlay.querySelector('.pp-close').addEventListener('click', closePopup);
 
-    // Escape key
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && overlay.classList.contains('active')) closePopup();
-    });
+        // Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('active')) closePopup();
+        });
 
-    // Option clicks
-    overlay.querySelectorAll('.pp-option').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var count = parseInt(btn.getAttribute('data-participants'));
-        saveAndRedirect(count);
-      });
-    });
-  }
-
-  function openPopup() {
-    injectPopup();
-    var overlay = document.getElementById('participant-popup-overlay');
-    overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    // Focus first option
-    var firstOpt = overlay.querySelector('.pp-option');
-    if (firstOpt) firstOpt.focus();
-  }
-
-  function closePopup() {
-    var overlay = document.getElementById('participant-popup-overlay');
-    if (overlay) {
-      overlay.classList.remove('active');
-      document.body.style.overflow = '';
+        // Option clicks
+        overlay.querySelectorAll('.pp-option').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var count = parseInt(btn.getAttribute('data-participants'));
+                saveAndRedirect(count);
+            });
+        });
     }
-  }
 
-  function saveAndRedirect(participants) {
-    // Save to smashlabs_order (used by select-package.html to filter)
-    var orderData = {};
-    try {
-      orderData = JSON.parse(localStorage.getItem('smashlabs_order') || '{}');
-    } catch (e) { orderData = {}; }
-    orderData.participants = participants;
-    localStorage.setItem('smashlabs_order', JSON.stringify(orderData));
+    function openPopup() {
+        injectPopup();
+        var overlay = document.getElementById('participant-popup-overlay');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        // Focus first option
+        var firstOpt = overlay.querySelector('.pp-option');
+        if (firstOpt) firstOpt.focus();
+    }
 
-    // Also save to currentOrder
-    var currentOrder = {};
-    try {
-      currentOrder = JSON.parse(localStorage.getItem('currentOrder') || '{}');
-    } catch (e) { currentOrder = {}; }
-    currentOrder.participants = participants;
-    currentOrder.quantity = participants;
-    localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+    function closePopup() {
+        var overlay = document.getElementById('participant-popup-overlay');
+        if (overlay) {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
 
-    closePopup();
-    window.location.href = 'select-package.html';
-  }
+    function saveAndRedirect(participants) {
+        // Save to smashlabs_order (used by select-package.html to filter)
+        var orderData = {};
+        try {
+            orderData = JSON.parse(localStorage.getItem('smashlabs_order') || '{}');
+        } catch (e) { orderData = {}; }
+        orderData.participants = participants;
+        localStorage.setItem('smashlabs_order', JSON.stringify(orderData));
 
-  // Intercept all links/buttons pointing to select-package.html
-  function interceptLinks() {
-    document.addEventListener('click', function (e) {
-      var link = e.target.closest('a[href*="select-package"], button[onclick*="select-package"]');
-      if (!link) return;
+        // Also save to currentOrder
+        var currentOrder = {};
+        try {
+            currentOrder = JSON.parse(localStorage.getItem('currentOrder') || '{}');
+        } catch (e) { currentOrder = {}; }
+        currentOrder.participants = participants;
+        currentOrder.quantity = participants;
+        localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
 
-      // Don't intercept if we're already ON select-package.html
-      if (window.location.pathname.indexOf('select-package') !== -1) return;
+        closePopup();
+        window.location.href = 'select-package.html';
+    }
 
-      e.preventDefault();
-      e.stopPropagation();
-      openPopup();
-    }, true);
-  }
+    // Intercept all links/buttons pointing to select-package.html
+    function interceptLinks() {
+        document.addEventListener('click', function(e) {
+            var link = e.target.closest('a[href*="select-package"], button[onclick*="select-package"]');
+            if (!link) return;
 
-  // Also intercept the nav link in the header
-  // (header-inject.js creates it dynamically, so we use event delegation above)
+            // Don't intercept if we're already ON select-package.html
+            if (window.location.pathname.indexOf('select-package') !== -1) return;
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', interceptLinks);
-  } else {
-    interceptLinks();
-  }
+            e.preventDefault();
+            e.stopPropagation();
+            openPopup();
+        }, true);
+    }
 
-  // Expose for programmatic use
-  window.openParticipantPopup = openPopup;
+    // Also intercept the nav link in the header
+    // (header-inject.js creates it dynamically, so we use event delegation above)
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', interceptLinks);
+    } else {
+        interceptLinks();
+    }
+
+    // Expose for programmatic use
+    window.openParticipantPopup = openPopup;
 })();

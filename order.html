@@ -34,18 +34,18 @@
                 'Supabase not ready', 'processWaiver', 'Address data',
                 'Sample record', 'Sample cities'
             ];
-            
+
             function shouldBlock(args) {
                 const str = JSON.stringify(args);
-                return blockedPatterns.some(pattern => 
+                return blockedPatterns.some(pattern =>
                     str.toLowerCase().includes(pattern.toLowerCase()));
             }
-            
+
             const originalLog = console.log;
             const originalError = console.error;
             const originalWarn = console.warn;
             const originalInfo = console.info;
-            
+
             console.log = function(...args) {
                 if (!shouldBlock(args)) originalLog.apply(console, args);
             };
@@ -74,18 +74,20 @@
     <!-- Preload and load fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+
     <!-- Fallback styles for order page -->
     <style>
         /* Fallback styles if main CSS fails to load */
-        body { 
-            font-family: 'Heebo', 'Rubik', Arial, sans-serif; 
-            background: #1a1a1a; 
-            color: #fff; 
-            margin: 0; 
+        
+        body {
+            font-family: 'Heebo', 'Rubik', Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            margin: 0;
             padding: 0;
             min-height: 100vh;
         }
+        
         .header-inner {
             display: flex;
             justify-content: space-between;
@@ -93,78 +95,107 @@
             padding: 1rem 2rem;
             background: #222;
         }
-        .logo { color: #ff6b00; font-size: 1.5rem; text-decoration: none; font-weight: bold; }
-        .nav-links { 
-            display: flex; 
-            list-style: none; 
-            gap: 1rem; 
-            margin: 0; 
-            padding: 0; 
+        
+        .logo {
+            color: #ff6b00;
+            font-size: 1.5rem;
+            text-decoration: none;
+            font-weight: bold;
         }
-        .nav-links a { 
-            color: #fff; 
-            text-decoration: none; 
-            padding: 0.5rem 1rem; 
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+            margin: 0;
+            padding: 0;
         }
-        .nav-links a:hover { color: #ff6b00; }
-        .hero { 
-            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); 
-            padding: 4rem 2rem; 
-            text-align: center; 
+        
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
         }
-        .hero h1 { 
-            font-size: 2.5rem; 
-            margin-bottom: 1rem; 
-            color: #ff6b00; 
+        
+        .nav-links a:hover {
+            color: #ff6b00;
         }
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 2rem; 
+        
+        .hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            padding: 4rem 2rem;
+            text-align: center;
         }
-        .card { 
-            background: #222; 
-            border-radius: 10px; 
-            padding: 2rem; 
-            margin: 2rem 0; 
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ff6b00;
         }
-        .form-group { 
-            margin-bottom: 1.5rem; 
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
         }
-        .form-group label { 
-            display: block; 
-            margin-bottom: 0.5rem; 
-            color: #ff6b00; 
-            font-weight: bold; 
+        
+        .card {
+            background: #222;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
         }
-        .form-group input, .form-group select, .form-group textarea { 
-            width: 100%; 
-            padding: 0.75rem; 
-            border: 1px solid #444; 
-            background: #333; 
-            color: #fff; 
-            border-radius: 5px; 
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ff6b00;
+            font-weight: bold;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #444;
+            background: #333;
+            color: #fff;
+            border-radius: 5px;
             font-size: 1rem;
             box-sizing: border-box;
         }
-        .cta-button { 
-            background: linear-gradient(45deg, #ff6b00, #1fb6c2); 
-            color: #fff; 
-            padding: 1rem 2rem; 
-            border: none; 
-            border-radius: 5px; 
-            font-size: 1rem; 
-            cursor: pointer; 
-            text-decoration: none; 
-            display: inline-block; 
+        
+        .cta-button {
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2);
+            color: #fff;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
         }
-        .hamburger { display: none; }
+        
+        .hamburger {
+            display: none;
+        }
+        
         @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .hamburger { display: block; }
+            .nav-links {
+                display: none;
+            }
+            .hamburger {
+                display: block;
+            }
         }
     </style>
-    
+
     <!-- NagishLi Accessibility Plugin Configuration -->
     <script>
         window.NagishLiConfig = {
@@ -205,7 +236,8 @@
 </head>
 
 <body>
-    <a href="#main" class="skip-to-content" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--primary,#ff6b00);color:#fff;padding:0.75rem 1.5rem;border-radius:8px;z-index:100000;font-weight:600;text-decoration:none;transition:top 0.3s;" onfocus="this.style.top='1rem'" onblur="this.style.top='-100%'">דלג לתוכן הראשי</a>
+    <a href="#main" class="skip-to-content" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--primary,#ff6b00);color:#fff;padding:0.75rem 1.5rem;border-radius:8px;z-index:100000;font-weight:600;text-decoration:none;transition:top 0.3s;"
+        onfocus="this.style.top='1rem'" onblur="this.style.top='-100%'">דלג לתוכן הראשי</a>
 
 
     <div id="site-header"></div>
@@ -251,7 +283,7 @@
                 <h2 class="section-title graffiti-text">פרטי הזמנה</h2>
                 <div class="card" style="max-width: 700px; margin: 0 auto; padding: var(--spacing-xl);">
                     <form class="booking-form" id="order-form">
-                        
+
                         <!-- Account Options Section - Combined -->
                         <div style="margin-bottom: var(--spacing-xl);">
                             <!-- Existing Account Login Option -->
@@ -267,7 +299,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Login fields (hidden by default) -->
                                 <div id="login-fields-container" style="display: none; margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid rgba(255, 107, 0, 0.2);">
                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
@@ -300,7 +332,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Password field (hidden by default) -->
                                 <div id="password-field-container" style="display: none; margin-top: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid rgba(31, 182, 194, 0.2);">
                                     <div class="form-group" style="margin-bottom: 0;">
@@ -339,7 +371,7 @@
 
                             <div class="form-group">
                                 <label for="quantity">כמות משתתפים *</label>
-                                <input type="number" id="quantity" name="quantity" min="1" max="20" value="1" required>
+                                <input type="number" id="quantity" name="quantity" min="1" max="20" value="1" required readonly title="כמות המשתתפים נקבעה לפי הבחירה הקודמת" style="background: #2a2a2a; cursor: not-allowed; opacity: 0.85;">
                             </div>
 
                             <div class="form-group">
@@ -416,36 +448,37 @@
             const timeSelect = document.getElementById('time');
             let currentPackageId = null;
             let occupiedSlots = [];
-            
+
             if (dateInput) {
                 const today = new Date().toISOString().split('T')[0];
                 dateInput.setAttribute('min', today);
             }
-            
+
             // Get package info from localStorage
             const orderData = JSON.parse(localStorage.getItem('currentOrder') || '{}');
             currentPackageId = orderData.service; // This is actually the package ID
-            
-            // Pre-fill quantity from participant popup selection
+
+            // Pre-fill quantity from participant popup selection (locked / read-only)
             const quantityInput = document.getElementById('quantity');
-            if (quantityInput && orderData.quantity) {
-                quantityInput.value = orderData.quantity;
+            if (quantityInput) {
+                quantityInput.value = orderData.quantity || orderData.participants || quantityInput.value || 1;
+                quantityInput.readOnly = true;
             }
-            
+
             // When date changes, check availability
             if (dateInput && timeSelect && currentPackageId) {
                 dateInput.addEventListener('change', async function() {
                     const selectedDate = this.value;
                     if (!selectedDate) return;
-                    
+
                     // Show loading state
                     timeSelect.disabled = true;
                     const originalHTML = timeSelect.innerHTML;
                     timeSelect.innerHTML = '<option value="">טוען זמינות...</option>';
-                    
+
                     try {
                         let data = null;
-                        
+
                         // Try API endpoint first
                         try {
                             const response = await fetch(`/api/calendar/check-availability?packageId=${currentPackageId}&date=${selectedDate}`);
@@ -455,17 +488,22 @@
                         } catch (apiErr) {
                             console.warn('API endpoint unavailable, falling back to direct query');
                         }
-                        
+
                         // Fallback: query Supabase directly from client
                         if (!data && window.supabase && window.supabase.from) {
-                            const { data: bookings, error: sbError } = await window.supabase
+                            const {
+                                data: bookings,
+                                error: sbError
+                            } = await window.supabase
                                 .from('bookings')
                                 .select('booking_time, booking_datetime, end_datetime, duration_minutes')
                                 .eq('package_id', currentPackageId)
                                 .eq('booking_date', selectedDate)
                                 .eq('status', 'confirmed')
-                                .order('booking_datetime', { ascending: true });
-                            
+                                .order('booking_datetime', {
+                                    ascending: true
+                                });
+
                             if (!sbError && bookings) {
                                 data = {
                                     occupiedSlots: bookings.map(b => ({
@@ -477,7 +515,7 @@
                                 };
                             }
                         }
-                        
+
                         if (data && data.occupiedSlots) {
                             occupiedSlots = data.occupiedSlots;
                             updateTimeSlots();
@@ -496,18 +534,116 @@
                     }
                 });
             }
-            
+
             // ── Working hours per day of week ──
             // getDay(): 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
             const workingHours = {
-                0: { open: '11:00', close: '21:00' }, // Sunday
-                1: { open: '11:00', close: '21:00' }, // Monday
-                2: { open: '11:00', close: '21:00' }, // Tuesday
-                3: { open: '11:00', close: '21:00' }, // Wednesday
-                4: { open: '11:00', close: '21:00' }, // Thursday
-                5: { open: '11:00', close: '16:00' }, // Friday
-                6: { open: '11:00', close: '16:00' }  // Saturday
+                0: {
+                    open: '11:00',
+                    close: '21:00'
+                }, // Sunday
+                1: {
+                    open: '11:00',
+                    close: '21:00'
+                }, // Monday
+                2: {
+                    open: '11:00',
+                    close: '21:00'
+                }, // Tuesday
+                3: {
+                    open: '11:00',
+                    close: '21:00'
+                }, // Wednesday
+                4: {
+                    open: '11:00',
+                    close: '21:00'
+                }, // Thursday
+                5: {
+                    open: '11:00',
+                    close: '16:00'
+                }, // Friday – close is overridden dynamically to 1h before Shabbat entry
+                6: {
+                    open: '11:00',
+                    close: '17:00'
+                } // Saturday
             };
+
+            // ── Shabbat-entry calculation (for Friday closing time) ──
+            // Business location: ולפסון 9, נהריה (Nahariya, Israel)
+            const NAHARIYA_LAT = 33.0058;
+            const NAHARIYA_LNG = 35.0947;
+            // "כניסת שבת" (candle lighting) = this many minutes before sunset
+            const CANDLE_OFFSET_MIN = 20;
+            // Friday close = Shabbat entry minus this buffer (one hour)
+            const FRIDAY_CLOSE_BUFFER_MIN = 60;
+
+            /**
+             * Compute sunset (as a UTC Date instant) for a given calendar date
+             * and location using the NOAA sunrise/sunset algorithm.
+             */
+            function getSunsetUtc(dateObj, lat, lng) {
+                const rad = Math.PI / 180,
+                    deg = 180 / Math.PI;
+                const zenith = 90.833; // official sunset (with refraction)
+
+                // Day of year
+                const start = new Date(dateObj.getFullYear(), 0, 0);
+                const diff = dateObj - start;
+                const N = Math.floor(diff / 86400000);
+
+                const lngHour = lng / 15;
+                const t = N + ((18 - lngHour) / 24); // sunset
+
+                const M = (0.9856 * t) - 3.289;
+                let L = M + (1.916 * Math.sin(M * rad)) + (0.020 * Math.sin(2 * M * rad)) + 282.634;
+                L = ((L % 360) + 360) % 360;
+
+                let RA = deg * Math.atan(0.91764 * Math.tan(L * rad));
+                RA = ((RA % 360) + 360) % 360;
+                const Lquadrant = Math.floor(L / 90) * 90;
+                const RAquadrant = Math.floor(RA / 90) * 90;
+                RA = (RA + (Lquadrant - RAquadrant)) / 15;
+
+                const sinDec = 0.39782 * Math.sin(L * rad);
+                const cosDec = Math.cos(Math.asin(sinDec));
+                const cosH = (Math.cos(zenith * rad) - (sinDec * Math.sin(lat * rad))) /
+                    (cosDec * Math.cos(lat * rad));
+                if (cosH > 1 || cosH < -1) return null; // sun never sets/rises
+
+                let H = (deg * Math.acos(cosH)) / 15;
+                const T = H + RA - (0.06571 * t) - 6.622;
+                let UT = ((T - lngHour) % 24 + 24) % 24;
+
+                const hours = Math.floor(UT);
+                const minutes = Math.round((UT - hours) * 60);
+                return new Date(Date.UTC(
+                    dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), hours, minutes
+                ));
+            }
+
+            /**
+             * Friday closing time (minutes since midnight, local Israel time):
+             * one hour before Shabbat entry (candle lighting), floored to the slot grid.
+             * Returns null if it can't be computed (caller keeps the static fallback).
+             */
+            function getFridayCloseMinutes(dateObj) {
+                const sunsetUtc = getSunsetUtc(dateObj, NAHARIYA_LAT, NAHARIYA_LNG);
+                if (!sunsetUtc) return null;
+
+                // Format the UTC instant in Israel local time (handles DST automatically)
+                const parts = new Intl.DateTimeFormat('en-GB', {
+                    timeZone: 'Asia/Jerusalem',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).formatToParts(sunsetUtc);
+                const hh = Number(parts.find(p => p.type === 'hour').value);
+                const mm = Number(parts.find(p => p.type === 'minute').value);
+
+                const sunsetMin = hh * 60 + mm;
+                const shabbatEntryMin = sunsetMin - CANDLE_OFFSET_MIN;
+                return shabbatEntryMin - FRIDAY_CLOSE_BUFFER_MIN;
+            }
 
             // Package duration in minutes (default 30 if unknown)
             let packageDuration = 30;
@@ -547,8 +683,14 @@
                 // Parse open / close into minutes since midnight
                 const [openH, openM] = hours.open.split(':').map(Number);
                 const [closeH, closeM] = hours.close.split(':').map(Number);
-                const openMin  = openH * 60 + openM;
-                const closeMin = closeH * 60 + closeM;
+                const openMin = openH * 60 + openM;
+                let closeMin = closeH * 60 + closeM;
+
+                // Friday: close one hour before Shabbat entry (sunset-based)
+                if (dayOfWeek === 5) {
+                    const fridayClose = getFridayCloseMinutes(dateObj);
+                    if (fridayClose !== null) closeMin = fridayClose;
+                }
 
                 // Generate slots at package-duration intervals
                 // Last slot must still allow the full session before closing
@@ -585,16 +727,16 @@
                 if (!selectedDate) return false;
 
                 const slotStartMs = new Date(`${selectedDate}T${time}:00`).getTime();
-                const slotEndMs   = slotStartMs + packageDuration * 60 * 1000;
+                const slotEndMs = slotStartMs + packageDuration * 60 * 1000;
 
                 return occupiedSlots.some(slot => {
                     const bookedStart = new Date(slot.startTime).getTime();
-                    const bookedEnd   = new Date(slot.endTime).getTime();
+                    const bookedEnd = new Date(slot.endTime).getTime();
                     // Two ranges overlap when one starts before the other ends
                     return slotStartMs < bookedEnd && slotEndMs > bookedStart;
                 });
             }
-            
+
             const hamburger = document.querySelector('.hamburger');
             const navLinks = document.querySelector('.nav-links');
 
@@ -625,4 +767,4 @@
             }
         });
     </script>
-<script src="js/user-auth.js"></script>
+    <script src="js/user-auth.js"></script>

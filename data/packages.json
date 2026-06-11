@@ -2,197 +2,190 @@
   {
     "id": "solo-rage-basic",
     "name": "חדר זעם - בסיסי",
-    "description": "חצי שעה בחדר",
-    "price": 120,
-    "duration": 30,
+    "description": "עד 20 דקות בחדר - 150 ₪ למשתתף",
+    "price": 150,
+    "pricePerPerson": true,
+    "duration": 20,
     "minParticipants": 1,
     "maxParticipants": 1,
     "roomType": "rage-room",
     "category": "rage",
     "includes": [
-      "חצי שעה בחדר",
-      "6 מוצרי מטבח (צלחות כוסות קערות)",
-      "1 מסך מחשב / טלוויזיה",
-      "1 גמד גינה",
-      "1 פינוק עלינו"
+      "עד 20 דקות בחדר",
+      "4 צלחות",
+      "4 כוסות",
+      "2 גמדי גינה",
+      "1 מסך"
     ]
   },
   {
-    "id": "solo-rage-expanded",
-    "name": "חדר זעם - מורחב",
-    "description": "חצי שעה בחדר",
-    "price": 150,
-    "duration": 30,
+    "id": "solo-rage-mid",
+    "name": "חדר זעם - מוגזם",
+    "description": "עד 40 דקות בחדר - 200 ₪ למשתתף",
+    "price": 200,
+    "pricePerPerson": true,
+    "duration": 40,
     "minParticipants": 1,
     "maxParticipants": 1,
     "roomType": "rage-room",
     "category": "rage",
     "recommended": true,
     "includes": [
-      "חצי שעה בחדר",
-      "10 מוצרי מטבח (צלחות כוסות קערות)",
-      "2 מסך מחשב / טלוויזיה",
-      "2 גמד גינה",
-      "1 פינוק עלינו"
+      "עד 40 דקות בחדר",
+      "5 צלחות",
+      "5 כוסות",
+      "2 גמדי גינה",
+      "2 מסכים"
     ]
   },
   {
-    "id": "solo-rage-extreme",
-    "name": "חדר זעם - מוגזם",
-    "description": "50 דקות בחדר",
-    "price": 210,
-    "duration": 50,
-    "minParticipants": 1,
-    "maxParticipants": 1,
-    "roomType": "rage-room",
-    "category": "rage",
-    "includes": [
-      "50 דקות בחדר",
-      "15 מוצרי מטבח (צלחות כוסות קערות)",
-      "2 מסך מחשב / טלוויזיה",
-      "4 גמד גינה",
-      "1 מדפסת",
-      "1 פינוק עלינו"
-    ]
-  },
-  {
-    "id": "solo-rage-explode",
-    "name": "חדר זעם - בא לי להתפוצץ",
-    "description": "שעה שלמה בחדר",
+    "id": "solo-rage-max",
+    "name": "חדר זעם - מושפרץ",
+    "description": "עד שעה בחדר - 250 ₪ למשתתף",
     "price": 250,
+    "pricePerPerson": true,
     "duration": 60,
     "minParticipants": 1,
     "maxParticipants": 1,
     "roomType": "rage-room",
     "category": "rage",
     "includes": [
-      "שעה שלמה בחדר",
-      "20 מוצרי מטבח (צלחות כוסות קערות)",
-      "2 מסך מחשב / טלוויזיה",
-      "5 גמד גינה",
-      "1 מדפסת",
-      "2 פינוק עלינו"
+      "עד שעה בחדר",
+      "8 צלחות",
+      "8 כוסות",
+      "2 גמדי גינה",
+      "3 מסכים"
     ]
   },
   {
-    "id": "solo-axes-taste",
-    "name": "הטלת גרזנים - טעימה של הטלה",
-    "description": "חצי שעה בחדר",
+    "id": "solo-axes-basic",
+    "name": "הטלת גרזנים - בסיסי",
+    "description": "עד 20 דקות בחדר - 100 ₪ למשתתף",
     "price": 100,
-    "duration": 30,
+    "pricePerPerson": true,
+    "duration": 20,
     "minParticipants": 1,
     "maxParticipants": 1,
     "roomType": "throwing-axes",
     "category": "axes",
     "includes": [
-      "חצי שעה בחדר",
-      "גרזנים או סכינים או שוריקנים"
+      "עד 20 דקות בחדר",
+      "גרזנים, סכינים ושוריקנים",
+      "הדרכה מקצועית"
     ]
   },
   {
-    "id": "solo-axes-full",
-    "name": "הטלת גרזנים - אם כבר אז כבר",
-    "description": "חצי שעה בחדר",
+    "id": "solo-axes-mid",
+    "name": "הטלת גרזנים - מוגזם",
+    "description": "עד 40 דקות בחדר - 150 ₪ למשתתף",
     "price": 150,
-    "duration": 30,
+    "pricePerPerson": true,
+    "duration": 40,
     "minParticipants": 1,
     "maxParticipants": 1,
     "roomType": "throwing-axes",
     "category": "axes",
     "recommended": true,
     "includes": [
-      "חצי שעה בחדר",
-      "גרזנים ושוריקנים או סכינים ושוריקנים"
+      "עד 40 דקות בחדר",
+      "גרזנים, סכינים ושוריקנים",
+      "הדרכה מקצועית"
     ]
   },
   {
-    "id": "solo-axes-pro",
-    "name": "הטלת גרזנים - יוצא מקצוען",
-    "description": "50 דקות בחדר",
-    "price": 180,
-    "duration": 50,
+    "id": "solo-axes-max",
+    "name": "הטלת גרזנים - מושפרץ",
+    "description": "עד שעה בחדר - 200 ₪ למשתתף",
+    "price": 200,
+    "pricePerPerson": true,
+    "duration": 60,
     "minParticipants": 1,
     "maxParticipants": 1,
     "roomType": "throwing-axes",
     "category": "axes",
     "includes": [
-      "50 דקות בחדר",
-      "גרזנים סכינים ושוריקנים ללא הגבלה"
+      "עד שעה בחדר",
+      "גרזנים, סכינים ושוריקנים ללא הגבלה",
+      "הדרכה מקצועית"
     ]
   },
   {
     "id": "solo-paint-basic",
     "name": "חדר צבע - בסיסי",
-    "description": "חצי שעה בחדר",
+    "description": "עד 20 דקות בחדר - 120 ₪ למשתתף",
     "price": 120,
-    "duration": 30,
+    "pricePerPerson": true,
+    "duration": 20,
     "minParticipants": 1,
     "maxParticipants": 1,
     "roomType": "paint-room",
     "category": "paint",
     "includes": [
-      "חצי שעה בחדר",
-      "בלאגן שפריץ 4 שפריצרים לבחירה",
-      "1 קנבס שפריץ 30 על 30"
+      "עד 20 דקות בחדר",
+      "4 שפריצרים",
+      "קנבס אחד"
     ]
   },
   {
-    "id": "solo-paint-expanded",
-    "name": "חדר צבע - מורחב",
-    "description": "45 דקות בחדר",
-    "price": 150,
-    "duration": 45,
+    "id": "solo-paint-mid",
+    "name": "חדר צבע - מוגזם",
+    "description": "עד 40 דקות בחדר - 180 ₪ למשתתף",
+    "price": 180,
+    "pricePerPerson": true,
+    "duration": 40,
     "minParticipants": 1,
     "maxParticipants": 1,
     "roomType": "paint-room",
     "category": "paint",
     "recommended": true,
     "includes": [
-      "45 דקות בחדר",
-      "בלאגן שפריץ 6 שפריצרים לבחירה",
-      "1 קנבס שפריץ 30 על 30",
-      "1 פורינג קנבס שולחן מסתובב"
+      "עד 40 דקות בחדר",
+      "6 שפריצרים",
+      "קנבס אחד"
     ]
   },
   {
-    "id": "solo-paint-extreme",
-    "name": "חדר צבע - מוגזם",
-    "description": "שעה שלמה בחדר",
-    "price": 220,
+    "id": "solo-paint-max",
+    "name": "חדר צבע - מושפרץ",
+    "description": "עד שעה בחדר - 240 ₪ למשתתף",
+    "price": 240,
+    "pricePerPerson": true,
     "duration": 60,
     "minParticipants": 1,
     "maxParticipants": 1,
     "roomType": "paint-room",
     "category": "paint",
     "includes": [
-      "שעה שלמה בחדר",
-      "בלאגן שפריץ 6 שפריצרים לבחירה",
-      "1 קנבס שפריץ 30 על 30",
-      "1 פורינג קנבס שולחן מסתובב",
-      "1 פורינג בובת גבס"
+      "עד שעה בחדר",
+      "8 שפריצרים",
+      "קנבס אחד",
+      "הפתעה"
     ]
   },
   {
     "id": "solo-combo-basic",
     "name": "משולב - בסיסי",
-    "description": "45 דקות במתחם",
-    "price": 240,
-    "duration": 45,
+    "description": "עד 40 דקות במתחם - 300 ₪ למשתתף",
+    "price": 300,
+    "pricePerPerson": true,
+    "duration": 40,
     "minParticipants": 1,
     "maxParticipants": 1,
     "roomType": "combo",
     "category": "combo",
     "includes": [
-      "זעם: 6 מוצרי מטבח, 1 מסך, 1 גמד גינה, 1 פינוק עלינו",
-      "גרזנים: גרזנים או סכינים או שוריקנים",
-      "צבע: בלאגן שפריץ 4 שפריצרים, 1 קנבס 30 על 30"
+      "עד 40 דקות במתחם",
+      "חדר זעם",
+      "חדר צבע",
+      "הטלת גרזנים"
     ]
   },
   {
-    "id": "solo-combo-expanded",
-    "name": "משולב - מורחב",
-    "description": "שעה שלמה במתחם",
-    "price": 320,
+    "id": "solo-combo-mid",
+    "name": "משולב - מוגזם",
+    "description": "עד שעה במתחם - 450 ₪ למשתתף",
+    "price": 450,
+    "pricePerPerson": true,
     "duration": 60,
     "minParticipants": 1,
     "maxParticipants": 1,
@@ -200,704 +193,682 @@
     "category": "combo",
     "recommended": true,
     "includes": [
-      "זעם: 10 מוצרי מטבח, 2 מסך, 2 גמד גינה, 1 פינוק עלינו",
-      "גרזנים: גרזנים ושוריקנים או סכינים ושוריקנים",
-      "צבע: בלאגן שפריץ 6 שפריצרים, 1 קנבס 30 על 30, 1 פורינג קנבס שולחן"
+      "עד שעה במתחם",
+      "חדר זעם מוגזם",
+      "חדר צבע מוגזם",
+      "הטלת גרזנים"
     ]
   },
   {
-    "id": "solo-combo-extreme",
-    "name": "משולב - מוגזם",
-    "description": "שעה שלמה במתחם",
-    "price": 420,
-    "duration": 60,
+    "id": "solo-combo-max",
+    "name": "משולב - מושפרץ",
+    "description": "עד שעה וחצי במתחם - 600 ₪ למשתתף",
+    "price": 600,
+    "pricePerPerson": true,
+    "duration": 90,
     "minParticipants": 1,
     "maxParticipants": 1,
     "roomType": "combo",
     "category": "combo",
     "includes": [
-      "זעם: 15 מוצרי מטבח, 2 מסך, 4 גמד גינה, 1 מדפסת, 1 פינוק עלינו",
-      "גרזנים: גרזנים סכינים ושוריקנים ללא הגבלה",
-      "צבע: בלאגן שפריץ 6 שפריצרים, 1 קנבס 30 על 30, 1 פורינג קנבס שולחן, 1 פורינג בובת גבס"
+      "עד שעה וחצי במתחם",
+      "חדר זעם מושפרץ",
+      "חדר צבע מושפרץ",
+      "הטלת גרזנים ללא הגבלה"
     ]
   },
   {
     "id": "couple-rage-basic",
     "name": "חדר זעם - בסיסי",
-    "description": "חצי שעה בחדר",
-    "price": 180,
-    "duration": 30,
+    "description": "עד 20 דקות בחדר - 135 ₪ למשתתף",
+    "price": 135,
+    "pricePerPerson": true,
+    "duration": 20,
     "minParticipants": 2,
     "maxParticipants": 2,
     "roomType": "rage-room",
     "category": "rage",
     "includes": [
-      "חצי שעה בחדר",
-      "10 מוצרי מטבח (צלחות כוסות קערות)",
-      "2 מסך מחשב / טלוויזיה",
-      "2 גמד גינה",
-      "1 פינוק עלינו"
+      "עד 20 דקות בחדר",
+      "4 צלחות",
+      "4 כוסות",
+      "2 גמדי גינה",
+      "1 מסך"
     ]
   },
   {
-    "id": "couple-rage-expanded",
-    "name": "חדר זעם - מורחב",
-    "description": "חצי שעה בחדר",
-    "price": 240,
-    "duration": 30,
+    "id": "couple-rage-mid",
+    "name": "חדר זעם - מוגזם",
+    "description": "עד 40 דקות בחדר - 180 ₪ למשתתף",
+    "price": 180,
+    "pricePerPerson": true,
+    "duration": 40,
     "minParticipants": 2,
     "maxParticipants": 2,
     "roomType": "rage-room",
     "category": "rage",
     "recommended": true,
     "includes": [
-      "חצי שעה בחדר",
-      "12 מוצרי מטבח (צלחות כוסות קערות)",
-      "2 מסך מחשב / טלוויזיה",
-      "4 גמד גינה",
-      "1 פינוק עלינו"
+      "עד 40 דקות בחדר",
+      "5 צלחות",
+      "5 כוסות",
+      "2 גמדי גינה",
+      "2 מסכים"
     ]
   },
   {
-    "id": "couple-rage-extreme",
-    "name": "חדר זעם - מוגזם",
-    "description": "50 דקות בחדר",
-    "price": 280,
-    "duration": 50,
-    "minParticipants": 2,
-    "maxParticipants": 2,
-    "roomType": "rage-room",
-    "category": "rage",
-    "includes": [
-      "50 דקות בחדר",
-      "15 מוצרי מטבח (צלחות כוסות קערות)",
-      "2 מסך מחשב / טלוויזיה",
-      "4 גמד גינה",
-      "1 מדפסת",
-      "1 פינוק עלינו"
-    ]
-  },
-  {
-    "id": "couple-rage-explode",
-    "name": "חדר זעם - בא לנו להתפוצץ",
-    "description": "שעה שלמה בחדר",
-    "price": 350,
+    "id": "couple-rage-max",
+    "name": "חדר זעם - מושפרץ",
+    "description": "עד שעה בחדר - 225 ₪ למשתתף",
+    "price": 225,
+    "pricePerPerson": true,
     "duration": 60,
     "minParticipants": 2,
     "maxParticipants": 2,
     "roomType": "rage-room",
     "category": "rage",
     "includes": [
-      "שעה שלמה בחדר",
-      "20 מוצרי מטבח (צלחות כוסות קערות)",
-      "2 מסך מחשב / טלוויזיה",
-      "5 גמד גינה",
-      "1 מדפסת",
-      "2 פינוק עלינו"
+      "עד שעה בחדר",
+      "8 צלחות",
+      "8 כוסות",
+      "2 גמדי גינה",
+      "3 מסכים"
     ]
   },
   {
-    "id": "couple-axes-taste",
-    "name": "הטלת גרזנים - טעימה של הטלה",
-    "description": "חצי שעה בחדר",
-    "price": 140,
-    "duration": 30,
+    "id": "couple-axes-basic",
+    "name": "הטלת גרזנים - בסיסי",
+    "description": "עד 20 דקות בחדר - 90 ₪ למשתתף",
+    "price": 90,
+    "pricePerPerson": true,
+    "duration": 20,
     "minParticipants": 2,
     "maxParticipants": 2,
     "roomType": "throwing-axes",
     "category": "axes",
     "includes": [
-      "חצי שעה בחדר",
-      "גרזנים או סכינים או שוריקנים"
+      "עד 20 דקות בחדר",
+      "גרזנים, סכינים ושוריקנים",
+      "הדרכה מקצועית"
     ]
   },
   {
-    "id": "couple-axes-full",
-    "name": "הטלת גרזנים - אם כבר אז כבר",
-    "description": "חצי שעה בחדר",
-    "price": 180,
-    "duration": 30,
+    "id": "couple-axes-mid",
+    "name": "הטלת גרזנים - מוגזם",
+    "description": "עד 40 דקות בחדר - 135 ₪ למשתתף",
+    "price": 135,
+    "pricePerPerson": true,
+    "duration": 40,
     "minParticipants": 2,
     "maxParticipants": 2,
     "roomType": "throwing-axes",
     "category": "axes",
     "recommended": true,
     "includes": [
-      "חצי שעה בחדר",
-      "גרזנים ושוריקנים או סכינים ושוריקנים"
+      "עד 40 דקות בחדר",
+      "גרזנים, סכינים ושוריקנים",
+      "הדרכה מקצועית"
     ]
   },
   {
-    "id": "couple-axes-pro",
-    "name": "הטלת גרזנים - יוצאים מקצוענים",
-    "description": "50 דקות בחדר",
-    "price": 210,
-    "duration": 50,
+    "id": "couple-axes-max",
+    "name": "הטלת גרזנים - מושפרץ",
+    "description": "עד שעה בחדר - 180 ₪ למשתתף",
+    "price": 180,
+    "pricePerPerson": true,
+    "duration": 60,
     "minParticipants": 2,
     "maxParticipants": 2,
     "roomType": "throwing-axes",
     "category": "axes",
     "includes": [
-      "50 דקות בחדר",
-      "גרזנים סכינים ושוריקנים ללא הגבלה"
+      "עד שעה בחדר",
+      "גרזנים, סכינים ושוריקנים ללא הגבלה",
+      "הדרכה מקצועית"
     ]
   },
   {
     "id": "couple-paint-basic",
     "name": "חדר צבע - בסיסי",
-    "description": "חצי שעה בחדר",
-    "price": 180,
-    "duration": 30,
+    "description": "עד 20 דקות בחדר - 108 ₪ למשתתף",
+    "price": 108,
+    "pricePerPerson": true,
+    "duration": 20,
     "minParticipants": 2,
     "maxParticipants": 2,
     "roomType": "paint-room",
     "category": "paint",
     "includes": [
-      "חצי שעה בחדר",
-      "בלאגן שפריץ 8 שפריצרים לבחירה",
-      "2 קנבס שפריץ 30 על 30"
+      "עד 20 דקות בחדר",
+      "4 שפריצרים",
+      "קנבס אחד"
     ]
   },
   {
-    "id": "couple-paint-expanded",
-    "name": "חדר צבע - מורחב",
-    "description": "45 דקות בחדר",
-    "price": 210,
-    "duration": 45,
+    "id": "couple-paint-mid",
+    "name": "חדר צבע - מוגזם",
+    "description": "עד 40 דקות בחדר - 162 ₪ למשתתף",
+    "price": 162,
+    "pricePerPerson": true,
+    "duration": 40,
     "minParticipants": 2,
     "maxParticipants": 2,
     "roomType": "paint-room",
     "category": "paint",
     "recommended": true,
     "includes": [
-      "45 דקות בחדר",
-      "בלאגן שפריץ 12 שפריצרים לבחירה",
-      "2 קנבס שפריץ 30 על 30",
-      "2 פורינג קנבס שולחן מסתובב"
+      "עד 40 דקות בחדר",
+      "6 שפריצרים",
+      "קנבס אחד"
     ]
   },
   {
-    "id": "couple-paint-extreme",
-    "name": "חדר צבע - מוגזם",
-    "description": "שעה שלמה בחדר",
-    "price": 300,
+    "id": "couple-paint-max",
+    "name": "חדר צבע - מושפרץ",
+    "description": "עד שעה בחדר - 216 ₪ למשתתף",
+    "price": 216,
+    "pricePerPerson": true,
     "duration": 60,
     "minParticipants": 2,
     "maxParticipants": 2,
     "roomType": "paint-room",
     "category": "paint",
     "includes": [
-      "שעה שלמה בחדר",
-      "בלאגן שפריץ 14 שפריצרים לבחירה",
-      "2 קנבס שפריץ 30 על 30",
-      "2 פורינג קנבס שולחן מסתובב",
-      "2 פורינג בובת גבס"
+      "עד שעה בחדר",
+      "8 שפריצרים",
+      "קנבס אחד",
+      "הפתעה"
     ]
   },
   {
     "id": "couple-combo-basic",
     "name": "משולב - בסיסי",
-    "description": "45 דקות במתחם",
-    "price": 360,
-    "duration": 45,
+    "description": "עד 40 דקות במתחם - 270 ₪ למשתתף",
+    "price": 270,
+    "pricePerPerson": true,
+    "duration": 40,
     "minParticipants": 2,
     "maxParticipants": 2,
     "roomType": "combo",
     "category": "combo",
     "includes": [
-      "זעם: 8 מוצרי מטבח, 1 מסך, 2 גמד גינה, 1 פינוק עלינו",
-      "גרזנים: גרזנים או סכינים או שוריקנים",
-      "צבע: בלאגן שפריץ 6 שפריצרים, 2 קנבס 30 על 30"
+      "עד 40 דקות במתחם",
+      "חדר זעם",
+      "חדר צבע",
+      "הטלת גרזנים"
     ]
   },
   {
-    "id": "couple-combo-expanded",
-    "name": "משולב - מורחב",
-    "description": "שעה שלמה במתחם",
-    "price": 420,
-    "duration": 60,
-    "minParticipants": 2,
-    "maxParticipants": 2,
-    "roomType": "combo",
-    "category": "combo",
-    "recommended": true,
-    "includes": [
-      "זעם: 12 מוצרי מטבח, 2 מסך, 4 גמד גינה, 1 פינוק עלינו",
-      "גרזנים: גרזנים ושוריקנים או סכינים ושוריקנים",
-      "צבע: בלאגן שפריץ 8 שפריצרים, 2 קנבס 30 על 30, 1 פורינג קנבס שולחן מסתובב"
-    ]
-  },
-  {
-    "id": "couple-combo-extreme",
+    "id": "couple-combo-mid",
     "name": "משולב - מוגזם",
-    "description": "שעה שלמה במתחם",
-    "price": 480,
+    "description": "עד שעה במתחם - 405 ₪ למשתתף",
+    "price": 405,
+    "pricePerPerson": true,
     "duration": 60,
     "minParticipants": 2,
     "maxParticipants": 2,
     "roomType": "combo",
     "category": "combo",
-    "includes": [
-      "זעם: 15 מוצרי מטבח, 2 מסך, 4 גמד גינה, 1 מדפסת, 1 פינוק עלינו",
-      "גרזנים: גרזנים סכינים ושוריקנים ללא הגבלה",
-      "צבע: בלאגן שפריץ 8 שפריצרים, 2 קנבס 30 על 30, 2 פורינג קנבס שולחן מסתובב, 2 פורינג בובת גבס"
-    ]
-  },
-  {
-    "id": "family-rage-basic",
-    "name": "חדר זעם - בסיסי",
-    "description": "חצי שעה בחדר",
-    "price": 220,
-    "duration": 30,
-    "minParticipants": 3,
-    "maxParticipants": 5,
-    "roomType": "rage-room",
-    "category": "rage",
-    "includes": [
-      "חצי שעה בחדר",
-      "15 מוצרי מטבח (צלחות כוסות קערות)",
-      "2 מסך מחשב / טלוויזיה",
-      "2 גמד גינה",
-      "1 פינוק עלינו"
-    ]
-  },
-  {
-    "id": "family-rage-expanded",
-    "name": "חדר זעם - מורחב",
-    "description": "חצי שעה בחדר",
-    "price": 300,
-    "duration": 30,
-    "minParticipants": 3,
-    "maxParticipants": 5,
-    "roomType": "rage-room",
-    "category": "rage",
     "recommended": true,
     "includes": [
-      "חצי שעה בחדר",
-      "15 מוצרי מטבח (צלחות כוסות קערות)",
-      "3 מסך מחשב / טלוויזיה",
-      "5 גמד גינה",
-      "1 פינוק עלינו"
+      "עד שעה במתחם",
+      "חדר זעם מוגזם",
+      "חדר צבע מוגזם",
+      "הטלת גרזנים"
     ]
   },
   {
-    "id": "family-rage-extreme",
+    "id": "couple-combo-max",
+    "name": "משולב - מושפרץ",
+    "description": "עד שעה וחצי במתחם - 540 ₪ למשתתף",
+    "price": 540,
+    "pricePerPerson": true,
+    "duration": 90,
+    "minParticipants": 2,
+    "maxParticipants": 2,
+    "roomType": "combo",
+    "category": "combo",
+    "includes": [
+      "עד שעה וחצי במתחם",
+      "חדר זעם מושפרץ",
+      "חדר צבע מושפרץ",
+      "הטלת גרזנים ללא הגבלה"
+    ]
+  },
+  {
+    "id": "trio-rage-basic",
+    "name": "חדר זעם - בסיסי",
+    "description": "עד 20 דקות בחדר - 112 ₪ למשתתף",
+    "price": 112,
+    "pricePerPerson": true,
+    "duration": 20,
+    "minParticipants": 3,
+    "maxParticipants": 3,
+    "roomType": "rage-room",
+    "category": "rage",
+    "includes": [
+      "עד 20 דקות בחדר",
+      "4 צלחות",
+      "4 כוסות",
+      "2 גמדי גינה",
+      "1 מסך"
+    ]
+  },
+  {
+    "id": "trio-rage-mid",
     "name": "חדר זעם - מוגזם",
-    "description": "50 דקות בחדר",
-    "price": 380,
-    "duration": 50,
+    "description": "עד 40 דקות בחדר - 150 ₪ למשתתף",
+    "price": 150,
+    "pricePerPerson": true,
+    "duration": 40,
     "minParticipants": 3,
-    "maxParticipants": 5,
+    "maxParticipants": 3,
     "roomType": "rage-room",
     "category": "rage",
+    "recommended": true,
     "includes": [
-      "50 דקות בחדר",
-      "20 מוצרי מטבח (צלחות כוסות קערות)",
-      "3 מסך מחשב / טלוויזיה",
-      "5 גמד גינה",
-      "1 מדפסת",
-      "1 פינוק עלינו"
+      "עד 40 דקות בחדר",
+      "5 צלחות",
+      "5 כוסות",
+      "2 גמדי גינה",
+      "2 מסכים"
     ]
   },
   {
-    "id": "family-rage-explode",
-    "name": "חדר זעם - בא לנו להתפוצץ",
-    "description": "שעה שלמה בחדר",
-    "price": 420,
+    "id": "trio-rage-max",
+    "name": "חדר זעם - מושפרץ",
+    "description": "עד שעה בחדר - 187 ₪ למשתתף",
+    "price": 187,
+    "pricePerPerson": true,
     "duration": 60,
     "minParticipants": 3,
-    "maxParticipants": 5,
+    "maxParticipants": 3,
     "roomType": "rage-room",
     "category": "rage",
     "includes": [
-      "שעה שלמה בחדר",
-      "30 מוצרי מטבח (צלחות כוסות קערות)",
-      "3 מסך מחשב / טלוויזיה",
-      "5 גמד גינה",
-      "2 מדפסת",
-      "2 פינוק עלינו"
+      "עד שעה בחדר",
+      "8 צלחות",
+      "8 כוסות",
+      "2 גמדי גינה",
+      "3 מסכים"
     ]
   },
   {
-    "id": "family-axes-taste",
-    "name": "הטלת גרזנים - טעימה של הטלה",
-    "description": "חצי שעה בחדר",
-    "price": 250,
-    "duration": 30,
+    "id": "trio-axes-basic",
+    "name": "הטלת גרזנים - בסיסי",
+    "description": "עד 20 דקות בחדר - 75 ₪ למשתתף",
+    "price": 75,
+    "pricePerPerson": true,
+    "duration": 20,
     "minParticipants": 3,
-    "maxParticipants": 5,
+    "maxParticipants": 3,
     "roomType": "throwing-axes",
     "category": "axes",
     "includes": [
-      "חצי שעה בחדר",
-      "גרזנים או סכינים או שוריקנים"
+      "עד 20 דקות בחדר",
+      "גרזנים, סכינים ושוריקנים",
+      "הדרכה מקצועית"
     ]
   },
   {
-    "id": "family-axes-full",
-    "name": "הטלת גרזנים - אם כבר אז כבר",
-    "description": "חצי שעה בחדר",
-    "price": 300,
-    "duration": 30,
+    "id": "trio-axes-mid",
+    "name": "הטלת גרזנים - מוגזם",
+    "description": "עד 40 דקות בחדר - 122 ₪ למשתתף",
+    "price": 122,
+    "pricePerPerson": true,
+    "duration": 40,
     "minParticipants": 3,
-    "maxParticipants": 5,
+    "maxParticipants": 3,
     "roomType": "throwing-axes",
     "category": "axes",
     "recommended": true,
     "includes": [
-      "חצי שעה בחדר",
-      "גרזנים ושוריקנים או סכינים ושוריקנים"
+      "עד 40 דקות בחדר",
+      "גרזנים, סכינים ושוריקנים",
+      "הדרכה מקצועית"
     ]
   },
   {
-    "id": "family-axes-pro",
-    "name": "הטלת גרזנים - יוצאים מקצוענים",
-    "description": "50 דקות בחדר",
-    "price": 400,
-    "duration": 50,
+    "id": "trio-axes-max",
+    "name": "הטלת גרזנים - מושפרץ",
+    "description": "עד שעה בחדר - 150 ₪ למשתתף",
+    "price": 150,
+    "pricePerPerson": true,
+    "duration": 60,
     "minParticipants": 3,
-    "maxParticipants": 5,
+    "maxParticipants": 3,
     "roomType": "throwing-axes",
     "category": "axes",
     "includes": [
-      "50 דקות בחדר",
-      "גרזנים סכינים ושוריקנים ללא הגבלה"
+      "עד שעה בחדר",
+      "גרזנים, סכינים ושוריקנים ללא הגבלה",
+      "הדרכה מקצועית"
     ]
   },
   {
-    "id": "family-paint-basic",
+    "id": "trio-paint-basic",
     "name": "חדר צבע - בסיסי",
-    "description": "חצי שעה בחדר",
-    "price": 250,
-    "duration": 30,
-    "minParticipants": 3,
-    "maxParticipants": 5,
-    "roomType": "paint-room",
-    "category": "paint",
-    "includes": [
-      "חצי שעה בחדר",
-      "בלאגן שפריץ 12 שפריצרים לבחירה",
-      "5 קנבס שפריץ 30 על 30"
-    ]
-  },
-  {
-    "id": "family-paint-expanded",
-    "name": "חדר צבע - מורחב",
-    "description": "45 דקות בחדר",
-    "price": 320,
-    "duration": 45,
-    "minParticipants": 3,
-    "maxParticipants": 5,
-    "roomType": "paint-room",
-    "category": "paint",
-    "recommended": true,
-    "includes": [
-      "45 דקות בחדר",
-      "בלאגן שפריץ 15 שפריצרים לבחירה",
-      "5 קנבס שפריץ 30 על 30",
-      "5 פורינג קנבס שולחן מסתובב"
-    ]
-  },
-  {
-    "id": "family-paint-extreme",
-    "name": "חדר צבע - מוגזם",
-    "description": "שעה שלמה בחדר",
-    "price": 400,
-    "duration": 60,
-    "minParticipants": 3,
-    "maxParticipants": 5,
-    "roomType": "paint-room",
-    "category": "paint",
-    "includes": [
-      "שעה שלמה בחדר",
-      "בלאגן שפריץ 20 שפריצרים לבחירה",
-      "5 קנבס שפריץ 30 על 30",
-      "5 פורינג קנבס שולחן מסתובב",
-      "5 פורינג בובת גבס"
-    ]
-  },
-  {
-    "id": "family-combo-basic",
-    "name": "משולב - בסיסי",
-    "description": "45 דקות במתחם",
-    "price": 480,
-    "duration": 45,
-    "minParticipants": 3,
-    "maxParticipants": 5,
-    "roomType": "combo",
-    "category": "combo",
-    "includes": [
-      "זעם: 10 מוצרי מטבח, 1 מסך, 5 גמד גינה, 1 פינוק עלינו",
-      "גרזנים: גרזנים או סכינים או שוריקנים",
-      "צבע: בלאגן שפריץ 12 שפריצרים, 5 קנבס 30 על 30"
-    ]
-  },
-  {
-    "id": "family-combo-expanded",
-    "name": "משולב - מורחב",
-    "description": "שעה שלמה במתחם",
-    "price": 550,
-    "duration": 60,
-    "minParticipants": 3,
-    "maxParticipants": 5,
-    "roomType": "combo",
-    "category": "combo",
-    "recommended": true,
-    "includes": [
-      "זעם: 15 מוצרי מטבח, 2 מסך, 5 גמד גינה, 1 פינוק עלינו",
-      "גרזנים: גרזנים ושוריקנים או סכינים ושוריקנים",
-      "צבע: בלאגן שפריץ 20 שפריצרים, 5 קנבס 30 על 30, 5 פורינג קנבס שולחן מסתובב"
-    ]
-  },
-  {
-    "id": "family-combo-extreme",
-    "name": "משולב - מוגזם",
-    "description": "שעה שלמה במתחם",
-    "price": 650,
-    "duration": 60,
-    "minParticipants": 3,
-    "maxParticipants": 5,
-    "roomType": "combo",
-    "category": "combo",
-    "includes": [
-      "זעם: 20 מוצרי מטבח, 2 מסך, 5 גמד גינה, 2 מדפסת, 1 פינוק עלינו",
-      "גרזנים: גרזנים סכינים ושוריקנים ללא הגבלה",
-      "צבע: בלאגן שפריץ 25 שפריצרים, 5 קנבס 30 על 30, 5 פורינג קנבס שולחן מסתובב, 5 פורינג בובת גבס"
-    ]
-  },
-  {
-    "id": "banda-rage-basic",
-    "name": "חדר זעם - בסיסי",
-    "description": "חצי שעה בחדר - 90 ₪ למשתתף",
+    "description": "עד 20 דקות בחדר - 90 ₪ למשתתף",
     "price": 90,
     "pricePerPerson": true,
-    "duration": 30,
-    "minParticipants": 6,
-    "maxParticipants": 20,
-    "roomType": "rage-room",
-    "category": "rage",
-    "includes": [
-      "חצי שעה בחדר",
-      "6 מוצרי מטבח (צלחות כוסות קערות)",
-      "1 מסך מחשב / טלוויזיה",
-      "1 גמד גינה",
-      "1 פינוק עלינו"
-    ]
-  },
-  {
-    "id": "banda-rage-expanded",
-    "name": "חדר זעם - מורחב",
-    "description": "חצי שעה בחדר - 120 ₪ למשתתף",
-    "price": 120,
-    "pricePerPerson": true,
-    "duration": 30,
-    "minParticipants": 6,
-    "maxParticipants": 20,
-    "roomType": "rage-room",
-    "category": "rage",
-    "recommended": true,
-    "includes": [
-      "חצי שעה בחדר",
-      "10 מוצרי מטבח (צלחות כוסות קערות)",
-      "2 מסך מחשב / טלוויזיה",
-      "2 גמד גינה",
-      "1 פינוק עלינו"
-    ]
-  },
-  {
-    "id": "banda-rage-extreme",
-    "name": "חדר זעם - מוגזם",
-    "description": "50 דקות בחדר - 150 ₪ למשתתף",
-    "price": 150,
-    "pricePerPerson": true,
-    "duration": 50,
-    "minParticipants": 6,
-    "maxParticipants": 20,
-    "roomType": "rage-room",
-    "category": "rage",
-    "includes": [
-      "50 דקות בחדר",
-      "15 מוצרי מטבח (צלחות כוסות קערות)",
-      "2 מסך מחשב / טלוויזיה",
-      "4 גמד גינה",
-      "1 מדפסת",
-      "1 פינוק עלינו"
-    ]
-  },
-  {
-    "id": "banda-rage-explode",
-    "name": "חדר זעם - בא לנו להתפוצץ",
-    "description": "שעה שלמה בחדר - 180 ₪ למשתתף",
-    "price": 180,
-    "pricePerPerson": true,
-    "duration": 60,
-    "minParticipants": 6,
-    "maxParticipants": 20,
-    "roomType": "rage-room",
-    "category": "rage",
-    "includes": [
-      "שעה שלמה בחדר",
-      "20 מוצרי מטבח (צלחות כוסות קערות)",
-      "2 מסך מחשב / טלוויזיה",
-      "5 גמד גינה",
-      "1 מדפסת",
-      "2 פינוק עלינו"
-    ]
-  },
-  {
-    "id": "banda-axes-taste",
-    "name": "הטלת גרזנים - טעימה של הטלה",
-    "description": "חצי שעה בחדר - 80 ₪ למשתתף",
-    "price": 80,
-    "pricePerPerson": true,
-    "duration": 30,
-    "minParticipants": 6,
-    "maxParticipants": 20,
-    "roomType": "throwing-axes",
-    "category": "axes",
-    "includes": [
-      "חצי שעה בחדר",
-      "גרזנים או סכינים או שוריקנים"
-    ]
-  },
-  {
-    "id": "banda-axes-full",
-    "name": "הטלת גרזנים - אם כבר אז כבר",
-    "description": "חצי שעה בחדר - 120 ₪ למשתתף",
-    "price": 120,
-    "pricePerPerson": true,
-    "duration": 30,
-    "minParticipants": 6,
-    "maxParticipants": 20,
-    "roomType": "throwing-axes",
-    "category": "axes",
-    "recommended": true,
-    "includes": [
-      "חצי שעה בחדר",
-      "גרזנים ושוריקנים או סכינים ושוריקנים"
-    ]
-  },
-  {
-    "id": "banda-axes-pro",
-    "name": "הטלת גרזנים - יוצאים מקצוענים",
-    "description": "50 דקות בחדר - 150 ₪ למשתתף",
-    "price": 150,
-    "pricePerPerson": true,
-    "duration": 50,
-    "minParticipants": 6,
-    "maxParticipants": 20,
-    "roomType": "throwing-axes",
-    "category": "axes",
-    "includes": [
-      "50 דקות בחדר",
-      "גרזנים סכינים ושוריקנים ללא הגבלה"
-    ]
-  },
-  {
-    "id": "banda-paint-basic",
-    "name": "חדר צבע - בסיסי",
-    "description": "חצי שעה בחדר - 100 ₪ למשתתף",
-    "price": 100,
-    "pricePerPerson": true,
-    "duration": 30,
-    "minParticipants": 6,
-    "maxParticipants": 20,
+    "duration": 20,
+    "minParticipants": 3,
+    "maxParticipants": 3,
     "roomType": "paint-room",
     "category": "paint",
     "includes": [
-      "חצי שעה בחדר",
-      "בלאגן שפריץ 4 שפריצרים לבחירה",
-      "1 קנבס שפריץ 30 על 30"
+      "עד 20 דקות בחדר",
+      "4 שפריצרים",
+      "קנבס אחד"
     ]
   },
   {
-    "id": "banda-paint-expanded",
-    "name": "חדר צבע - מורחב",
-    "description": "45 דקות בחדר - 120 ₪ למשתתף",
-    "price": 120,
-    "pricePerPerson": true,
-    "duration": 45,
-    "minParticipants": 6,
-    "maxParticipants": 20,
-    "roomType": "paint-room",
-    "category": "paint",
-    "recommended": true,
-    "includes": [
-      "45 דקות בחדר",
-      "בלאגן שפריץ 6 שפריצרים לבחירה",
-      "1 קנבס שפריץ 30 על 30",
-      "1 פורינג קנבס שולחן מסתובב"
-    ]
-  },
-  {
-    "id": "banda-paint-extreme",
+    "id": "trio-paint-mid",
     "name": "חדר צבע - מוגזם",
-    "description": "שעה שלמה בחדר - 180 ₪ למשתתף",
+    "description": "עד 40 דקות בחדר - 135 ₪ למשתתף",
+    "price": 135,
+    "pricePerPerson": true,
+    "duration": 40,
+    "minParticipants": 3,
+    "maxParticipants": 3,
+    "roomType": "paint-room",
+    "category": "paint",
+    "recommended": true,
+    "includes": [
+      "עד 40 דקות בחדר",
+      "6 שפריצרים",
+      "קנבס אחד"
+    ]
+  },
+  {
+    "id": "trio-paint-max",
+    "name": "חדר צבע - מושפרץ",
+    "description": "עד שעה בחדר - 180 ₪ למשתתף",
     "price": 180,
     "pricePerPerson": true,
     "duration": 60,
-    "minParticipants": 6,
+    "minParticipants": 3,
+    "maxParticipants": 3,
+    "roomType": "paint-room",
+    "category": "paint",
+    "includes": [
+      "עד שעה בחדר",
+      "8 שפריצרים",
+      "קנבס אחד",
+      "הפתעה"
+    ]
+  },
+  {
+    "id": "trio-combo-basic",
+    "name": "משולב - בסיסי",
+    "description": "עד 40 דקות במתחם - 225 ₪ למשתתף",
+    "price": 225,
+    "pricePerPerson": true,
+    "duration": 40,
+    "minParticipants": 3,
+    "maxParticipants": 3,
+    "roomType": "combo",
+    "category": "combo",
+    "includes": [
+      "עד 40 דקות במתחם",
+      "חדר זעם",
+      "חדר צבע",
+      "הטלת גרזנים"
+    ]
+  },
+  {
+    "id": "trio-combo-mid",
+    "name": "משולב - מוגזם",
+    "description": "עד שעה במתחם - 338 ₪ למשתתף",
+    "price": 338,
+    "pricePerPerson": true,
+    "duration": 60,
+    "minParticipants": 3,
+    "maxParticipants": 3,
+    "roomType": "combo",
+    "category": "combo",
+    "recommended": true,
+    "includes": [
+      "עד שעה במתחם",
+      "חדר זעם מוגזם",
+      "חדר צבע מוגזם",
+      "הטלת גרזנים"
+    ]
+  },
+  {
+    "id": "trio-combo-max",
+    "name": "משולב - מושפרץ",
+    "description": "עד שעה וחצי במתחם - 450 ₪ למשתתף",
+    "price": 450,
+    "pricePerPerson": true,
+    "duration": 90,
+    "minParticipants": 3,
+    "maxParticipants": 3,
+    "roomType": "combo",
+    "category": "combo",
+    "includes": [
+      "עד שעה וחצי במתחם",
+      "חדר זעם מושפרץ",
+      "חדר צבע מושפרץ",
+      "הטלת גרזנים ללא הגבלה"
+    ]
+  },
+  {
+    "id": "group-rage-basic",
+    "name": "חדר זעם - בסיסי",
+    "description": "עד 20 דקות בחדר - 105 ₪ למשתתף",
+    "price": 105,
+    "pricePerPerson": true,
+    "duration": 20,
+    "minParticipants": 4,
+    "maxParticipants": 20,
+    "roomType": "rage-room",
+    "category": "rage",
+    "includes": [
+      "עד 20 דקות בחדר",
+      "4 צלחות",
+      "4 כוסות",
+      "2 גמדי גינה",
+      "1 מסך"
+    ]
+  },
+  {
+    "id": "group-rage-mid",
+    "name": "חדר זעם - מוגזם",
+    "description": "עד 40 דקות בחדר - 140 ₪ למשתתף",
+    "price": 140,
+    "pricePerPerson": true,
+    "duration": 40,
+    "minParticipants": 4,
+    "maxParticipants": 20,
+    "roomType": "rage-room",
+    "category": "rage",
+    "recommended": true,
+    "includes": [
+      "עד 40 דקות בחדר",
+      "5 צלחות",
+      "5 כוסות",
+      "2 גמדי גינה",
+      "2 מסכים"
+    ]
+  },
+  {
+    "id": "group-rage-max",
+    "name": "חדר זעם - מושפרץ",
+    "description": "עד שעה בחדר - 175 ₪ למשתתף",
+    "price": 175,
+    "pricePerPerson": true,
+    "duration": 60,
+    "minParticipants": 4,
+    "maxParticipants": 20,
+    "roomType": "rage-room",
+    "category": "rage",
+    "includes": [
+      "עד שעה בחדר",
+      "8 צלחות",
+      "8 כוסות",
+      "2 גמדי גינה",
+      "3 מסכים"
+    ]
+  },
+  {
+    "id": "group-axes-basic",
+    "name": "הטלת גרזנים - בסיסי",
+    "description": "עד 20 דקות בחדר - 70 ₪ למשתתף",
+    "price": 70,
+    "pricePerPerson": true,
+    "duration": 20,
+    "minParticipants": 4,
+    "maxParticipants": 20,
+    "roomType": "throwing-axes",
+    "category": "axes",
+    "includes": [
+      "עד 20 דקות בחדר",
+      "גרזנים, סכינים ושוריקנים",
+      "הדרכה מקצועית"
+    ]
+  },
+  {
+    "id": "group-axes-mid",
+    "name": "הטלת גרזנים - מוגזם",
+    "description": "עד 40 דקות בחדר - 105 ₪ למשתתף",
+    "price": 105,
+    "pricePerPerson": true,
+    "duration": 40,
+    "minParticipants": 4,
+    "maxParticipants": 20,
+    "roomType": "throwing-axes",
+    "category": "axes",
+    "recommended": true,
+    "includes": [
+      "עד 40 דקות בחדר",
+      "גרזנים, סכינים ושוריקנים",
+      "הדרכה מקצועית"
+    ]
+  },
+  {
+    "id": "group-axes-max",
+    "name": "הטלת גרזנים - מושפרץ",
+    "description": "עד שעה בחדר - 140 ₪ למשתתף",
+    "price": 140,
+    "pricePerPerson": true,
+    "duration": 60,
+    "minParticipants": 4,
+    "maxParticipants": 20,
+    "roomType": "throwing-axes",
+    "category": "axes",
+    "includes": [
+      "עד שעה בחדר",
+      "גרזנים, סכינים ושוריקנים ללא הגבלה",
+      "הדרכה מקצועית"
+    ]
+  },
+  {
+    "id": "group-paint-basic",
+    "name": "חדר צבע - בסיסי",
+    "description": "עד 20 דקות בחדר - 84 ₪ למשתתף",
+    "price": 84,
+    "pricePerPerson": true,
+    "duration": 20,
+    "minParticipants": 4,
     "maxParticipants": 20,
     "roomType": "paint-room",
     "category": "paint",
     "includes": [
-      "שעה שלמה בחדר",
-      "בלאגן שפריץ 6 שפריצרים לבחירה",
-      "1 קנבס שפריץ 30 על 30",
-      "1 פורינג קנבס שולחן מסתובב",
-      "1 פורינג בובת גבס"
+      "עד 20 דקות בחדר",
+      "4 שפריצרים",
+      "קנבס אחד"
     ]
   },
   {
-    "id": "banda-combo-basic",
-    "name": "משולב - בסיסי",
-    "description": "45 דקות במתחם - 180 ₪ למשתתף",
-    "price": 180,
+    "id": "group-paint-mid",
+    "name": "חדר צבע - מוגזם",
+    "description": "עד 40 דקות בחדר - 126 ₪ למשתתף",
+    "price": 126,
     "pricePerPerson": true,
-    "duration": 45,
-    "minParticipants": 6,
+    "duration": 40,
+    "minParticipants": 4,
+    "maxParticipants": 20,
+    "roomType": "paint-room",
+    "category": "paint",
+    "recommended": true,
+    "includes": [
+      "עד 40 דקות בחדר",
+      "6 שפריצרים",
+      "קנבס אחד"
+    ]
+  },
+  {
+    "id": "group-paint-max",
+    "name": "חדר צבע - מושפרץ",
+    "description": "עד שעה בחדר - 170 ₪ למשתתף",
+    "price": 170,
+    "pricePerPerson": true,
+    "duration": 60,
+    "minParticipants": 4,
+    "maxParticipants": 20,
+    "roomType": "paint-room",
+    "category": "paint",
+    "includes": [
+      "עד שעה בחדר",
+      "8 שפריצרים",
+      "קנבס אחד",
+      "הפתעה"
+    ]
+  },
+  {
+    "id": "group-combo-basic",
+    "name": "משולב - בסיסי",
+    "description": "עד 40 דקות במתחם - 210 ₪ למשתתף",
+    "price": 210,
+    "pricePerPerson": true,
+    "duration": 40,
+    "minParticipants": 4,
     "maxParticipants": 20,
     "roomType": "combo",
     "category": "combo",
     "includes": [
-      "זעם: 6 מוצרי מטבח, 1 מסך, 1 גמד גינה, 1 פינוק עלינו",
-      "גרזנים: גרזנים או סכינים או שוריקנים",
-      "צבע: בלאגן שפריץ 4 שפריצרים, 1 קנבס 30 על 30"
+      "עד 40 דקות במתחם",
+      "חדר זעם",
+      "חדר צבע",
+      "הטלת גרזנים"
     ]
   },
   {
-    "id": "banda-combo-expanded",
-    "name": "משולב - מורחב",
-    "description": "שעה שלמה במתחם - 240 ₪ למשתתף",
-    "price": 240,
+    "id": "group-combo-mid",
+    "name": "משולב - מוגזם",
+    "description": "עד שעה במתחם - 315 ₪ למשתתף",
+    "price": 315,
     "pricePerPerson": true,
     "duration": 60,
-    "minParticipants": 6,
+    "minParticipants": 4,
     "maxParticipants": 20,
     "roomType": "combo",
     "category": "combo",
     "recommended": true,
     "includes": [
-      "זעם: 10 מוצרי מטבח, 2 מסך, 2 גמד גינה, 1 פינוק עלינו",
-      "גרזנים: גרזנים ושוריקנים או סכינים ושוריקנים",
-      "צבע: בלאגן שפריץ 6 שפריצרים, 1 קנבס 30 על 30, 1 פורינג קנבס שולחן מסתובב"
+      "עד שעה במתחם",
+      "חדר זעם מוגזם",
+      "חדר צבע מוגזם",
+      "הטלת גרזנים"
     ]
   },
   {
-    "id": "banda-combo-extreme",
-    "name": "משולב - מוגזם",
-    "description": "שעה שלמה במתחם - 280 ₪ למשתתף",
-    "price": 280,
+    "id": "group-combo-max",
+    "name": "משולב - מושפרץ",
+    "description": "עד שעה וחצי במתחם - 420 ₪ למשתתף",
+    "price": 420,
     "pricePerPerson": true,
-    "duration": 60,
-    "minParticipants": 6,
+    "duration": 90,
+    "minParticipants": 4,
     "maxParticipants": 20,
     "roomType": "combo",
     "category": "combo",
     "includes": [
-      "זעם: 15 מוצרי מטבח, 2 מסך, 4 גמד גינה, 1 מדפסת, 1 פינוק עלינו",
-      "גרזנים: גרזנים סכינים ושוריקנים ללא הגבלה",
-      "צבע: בלאגן שפריץ 6 שפריצרים, 1 קנבס 30 על 30, 1 פורינג קנבס שולחן מסתובב, 1 פורינג בובת גבס"
+      "עד שעה וחצי במתחם",
+      "חדר זעם מושפרץ",
+      "חדר צבע מושפרץ",
+      "הטלת גרזנים ללא הגבלה"
     ]
   }
 ]

@@ -5,8 +5,8 @@
  */
 
 // Get config from window.ENV_CONFIG (loaded by config.js)
-const SUPABASE_URL = window.ENV_CONFIG?.SUPABASE_URL || 'https://aquhidjcuxkhkwosfvgf.supabase.co';
-const SUPABASE_ANON_KEY = window.ENV_CONFIG?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxdWhpZGpjdXhraGt3b3NmdmdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyODk5MjgsImV4cCI6MjA4NDg2NTkyOH0.qyUyRWFn6cpLL43ZgmLdJwfkq6UfAK_weNdb7Oclnps';
+const SUPABASE_URL = window.ENV_CONFIG ? .SUPABASE_URL || 'https://aquhidjcuxkhkwosfvgf.supabase.co';
+const SUPABASE_ANON_KEY = window.ENV_CONFIG ? .SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxdWhpZGpjdXhraGt3b3NmdmdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyODk5MjgsImV4cCI6MjA4NDg2NTkyOH0.qyUyRWFn6cpLL43ZgmLdJwfkq6UfAK_weNdb7Oclnps';
 
 // Load Supabase from CDN
 const script = document.createElement('script');
@@ -15,13 +15,13 @@ script.onerror = function(e) {
     console.error('❌ Failed to load Supabase from CDN:', e);
 };
 script.onload = function() {
-    if (! window.supabase || !window.supabase.createClient) {
+    if (!window.supabase || !window.supabase.createClient) {
         console.error('❌ Supabase createClient not found!');
         return;
     }
-    
+
     window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
+
     // Helper functions for user operations
     window.userDB = {
         // Register new user
@@ -93,7 +93,7 @@ script.onload = function() {
                     date: orderData.date,
                     time: orderData.time,
                     notes: orderData.notes || '',
-                    status: 'pending',
+                    status: orderData.status || 'pending',
                     user_id: orderData.userId || null,
                     account_created_during_order: orderData.accountCreated || false,
                     created_at: new Date().toISOString()
@@ -184,7 +184,7 @@ script.onload = function() {
             if (error) throw error;
             return data;
         }
-    };    
+    };
     window.dispatchEvent(new Event('supabase-loaded'));
 };
 document.head.appendChild(script);

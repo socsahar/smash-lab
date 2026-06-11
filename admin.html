@@ -1381,6 +1381,71 @@
             font-size: 1.3rem;
         }
         
+        .events-search-wrap {
+            position: relative;
+            margin-bottom: 18px;
+        }
+        
+        .events-search-wrap .events-search-icon {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        #eventsSearchInput {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 44px 12px 44px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            background: rgba(0, 0, 0, 0.35);
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        #eventsSearchInput::placeholder {
+            color: #888;
+        }
+        
+        #eventsSearchInput:focus {
+            outline: none;
+            border-color: #ff6b00;
+            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15);
+        }
+        
+        .events-search-clear {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            line-height: 1;
+            display: none;
+        }
+        
+        .events-search-clear:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        #eventsSearchCount {
+            margin: 0 0 14px;
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
         .event-card {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 107, 0, 0.25);
@@ -2533,6 +2598,12 @@
                 <!-- Events List -->
                 <div class="events-list-section">
                     <h3>📋 אירועים פעילים</h3>
+                    <div class="events-search-wrap">
+                        <span class="events-search-icon">🔍</span>
+                        <input type="text" id="eventsSearchInput" placeholder="חיפוש: שם אירוע, איש קשר, טלפון, תאריך, שם חותם, ת.ז..." oninput="renderEventsWithSearch()" autocomplete="off">
+                        <button type="button" class="events-search-clear" id="eventsSearchClear" title="נקה חיפוש" onclick="clearEventsSearch()">✕</button>
+                    </div>
+                    <p id="eventsSearchCount" style="display:none;"></p>
                     <div id="eventsListContainer">
                         <p style="color:#888; text-align:center; padding:20px;">אין אירועים עדיין. צור אירוע חדש למעלה.</p>
                     </div>
@@ -3745,6 +3816,51 @@
             }
         }
 
+        // Mirror a newly-created event into the bookings table so it also appears
+        // in the orders panel. Additive only — it never touches existing events or orders.
+        async function addEventToBookings(ev) {
+            try {
+                const client = initSupabaseForCoupons();
+                if (!client || !client.from) {
+                    console.warn('Supabase not ready — event not mirrored to orders panel');
+                    return false;
+                }
+                const typeLabels = {
+                    birthday: 'יום הולדת', corporate: 'גיבוש חברה',
+                    school: 'בית ספר / טיול', military: 'אירוע צבאי', other: 'אחר'
+                };
+                const dt = ev.datetime ? new Date(ev.datetime) : null;
+                const bookingDate = ev.datetime ? ev.datetime.split('T')[0] : null;
+                const bookingTime = (ev.datetime && ev.datetime.includes('T'))
+                    ? ev.datetime.split('T')[1].slice(0, 5) : null;
+                const row = {
+                    package_id: 'event',
+                    package_name: ev.title || 'אירוע',
+                    customer_name: ev.responsible || ev.title || 'אירוע',
+                    customer_email: '',
+                    customer_phone: ev.phone || '',
+                    booking_date: bookingDate,
+                    booking_time: bookingTime,
+                    booking_datetime: dt ? dt.toISOString() : null,
+                    end_datetime: dt ? dt.toISOString() : null,
+                    duration_minutes: null,
+                    order_id: ev.id,
+                    status: 'confirmed',
+                    price: 0,
+                    customer_notes: `אירוע (${typeLabels[ev.type] || ev.type || 'אחר'}) · ${ev.participants || 0} משתתפים${ev.notes ? ' · ' + ev.notes : ''}`
+                };
+                const { error } = await client.from('bookings').insert([row]);
+                if (error) {
+                    console.warn('Failed to mirror event to orders panel:', error);
+                    return false;
+                }
+                return true;
+            } catch (e) {
+                console.warn('addEventToBookings error:', e);
+                return false;
+            }
+        }
+
         async function submitNewEvent(e) {
             e.preventDefault();
             const title        = document.getElementById('eventTitle').value.trim();
@@ -3766,6 +3882,8 @@
 
             const events = [event, ...getEvents()];
             await saveEvents(events);
+            // Also record the event in the orders panel (additive; old events untouched)
+            await addEventToBookings(event);
 
             document.getElementById('createEventForm').reset();
             await loadEvents();
@@ -3854,26 +3972,95 @@
             }
         }
 
-        async function loadEvents() {
-            await migrateLegacyEventsToServer();
+        // Holds the full (unfiltered) events data so the search bar can filter without re-fetching
+        let eventsCache = { events: [], sharedByEvent: {} };
 
-            const serverEvents = await fetchServerEvents();
-            const events = Array.isArray(serverEvents) && serverEvents.length ? serverEvents : getEvents();
-            if (Array.isArray(serverEvents) && serverEvents.length) {
-                saveLocalEvents(serverEvents);
+        const EVENT_TYPE_LABELS = {
+            birthday: '🎂 יום הולדת',
+            corporate: '🏢 גיבוש חברה',
+            school: '🎓 בית ספר / טיול',
+            military: '⭐ אירוע צבאי',
+            other: '📌 אחר'
+        };
+
+        function getSignerName(s) {
+            return s.participantName || s.fullName || s.guardianName || '';
+        }
+
+        // Build a single searchable text blob for an event (title, contact, date, signer names, etc.)
+        function eventSearchHaystack(ev, sharedByEvent) {
+            const shared = sharedByEvent[ev.id] || null;
+            const sigs = (shared && Array.isArray(shared.signatures) ? shared.signatures : (ev.signatures || []));
+            const dateStr = ev.datetime ? new Date(ev.datetime).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' }) : '';
+            const createdStr = ev.createdAt ? new Date(ev.createdAt).toLocaleDateString('he-IL') : '';
+            const statusStr = ev.status === 'active' ? 'פעיל active' : 'סגור closed';
+            const parts = [
+                ev.title, ev.responsible, ev.phone, ev.notes, ev.type,
+                EVENT_TYPE_LABELS[ev.type], dateStr, createdStr, statusStr
+            ];
+            sigs.forEach(s => {
+                parts.push(getSignerName(s), s.idNumber, s.phone, s.email, s.city, s.guardianName);
+            });
+            return parts.filter(Boolean).join(' ').toLowerCase();
+        }
+
+        function clearEventsSearch() {
+            const input = document.getElementById('eventsSearchInput');
+            if (input) input.value = '';
+            renderEventsWithSearch();
+        }
+
+        // Filters the cached events by the search term and re-renders (preserves open signer lists)
+        function renderEventsWithSearch() {
+            const input = document.getElementById('eventsSearchInput');
+            const clearBtn = document.getElementById('eventsSearchClear');
+            const countEl = document.getElementById('eventsSearchCount');
+            const container = document.getElementById('eventsListContainer');
+            const term = (input && input.value || '').trim().toLowerCase();
+            const all = eventsCache.events || [];
+
+            if (clearBtn) clearBtn.style.display = term ? 'block' : 'none';
+
+            if (!term) {
+                if (countEl) countEl.style.display = 'none';
+                renderEventCards(all, eventsCache.sharedByEvent);
+                return;
             }
 
+            const tokens = term.split(/\s+/).filter(Boolean);
+            const filtered = all.filter(ev => {
+                const hay = eventSearchHaystack(ev, eventsCache.sharedByEvent);
+                return tokens.every(t => hay.includes(t));
+            });
+
+            if (countEl) {
+                countEl.style.display = 'block';
+                countEl.textContent = `נמצאו ${filtered.length} אירועים מתוך ${all.length}`;
+            }
+
+            if (!filtered.length) {
+                if (container) {
+                    container.innerHTML = `<p style="color:#888; text-align:center; padding:20px;">לא נמצאו אירועים התואמים ל"${escapeEventHtml(input.value.trim())}".</p>`;
+                }
+                return;
+            }
+
+            renderEventCards(filtered, eventsCache.sharedByEvent);
+        }
+
+        function renderEventCards(events, sharedByEvent) {
             const container = document.getElementById('eventsListContainer');
+            if (!container) return;
+
+            // Remember which "all signers" lists are open so a refresh never collapses them
+            const openDetailIds = Array.from(
+                container.querySelectorAll('details[open][data-event]')
+            ).map(d => d.getAttribute('data-event'));
+
             if (!events.length) {
                 container.innerHTML = '<p style="color:#888; text-align:center; padding:20px;">אין אירועים עדיין. צור אירוע חדש למעלה.</p>';
                 return;
             }
-
-            const sharedByEvent = {};
-            await Promise.all(events.map(async(ev) => {
-                const data = await fetchSharedSignaturesSummary(ev.id);
-                if (data) sharedByEvent[ev.id] = data;
-            }));
 
             const typeLabels = {
                 birthday: '🎂 יום הולדת',
@@ -3896,7 +4083,7 @@
                 const getTrackedName = (s) => s.participantName || s.fullName || s.guardianName || 'ללא שם';
                 const signerItemsHtml = allSignatures.length
                     ? `
-                    <details style="margin-top:10px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:.65rem .8rem;">
+                    <details data-event="${ev.id}" style="margin-top:10px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:.65rem .8rem;">
                         <summary style="cursor:pointer; color:#ffb87a; font-weight:700;">כל החותמים (${allSignatures.length})</summary>
                         <div style="margin-top:.75rem; display:grid; gap:.45rem; font-size:0.9rem;">
                             ${allSignatures.map((s, idx) => `
@@ -3949,6 +4136,36 @@
                     </div>
                 </div>`;
             }).join('');
+
+            // Re-open any signer lists that were open before this refresh
+            openDetailIds.forEach(id => {
+                const d = container.querySelector(`details[data-event="${id}"]`);
+                if (d) d.open = true;
+            });
+        }
+
+        async function loadEvents() {
+            // 1) Render instantly from cached events so the tab opens with no delay
+            eventsCache = { events: getEvents(), sharedByEvent: {} };
+            renderEventsWithSearch();
+
+            // 2) Enrich in the background with server data + shared signature summaries
+            await migrateLegacyEventsToServer();
+
+            const serverEvents = await fetchServerEvents();
+            const events = Array.isArray(serverEvents) && serverEvents.length ? serverEvents : getEvents();
+            if (Array.isArray(serverEvents) && serverEvents.length) {
+                saveLocalEvents(serverEvents);
+            }
+
+            const sharedByEvent = {};
+            await Promise.all(events.map(async(ev) => {
+                const data = await fetchSharedSignaturesSummary(ev.id);
+                if (data) sharedByEvent[ev.id] = data;
+            }));
+
+            eventsCache = { events, sharedByEvent };
+            renderEventsWithSearch();
         }
 
         function copyEventLink(id, title) {
@@ -4004,7 +4221,10 @@
         // Keep refreshing the events list while the events tab is open
         setInterval(() => {
             const eventsSection = document.getElementById('events-section');
-            if (eventsSection && eventsSection.classList.contains('active')) {
+            const sigModal = document.getElementById('signature-details-modal');
+            const modalOpen = sigModal && sigModal.style.display === 'flex';
+            // Don't refresh while the admin is viewing a signer's details
+            if (eventsSection && eventsSection.classList.contains('active') && !modalOpen) {
                 loadEvents();
             }
         }, 10000);

@@ -53,6 +53,23 @@ CREATE TRIGGER update_bookings_updated_at
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
+-- ============================================
+-- Allow customer bookings to be saved from the website (client-side insert)
+-- ============================================
+-- The booking row is written directly from order-success.html after payment,
+-- so the anon (public) role needs INSERT privilege on the bookings table.
+
+-- Allow public + logged-in users to insert bookings
+GRANT INSERT ON bookings TO anon;
+GRANT INSERT ON bookings TO authenticated;
+
+-- RLS policy permitting inserts from the website
+DROP POLICY IF EXISTS "Enable insert for website bookings" ON bookings;
+CREATE POLICY "Enable insert for website bookings"
+    ON bookings
+    FOR INSERT
+    WITH CHECK (true);
+
 -- Verify the changes
 SELECT column_name, data_type, column_default
 FROM information_schema.columns
