@@ -1423,8 +1423,8 @@
 
             // calculateAge is now defined at script-level scope above
 
-            dobInput.addEventListener('change', function() {
-                const dob = this.value;
+            function handleDobChange() {
+                const dob = dobInput.value;
                 if (!dob) {
                     ageDisplay.style.display = 'none';
                     guardianSection.style.display = 'none';
@@ -1449,7 +1449,11 @@
                     toggleGuardianRequired(false);
                 }
                 checkFormValidity();
-            });
+            }
+            // Listen to both 'change' and 'input' so the guardian section toggles
+            // reliably whether the date is picked from the calendar, typed, or autofilled.
+            dobInput.addEventListener('change', handleDobChange);
+            dobInput.addEventListener('input', handleDobChange);
 
             guardianDobInput.addEventListener('change', function() {
                 const dob = this.value;
@@ -1688,8 +1692,12 @@
                         if (skipValidationIds.indexOf(ctrl.id) !== -1) continue;
                         if (ctrl.getClientRects().length === 0) continue;
                         if (typeof ctrl.checkValidity === 'function' && !ctrl.checkValidity()) {
-                            if (typeof ctrl.reportValidity === 'function') ctrl.reportValidity();
-                            else if (typeof ctrl.focus === 'function') ctrl.focus();
+                            if (window.customModal && typeof window.customModal.error === 'function') {
+                                window.customModal.error('יש למלא את כל השדות המסומנים בכוכבית (*) לפני המעבר לתקנון');
+                            } else {
+                                alert('יש למלא את כל השדות המסומנים בכוכבית (*) לפני המעבר לתקנון');
+                            }
+                            if (typeof ctrl.focus === 'function') ctrl.focus();
                             return;
                         }
                     }
