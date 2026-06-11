@@ -3944,17 +3944,37 @@
                     <div><strong>נחתם:</strong> ${escapeEventHtml(new Date(s.signedAt || Date.now()).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' }))}</div>
                     ${s.guardianName ? `<div><strong>אפוטרופוס:</strong> ${escapeEventHtml(s.guardianName)}${s.guardianId ? ` · ${escapeEventHtml(s.guardianId)}` : ''}</div>` : ''}
                     ${children}
-                    ${s.signature ? `<div style="margin-top:.75rem;"><strong>חתימה:</strong><div style="margin-top:.35rem;border:1px solid rgba(255,255,255,.15);padding:.5rem;background:#111;border-radius:8px;"><img src="${escapeEventHtml(s.signature)}" alt="signature" style="max-width:100%;height:auto;display:block;"></div></div>` : ''}
+                    ${s.signature
+                        ? `<div style="margin-top:.75rem;"><strong>חתימה:</strong><div style="margin-top:.35rem;border:1px solid rgba(255,255,255,.15);padding:.5rem;background:#111;border-radius:8px;"><img src="${escapeEventHtml(s.signature)}" alt="signature" style="max-width:100%;height:auto;display:block;"></div></div>`
+                        : (s.hasSignature ? `<div style="margin-top:.75rem;"><strong>חתימה:</strong><div style="margin-top:.35rem;border:1px solid rgba(255,255,255,.15);padding:.5rem;background:#111;border-radius:8px;color:#888;">טוען חתימה…</div></div>` : '')}
                 </div>`;
         }
 
-        function openSignatureDetails(eventTitle, signature) {
+        async function openSignatureDetails(eventTitle, signature, eventId) {
             const modal = document.getElementById('signature-details-modal');
             const titleEl = document.getElementById('signature-details-title');
             const bodyEl = document.getElementById('signature-details-body');
             titleEl.textContent = `${eventTitle || 'אירוע'} - ${getSignatureDisplayName(signature)}`;
             bodyEl.innerHTML = getSignatureDetailHtml(signature);
             modal.style.display = 'flex';
+
+            // Lazy-load the heavy signature image only when a signer is opened.
+            if (eventId && signature && !signature.signature && signature.signatureId) {
+                const wantedId = signature.signatureId;
+                try {
+                    const res = await fetch(`/api/events/${encodeURIComponent(eventId)}/signatures/${encodeURIComponent(wantedId)}`);
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    const full = data && data.signature;
+                    // Only update if the modal still shows this same signer
+                    if (full && full.signature && modal.style.display === 'flex'
+                        && getSignatureDisplayName(signature) && titleEl.textContent.includes(getSignatureDisplayName(signature))) {
+                        bodyEl.innerHTML = getSignatureDetailHtml({ ...signature, signature: full.signature });
+                    }
+                } catch (e) {
+                    /* ignore — details (minus image) are already shown */
+                }
+            }
         }
 
         function closeSignatureDetails() {
@@ -3964,7 +3984,8 @@
 
         async function fetchSharedSignaturesSummary(eventId) {
             try {
-                const res = await fetch(`/api/events/${encodeURIComponent(eventId)}/signatures`);
+                // summary=1 omits the heavy base64 signature images for a fast list load
+                const res = await fetch(`/api/events/${encodeURIComponent(eventId)}/signatures?summary=1`);
                 if (!res.ok) return null;
                 return await res.json();
             } catch (e) {
@@ -4087,7 +4108,7 @@
                         <summary style="cursor:pointer; color:#ffb87a; font-weight:700;">כל החותמים (${allSignatures.length})</summary>
                         <div style="margin-top:.75rem; display:grid; gap:.45rem; font-size:0.9rem;">
                             ${allSignatures.map((s, idx) => `
-                                <button type="button" class="action-btn" style="text-align:right; justify-content:flex-start; padding:.55rem .7rem; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); color:#fff;" onclick='openSignatureDetails(${JSON.stringify(ev.title)}, ${JSON.stringify(s)})'>
+                                <button type="button" class="action-btn" style="text-align:right; justify-content:flex-start; padding:.55rem .7rem; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); color:#fff;" onclick='openSignatureDetails(${JSON.stringify(ev.title)}, ${JSON.stringify(s)}, ${JSON.stringify(ev.id)})'>
                                     <span style="color:#fff;">${idx + 1}. ${escapeEventHtml(getTrackedName(s))}</span> <span style="color:#bbb;">(${new Date(s.signedAt || Date.now()).toLocaleString('he-IL', { dateStyle:'short', timeStyle:'short' })})</span>
                                 </button>
                             `).join('')}

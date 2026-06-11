@@ -560,11 +560,18 @@ app.get('/api/events/:eventId/signatures', async(req, res) => {
         }
         const lastSignature = signatures.length ? signatures[signatures.length - 1] : null;
 
+        // Light/summary mode: omit the heavy base64 `signature` image so the admin
+        // events list can load fast. The image is fetched on demand per signer.
+        const summary = req.query && (req.query.summary === '1' || req.query.summary === 'true' || req.query.light === '1');
+        const outSignatures = summary
+            ? signatures.map((s) => ({ ...s, signature: '', hasSignature: Boolean(s.signature) }))
+            : signatures;
+
         res.json({
             eventId,
             eventTitle: record.eventTitle || '',
             participants: record.participants || 0,
-            signatures,
+            signatures: outSignatures,
             signedCount: signatures.length,
             lastSignerName: lastSignature ? lastSignature.fullName || '' : '',
             lastSignedAt: lastSignature ? lastSignature.signedAt || '' : ''
@@ -572,6 +579,25 @@ app.get('/api/events/:eventId/signatures', async(req, res) => {
     } catch (error) {
         console.error('Failed loading event signatures:', error);
         res.status(500).json({ error: 'Failed to load event signatures' });
+    }
+});
+
+// Fetch a single signature (including its base64 image) on demand. Used by the
+// admin panel to lazy-load the signature image only when a signer is opened.
+app.get('/api/events/:eventId/signatures/:signatureId', async(req, res) => {
+    try {
+        const { eventId, signatureId } = req.params;
+        const store = await readEventSignaturesStore();
+        const record = store[eventId] || { eventId, signatures: [] };
+        const signatures = Array.isArray(record.signatures) ? record.signatures : [];
+        const signature = signatures.find((s) => s && s.signatureId === signatureId) || null;
+        if (!signature) {
+            return res.status(404).json({ error: 'Signature not found' });
+        }
+        res.json({ eventId, signature });
+    } catch (error) {
+        console.error('Failed loading single signature:', error);
+        res.status(500).json({ error: 'Failed to load signature' });
     }
 });
 
