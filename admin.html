@@ -3825,10 +3825,6 @@
                     console.warn('Supabase not ready — event not mirrored to orders panel');
                     return false;
                 }
-                const typeLabels = {
-                    birthday: 'יום הולדת', corporate: 'גיבוש חברה',
-                    school: 'בית ספר / טיול', military: 'אירוע צבאי', other: 'אחר'
-                };
                 const dt = ev.datetime ? new Date(ev.datetime) : null;
                 const bookingDate = ev.datetime ? ev.datetime.split('T')[0] : null;
                 const bookingTime = (ev.datetime && ev.datetime.includes('T'))
@@ -3846,8 +3842,7 @@
                     duration_minutes: null,
                     order_id: ev.id,
                     status: 'confirmed',
-                    price: 0,
-                    customer_notes: `אירוע (${typeLabels[ev.type] || ev.type || 'אחר'}) · ${ev.participants || 0} משתתפים${ev.notes ? ' · ' + ev.notes : ''}`
+                    price: 0
                 };
                 const { error } = await client.from('bookings').insert([row]);
                 if (error) {
