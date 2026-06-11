@@ -380,7 +380,15 @@
                 font-size: 0.9rem;
             }
             .guidelines-dialog {
-                max-height: 94vh;
+                max-height: 96vh;
+                height: 94vh;
+            }
+            .guidelines-modal .waiver-text {
+                min-height: 62vh;
+                font-size: 1rem;
+            }
+            .guidelines-modal {
+                padding: 0.5rem;
             }
         }
         /* Title + guidelines popup (match justwaiver design) */
@@ -1355,12 +1363,14 @@
                         }
 
                         // Check if scrolled to bottom (with generous tolerance)
-                        if (scrollTop + clientHeight >= scrollHeight - 100) {
+                        if (scrollTop + clientHeight >= scrollHeight - 150) {
                             enableCheckbox();
                         }
                     }
 
                     waiverContent.addEventListener('scroll', checkScroll);
+                    waiverContent.addEventListener('touchend', checkScroll);
+                    window.addEventListener('resize', checkScroll);
 
                     // === Load EVENT from URL params (not order) ===
                     const urlParams = new URLSearchParams(window.location.search);
@@ -1760,6 +1770,8 @@
                 waiverContent.scrollTop = 0;
                 syncConfirmButton();
                 setTimeout(checkScroll, 50);
+                setTimeout(checkScroll, 300);
+                setTimeout(checkScroll, 800);
                 if (closeGuidelinesBtn) closeGuidelinesBtn.focus();
             }
 

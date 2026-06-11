@@ -346,7 +346,15 @@
                 width: 100%;
             }
             .guidelines-dialog {
-                max-height: 94vh;
+                max-height: 96vh;
+                height: 94vh;
+            }
+            .guidelines-modal .waiver-text {
+                min-height: 62vh;
+                font-size: 1rem;
+            }
+            .guidelines-modal {
+                padding: 0.5rem;
             }
         }
         /* Guidelines popup (opened from the "קרא וחתום על התקנון" button) */
@@ -1093,12 +1101,14 @@
                     return;
                 }
 
-                if (scrollTop + clientHeight >= scrollHeight - 100) {
+                if (scrollTop + clientHeight >= scrollHeight - 150) {
                     enableCheckbox();
                 }
             }
 
             waiverContent.addEventListener('scroll', checkScroll);
+            waiverContent.addEventListener('touchend', checkScroll);
+            window.addEventListener('resize', checkScroll);
             setTimeout(checkScroll, 100);
             setTimeout(checkScroll, 500);
             setTimeout(checkScroll, 1000);
