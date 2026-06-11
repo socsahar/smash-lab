@@ -195,20 +195,27 @@ function aggregateLegacySignatureRows(rows) {
     return store;
 }
 
-async function readEventSignaturesStore() {
+async function readEventSignaturesStore(eventId = null) {
     if (hasSupabasePersistence()) {
-        const { data, error } = await supabasePersistence
+        // When a specific event is requested, only fetch that event's rows.
+        // Loading every signature (with its heavy base64 image) for all events
+        // just to read one event was the cause of multi-second load times.
+        let query = supabasePersistence
             .from(SUPABASE_EVENT_SIGNATURES_TABLE)
             .select('event_id, signature_id, payload, created_at, updated_at')
             .order('created_at', { ascending: true });
+        if (eventId) query = query.eq('event_id', eventId);
+        const { data, error } = await query;
 
         if (!error) {
             const store = aggregateSignatureRows(data || []);
             if (Object.keys(store).length) return store;
 
-            const legacy = await supabasePersistence
+            let legacyQuery = supabasePersistence
                 .from(SUPABASE_LEGACY_EVENT_SIGNATURES_TABLE)
                 .select('event_id, payload, updated_at');
+            if (eventId) legacyQuery = legacyQuery.eq('event_id', eventId);
+            const legacy = await legacyQuery;
 
             if (!legacy.error) {
                 return aggregateLegacySignatureRows(legacy.data || []);
@@ -548,7 +555,7 @@ async function appendSignatureToEventRecord(eventId, signature, meta = {}) {
 app.get('/api/events/:eventId/signatures', async(req, res) => {
     try {
         const { eventId } = req.params;
-        const store = await readEventSignaturesStore();
+        const store = await readEventSignaturesStore(eventId);
         const record = store[eventId] || { eventId, signatures: [] };
         const rawSignatures = Array.isArray(record.signatures) ? record.signatures : [];
         const signatures = dedupeSignatures(rawSignatures);
@@ -563,9 +570,9 @@ app.get('/api/events/:eventId/signatures', async(req, res) => {
         // Light/summary mode: omit the heavy base64 `signature` image so the admin
         // events list can load fast. The image is fetched on demand per signer.
         const summary = req.query && (req.query.summary === '1' || req.query.summary === 'true' || req.query.light === '1');
-        const outSignatures = summary
-            ? signatures.map((s) => ({ ...s, signature: '', hasSignature: Boolean(s.signature) }))
-            : signatures;
+        const outSignatures = summary ?
+            signatures.map((s) => ({...s, signature: '', hasSignature: Boolean(s.signature) })) :
+            signatures;
 
         res.json({
             eventId,
@@ -587,7 +594,7 @@ app.get('/api/events/:eventId/signatures', async(req, res) => {
 app.get('/api/events/:eventId/signatures/:signatureId', async(req, res) => {
     try {
         const { eventId, signatureId } = req.params;
-        const store = await readEventSignaturesStore();
+        const store = await readEventSignaturesStore(eventId);
         const record = store[eventId] || { eventId, signatures: [] };
         const signatures = Array.isArray(record.signatures) ? record.signatures : [];
         const signature = signatures.find((s) => s && s.signatureId === signatureId) || null;
@@ -697,7 +704,7 @@ app.delete('/api/events/:eventId', async(req, res) => {
 
         // Also remove from the file-fallback store.
         try {
-            const sigStore = await readEventSignaturesStore();
+            const sigStore = await readEventSignaturesStore(eventId);
             if (sigStore && sigStore[eventId]) {
                 delete sigStore[eventId];
                 await writeEventSignaturesStore(sigStore);
@@ -756,7 +763,7 @@ app.post('/api/events/:eventId/signatures', async(req, res) => {
             return res.status(400).json({ error: 'fullName is required' });
         }
 
-        const store = await readEventSignaturesStore();
+        const store = await readEventSignaturesStore(eventId);
         const existing = store[eventId] || { eventId, signatures: [] };
         const eventTitle = (req.body && req.body.eventTitle) || existing.eventTitle || '';
         const participants = (req.body && Number(req.body.participants)) || existing.participants || 0;
@@ -837,7 +844,7 @@ app.post('/api/events/:eventId/signatures/import', async(req, res) => {
 
         const incoming = incomingRaw.map(sanitizeSignaturePayload).filter((s) => s.fullName);
 
-        const store = await readEventSignaturesStore();
+        const store = await readEventSignaturesStore(eventId);
         const existing = store[eventId] || { eventId, signatures: [] };
         existing.eventId = eventId;
         existing.eventTitle = (req.body && req.body.eventTitle) || existing.eventTitle || '';
