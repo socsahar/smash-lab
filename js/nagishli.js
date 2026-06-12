@@ -27,19 +27,33 @@
 
 *
 * * * * * * * * * * * * * * * * * * * */
-if ("undefined" == typeof jQuery) { var docHead = document.getElementsByTagName("head")[0],
+if ("undefined" == typeof jQuery) {
+    var docHead = document.getElementsByTagName("head")[0],
         scriptTag = document.createElement("script"),
         jq_not_found = !0;
     scriptTag.type = "text/javascript";
     scriptTag.src = "https://code.jquery.com/jquery-1.8.0.min.js";
     scriptTag.onload = initNagishLi;
-    docHead.appendChild(scriptTag) } else initNagishLi();
+    docHead.appendChild(scriptTag)
+} else initNagishLi();
 
 function initNagishLi() {
-    function ma(a, d) { var e = document.createElement("script");
+    // Prevent double-initialization when the script is included more than once
+    try {
+        if (document.getElementById('NagishLiTag') || document.getElementsByTagName('nagishli').length > 1) {
+            console.log('NagishLi: already initialized — skipping duplicate init');
+            return;
+        }
+    } catch (e) {
+        // DOM might not be ready; fall back to normal init
+    }
+
+    function ma(a, d) {
+        var e = document.createElement("script");
         e.src = a;
         e.id = d;
-        document.getElementsByTagName("nagishli")[0].appendChild(e) }
+        document.getElementsByTagName("nagishli")[0].appendChild(e)
+    }
 
     function h(a) { return (a = a.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i)) && 4 === a.length ? "#" + ("0" + parseInt(a[1], 10).toString(16)).slice(-2) + ("0" + parseInt(a[2], 10).toString(16)).slice(-2) + ("0" + parseInt(a[3], 10).toString(16)).slice(-2) : "" }
 
@@ -86,10 +100,16 @@ function initNagishLi() {
     })(navigator.userAgent || navigator.vendor || window.opera);
     var G = jQuery.browser.mobile;
     var H = "undefined" != typeof nl_accordion && "1" == nl_accordion || G ? !0 : !1;
-    var A = function() { var a = new Date,
-            d; try {
-            (d = window.localStorage).setItem(a, a); var e = d.getItem(a) == a;
-            d.removeItem(a); return e && d } catch (ra) {} }();
+    var A = function() {
+        var a = new Date,
+            d;
+        try {
+            (d = window.localStorage).setItem(a, a);
+            var e = d.getItem(a) == a;
+            d.removeItem(a);
+            return e && d
+        } catch (ra) {}
+    }();
     if ("undefined" != typeof nl_dir) var q = "/" == nl_dir.substr(-1) ? nl_dir.slice(0, -1) : nl_dir;
     else {
         k = document.querySelectorAll("script[src]");
@@ -616,15 +636,19 @@ function initNagishLi() {
             f("change", "display", c)
         }
 
-        function ba(b) { b = void 0 === b ? "normal" : b;
-            a("body[nl-display]").length && (a("body").removeAttr("nl-display"), a("link[rel='stylesheet']").prop("disabled") && a("link[rel='stylesheet']").prop("disabled", !1), a("body > *, img, iframe[src*='youtube.com'], video").css({ display: "", visibility: "" }), a("body").css("background-image", ""), f("change", "display", b)) }
+        function ba(b) {
+            b = void 0 === b ? "normal" : b;
+            a("body[nl-display]").length && (a("body").removeAttr("nl-display"), a("link[rel='stylesheet']").prop("disabled") && a("link[rel='stylesheet']").prop("disabled", !1), a("body > *, img, iframe[src*='youtube.com'], video").css({ display: "", visibility: "" }), a("body").css("background-image", ""), f("change", "display", b))
+        }
 
         function T(b) {
             b ?
-                (a(commons.dd + " > #NagishLiHighlight > li > #NLHighlightLinks").attr("aria-label", phrases.aria_the_option + phrases.hl_links + " " + phrases.r2m_on).prepend(commons.checkmark).parent("li").addClass("active"), a("* a").not("#NagishLiBar a").each(function() { this.style.setProperty("outline", "3px red dotted", "important");
+                (a(commons.dd + " > #NagishLiHighlight > li > #NLHighlightLinks").attr("aria-label", phrases.aria_the_option + phrases.hl_links + " " + phrases.r2m_on).prepend(commons.checkmark).parent("li").addClass("active"), a("* a").not("#NagishLiBar a").each(function() {
+                    this.style.setProperty("outline", "3px red dotted", "important");
                     this.style.setProperty("background-color", "black", "important");
                     this.style.setProperty("color", "yellow", "important");
-                    a("body").attr("nl-hl-links", "1") })) : (a("body[nl-hl-links]").length ? (a("* a").not("#NagishLiBar a").each(function() {
+                    a("body").attr("nl-hl-links", "1")
+                })) : (a("body[nl-hl-links]").length ? (a("* a").not("#NagishLiBar a").each(function() {
                     this.style.setProperty("outline",
                         "", "");
                     this.style.setProperty("background-color", "", "");
@@ -647,9 +671,11 @@ function initNagishLi() {
                 this.style.setProperty("background", "", "");
                 this.style.setProperty("color",
                     "", "")
-            }), a("body[nl-hl-links]").length || a("h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, h1 span, h2 span, h3 span, h4 span, h5 span, h6 span").each(function() { this.style.setProperty("color", "", "") }), a("body").removeAttr("nl-hl-headings"), b = "0") : (a("h1, h2, h3, h4, h5, h6, h1").each(function() { this.style.setProperty("outline", "3px red dotted", "important");
+            }), a("body[nl-hl-links]").length || a("h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, h1 span, h2 span, h3 span, h4 span, h5 span, h6 span").each(function() { this.style.setProperty("color", "", "") }), a("body").removeAttr("nl-hl-headings"), b = "0") : (a("h1, h2, h3, h4, h5, h6, h1").each(function() {
+                this.style.setProperty("outline", "3px red dotted", "important");
                 this.style.setProperty("background", "black", "important");
-                this.style.setProperty("color", "yellow", "important") }), a("body[nl-hl-links]").length || a("h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, h1 span, h2 span, h3 span, h4 span, h5 span, h6 span").each(function() {
+                this.style.setProperty("color", "yellow", "important")
+            }), a("body[nl-hl-links]").length || a("h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, h1 span, h2 span, h3 span, h4 span, h5 span, h6 span").each(function() {
                 this.style.setProperty("color",
                     "inherit", "important")
             }), b = "1", a("body").attr("nl-hl-headings", "1")), f("change", "highlight", { to: b, pos: 1 }))
@@ -750,10 +776,14 @@ function initNagishLi() {
         function ha(b, c) {
             b = void 0 === b ? !1 : b;
             c = void 0 === c ? "off" : c;
-            a("body[nl-animations]").length || "off" != c ? (jQuery.fx.off = !1, a("body *").not(commons.not).each(function() { this.style.setProperty("animation-play-state", "", "");
-                    this.style.setProperty("transition-duration", "", "") }), a("body").removeAttr("nl-animations"), a(commons.dd + " > #NagishLiMisc > li > #NLAnimations > #NLAnimationsVal")[0].innerHTML =
-                "&#x25ba;&nbsp;" + phrases.animations_on, c = "on") : (jQuery.fx.off = !0, a("body *").not(commons.not).each(function() { this.style.setProperty("animation-play-state", "paused", "important");
-                this.style.setProperty("transition-duration", "0s", "important") }), a("body").attr("nl-animations", c), a(commons.dd + " > #NagishLiMisc > li > #NLAnimations > #NLAnimationsVal")[0].innerHTML = '<span aria-hidden="true">&#x275a;&#x275a;&nbsp;</span>' + phrases.animations_off);
+            a("body[nl-animations]").length || "off" != c ? (jQuery.fx.off = !1, a("body *").not(commons.not).each(function() {
+                    this.style.setProperty("animation-play-state", "", "");
+                    this.style.setProperty("transition-duration", "", "")
+                }), a("body").removeAttr("nl-animations"), a(commons.dd + " > #NagishLiMisc > li > #NLAnimations > #NLAnimationsVal")[0].innerHTML =
+                "&#x25ba;&nbsp;" + phrases.animations_on, c = "on") : (jQuery.fx.off = !0, a("body *").not(commons.not).each(function() {
+                this.style.setProperty("animation-play-state", "paused", "important");
+                this.style.setProperty("transition-duration", "0s", "important")
+            }), a("body").attr("nl-animations", c), a(commons.dd + " > #NagishLiMisc > li > #NLAnimations > #NLAnimationsVal")[0].innerHTML = '<span aria-hidden="true">&#x275a;&#x275a;&nbsp;</span>' + phrases.animations_off);
             b || f("change", "animations", c)
         }
 
@@ -772,14 +802,18 @@ function initNagishLi() {
                     b.preventDefault();
                     if (X) b = new SpeechSynthesisUtterance, b.lang = "en", pa ? (b.pitch = .7, b.rate = .7) : (b.pitch = 1, b.rate = .7 - .2), b.text =
                         a(this).parent("span.r2m").attr("nl-r2m-data").replace(/\D/g, ""), speechSynthesis.speak(b);
-                    else { var c = function(a) { e.src = "data:audio/mp3;base64," + edgts[a];
+                    else {
+                        var c = function(a) {
+                                e.src = "data:audio/mp3;base64," + edgts[a];
                                 e.load();
-                                e.play() },
+                                e.play()
+                            },
                             d = a(this).parent("span.r2m").attr("nl-r2m-data").replace(/\D/g, "").split(""),
                             e = document.getElementById("nlr2mp"),
                             f = 0;
                         e.addEventListener("ended", function() { f < d.length - 1 && (f++, c(d[f])) });
-                        c(d[f]) }
+                        c(d[f])
+                    }
                 });
                 c = "on"
             }
@@ -884,8 +918,11 @@ function initNagishLi() {
                     if (c in r)
                         for (b = 0; b < r[c].length; b++)
                             if (("keydown" ===
-                                    a.type && r[c][b].keydown || "keyup" === a.type && r[c][b].keyup) && r[c][b].key) { e = r[c][b].key.split("+"); for (var F = [], l = 0; l < e.length; l++) F.push(y(e[l]));
-                                F.sort().join("") === p.sort().join("") && g(a, r[c][b], d) }
+                                    a.type && r[c][b].keydown || "keyup" === a.type && r[c][b].keyup) && r[c][b].key) {
+                                e = r[c][b].key.split("+");
+                                for (var F = [], l = 0; l < e.length; l++) F.push(y(e[l]));
+                                F.sort().join("") === p.sort().join("") && g(a, r[c][b], d)
+                            }
                 }
             }
 
@@ -942,25 +979,38 @@ function initNagishLi() {
                 },
                 getPressedKeyCodes: function() { return p.slice(0) },
                 isPressed: function(a) { return "string" == typeof a && (a = y(a)), !!~p.indexOf(a) },
-                filter: function(a) { a = a.target || a.srcElement; var b = a.tagName,
-                        c = !0; return !a.isContentEditable && "TEXTAREA" !== b && ("INPUT" !== b && "TEXTAREA" !== b || a.readOnly) || (c = !1), c },
+                filter: function(a) {
+                    a = a.target || a.srcElement;
+                    var b = a.tagName,
+                        c = !0;
+                    return !a.isContentEditable && "TEXTAREA" !== b && ("INPUT" !== b && "TEXTAREA" !== b || a.readOnly) || (c = !1), c
+                },
                 unbind: function(a, b, e) {
                     var l, B = d(a),
                         g;
                     "function" == typeof b && (e = b, b = "all");
                     for (var k = 0; k < B.length && (g = 1 < (l = B[k].split("+")).length ? c(q, l) : [], a = "*" === (a = l[l.length - 1]) ? "*" : y(a), b || (b = f()), r[a]); k++)
                         for (var m =
-                                0; m < r[a].length; m++) { var h = r[a][m]; var n; if (!(n = e && h.method !== e || h.scope !== b)) { n = h.mods;
+                                0; m < r[a].length; m++) {
+                            var h = r[a][m];
+                            var n;
+                            if (!(n = e && h.method !== e || h.scope !== b)) {
+                                n = h.mods;
                                 h = n.length < g.length ? g : n;
-                                n = n.length < g.length ? n : g; for (var p = !0, E = 0; E < h.length; E++) ~n.indexOf(h[E]) || (p = !1);
-                                n = !p }
-                            n || (r[a][m] = {}) }
+                                n = n.length < g.length ? n : g;
+                                for (var p = !0, E = 0; E < h.length; E++) ~n.indexOf(h[E]) || (p = !1);
+                                n = !p
+                            }
+                            n || (r[a][m] = {})
+                        }
                 }
             };
             for (var x in k) Object.prototype.hasOwnProperty.call(k, x) && (m[x] = k[x]);
-            if ("undefined" != typeof window) { var A = window.hotkeys;
+            if ("undefined" != typeof window) {
+                var A = window.hotkeys;
                 m.noConflict = function(a) { return a && window.hotkeys === m && (window.hotkeys = A), m };
-                window.hotkeys = m }
+                window.hotkeys = m
+            }
             return m
         });
         "he" == g ? (C = "\x3c!--\n", C += "/* * * * * * * * * * * * * * * * * * * *\n* \u05e0\u05d2\u05d9\u05e9 \u05dc\u05d9 - \u05ea\u05d5\u05e1\u05e3 \u05e0\u05d2\u05d9\u05e9\u05d5\u05ea \u05d1\u05d7\u05d9\u05e0\u05dd\n* \u05e4\u05d5\u05ea\u05d7 \u05e2\u05dc \u05d9\u05d3\u05d9 \u05dc\u05d5\u05e7\u05dc\u05d9\u05d9\u05d6* (c) 2016-" +
@@ -1262,8 +1312,10 @@ function initNagishLi() {
                 alert(phrases.settings_save)
             };
             a(commons.dd + " > #NagishLiInfo > li > #NLResetSettings").click(function() { la() });
-            hotkeys("alt+c, shift+c", function(a) { la();
-                a.preventDefault() })
+            hotkeys("alt+c, shift+c", function(a) {
+                la();
+                a.preventDefault()
+            })
         }
         a(commons.dd + " > #NagishLiMisc > li > #NLAnimations").click(function() { ha() });
         a(commons.dd + " > #NagishLiInfo > #NagishLiHelp").click(function() { V() });
@@ -1387,9 +1439,13 @@ function initNagishLi() {
                 a("body")[0].style.setProperty("overflow", "hidden", "important");
                 a(document).on("keydown.nlkbnav mousedown.nlkbnav", function(b) {
                     if (a(b.target).hasClass("NagishLiOverlay") || "closeBtn" ==
-                        b.target.id && 9 !== b.which && 40 !== b.which && 38 !== b.which || 27 === b.which) a("#DeveloperMsg").length ? a(".NagishLiOverlay").fadeOut("fast", function() { a(this).remove();
-                        a("body[nl-kbnav]").length && a(commons.dd + " > #NagishLiInfo > li > #NagishLiHowAccessible").focus() }) : a(".NagishLiOverlay").fadeOut("fast", function() { a(this).remove();
-                        a("body[nl-kbnav]").length && a(commons.dd + " > #NagishLiInfo > li > #NagishLiStatement").focus() }), a("html")[0].style.setProperty("overflow", "", ""), a("body")[0].style.setProperty("overflow",
+                        b.target.id && 9 !== b.which && 40 !== b.which && 38 !== b.which || 27 === b.which) a("#DeveloperMsg").length ? a(".NagishLiOverlay").fadeOut("fast", function() {
+                        a(this).remove();
+                        a("body[nl-kbnav]").length && a(commons.dd + " > #NagishLiInfo > li > #NagishLiHowAccessible").focus()
+                    }) : a(".NagishLiOverlay").fadeOut("fast", function() {
+                        a(this).remove();
+                        a("body[nl-kbnav]").length && a(commons.dd + " > #NagishLiInfo > li > #NagishLiStatement").focus()
+                    }), a("html")[0].style.setProperty("overflow", "", ""), a("body")[0].style.setProperty("overflow",
                         "", ""), a(document).off("keydown.nlkbnav mousedown.nlkbnav")
                 });
                 var c = a(commons.dd + ":last-child > .nl-dropdown-menu > li:last-child > div").css("border-bottom-color");
@@ -1495,8 +1551,12 @@ function initNagishLi() {
         a("body").css("-ms-overflow-style", "scrollbar");
         a(commons.menus + " > li.nl-dropdown > ul.nl-dropdown-menu > li").on("dragstart", function() { return !1 });
         a(commons.bar).on("contextmenu", function() { return !1 });
-        a("img").each(function() { if (!a(this).attr("alt")) { var b = a(this).attr("title") ? phrases.img_alt + a(this).attr("title") : phrases.img_alt_missing;
-                a(this).attr("alt", b) } });
+        a("img").each(function() {
+            if (!a(this).attr("alt")) {
+                var b = a(this).attr("title") ? phrases.img_alt + a(this).attr("title") : phrases.img_alt_missing;
+                a(this).attr("alt", b)
+            }
+        });
         a("audio, video").each(function() { a(this).text().trim().length || a(this).append(document.createTextNode(phrases.unsupported_media)) });
         a("h1, h2, h3, h4, h5, h6").attr("role", "heading");
         a(commons.dd + " > #NagishLiMisc > li > #NLSkipLinks > #NLSkipLinksVal").on("change", function() {

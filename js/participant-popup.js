@@ -39,7 +39,8 @@
       #participant-popup .pp-close {
         position: absolute;
         top: 12px;
-        left: 12px;
+        right: 12px; /* moved to right for RTL */
+        left: auto;
         background: none;
         border: none;
         color: #999;
