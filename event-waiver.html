@@ -380,15 +380,20 @@
                 font-size: 0.9rem;
             }
             .guidelines-dialog {
-                max-height: 96vh;
+                max-height: 94vh;
+                max-height: 94dvh;
                 height: 94vh;
+                height: 94dvh;
             }
             .guidelines-modal .waiver-text {
-                min-height: 62vh;
+                min-height: 0;
                 font-size: 1rem;
             }
             .guidelines-modal {
                 padding: 0.5rem;
+                align-items: flex-start;
+                overflow-y: auto;
+                touch-action: pan-y;
             }
         }
         /* Title + guidelines popup (match justwaiver design) */
@@ -444,6 +449,7 @@
             width: 100%;
             max-width: 760px;
             max-height: 90vh;
+            max-height: 90dvh;
             display: flex;
             flex-direction: column;
             overflow: hidden;

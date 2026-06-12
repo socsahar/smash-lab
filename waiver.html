@@ -382,6 +382,8 @@
             justify-content: center;
             z-index: 3000;
             padding: 1rem;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .guidelines-modal.open {
@@ -395,6 +397,7 @@
             width: 100%;
             max-width: 760px;
             max-height: 90vh;
+            max-height: 90dvh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -472,8 +475,13 @@
             .waiver-text {
                 font-size: 0.9rem;
             }
+            .guidelines-modal {
+                align-items: flex-start;
+                padding: 0.5rem;
+            }
             .guidelines-dialog {
                 max-height: 94vh;
+                max-height: 94dvh;
             }
         }
     </style>
