@@ -2175,11 +2175,10 @@
 
             const adminEmail = String(window.ENV_CONFIG.EMAIL_TO || '').trim();
             const customerEmail = String(waiverData.email || '').trim();
-            // Only send a separate copy to the participant when they provided an
-            // email that is different from the admin inbox. Otherwise both copies
-            // would arrive at the admin mailbox (the "waiver received twice" bug).
-            const shouldSendCustomer = customerEmail &&
-                customerEmail.toLowerCase() !== adminEmail.toLowerCase();
+            // Send a SINGLE confirmation to the business inbox only, matching the
+            // regular (non-event) waiver page. Sending a second copy to the
+            // participant caused the "waiver received twice" / double-email issue.
+            const shouldSendCustomer = false;
 
             const adminEmailParams = {
                 ...templateParams,
