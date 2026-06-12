@@ -346,10 +346,10 @@
                 width: 100%;
             }
             .guidelines-dialog {
-                max-height: 94vh;
-                max-height: 94dvh;
-                height: 94vh;
-                height: 94dvh;
+                max-height: 97vh;
+                max-height: 97dvh;
+                height: 97vh;
+                height: 97dvh;
             }
             .guidelines-modal .waiver-text {
                 min-height: 0;
@@ -420,8 +420,8 @@
             border-radius: 12px;
             width: 100%;
             max-width: 760px;
-            max-height: 92vh;
-            max-height: 92dvh;
+            max-height: 96vh;
+            max-height: 96dvh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -489,15 +489,18 @@
             text-align: center;
         }
         /* Sending spinner shown on the confirm button while the email is sent */
+        
         @keyframes wv-spin {
             to {
                 transform: rotate(360deg);
             }
         }
+        
         .btn.is-sending {
             cursor: progress;
             opacity: 0.9;
         }
+        
         .btn.is-sending::after {
             content: '';
             display: inline-block;
