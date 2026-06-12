@@ -396,8 +396,8 @@
             border-radius: 12px;
             width: 100%;
             max-width: 760px;
-            max-height: 90vh;
-            max-height: 90dvh;
+            max-height: 92vh;
+            max-height: 92dvh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -461,6 +461,28 @@
             margin: 0.5rem 0;
             text-align: center;
         }
+        /* Sending spinner shown on the confirm button while submitting */
+        @keyframes wv-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .btn.is-sending {
+            cursor: progress;
+            opacity: 0.9;
+        }
+        .btn.is-sending::after {
+            content: '';
+            display: inline-block;
+            width: 0.95em;
+            height: 0.95em;
+            margin-inline-start: 0.5em;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: wv-spin 0.7s linear infinite;
+            vertical-align: -0.12em;
+        }
         
         @media (max-width: 768px) {
             .nav-links {
@@ -482,6 +504,37 @@
             .guidelines-dialog {
                 max-height: 94vh;
                 max-height: 94dvh;
+                height: 94vh;
+                height: 94dvh;
+            }
+            .guidelines-modal .waiver-text {
+                min-height: 0;
+            }
+            /* Trim header/footer on mobile so the reading area gets more room. */
+            .guidelines-header {
+                padding: 0.55rem 1rem;
+            }
+            .guidelines-header h3 {
+                font-size: 1.05rem;
+            }
+            .guidelines-footer {
+                padding: 0.55rem 1rem;
+            }
+            .guidelines-footer .checkbox-group {
+                margin: 0.4rem 0;
+            }
+            .guidelines-footer label {
+                font-size: 0.82rem;
+                line-height: 1.35;
+            }
+            #scroll-prompt {
+                padding: 0.45rem !important;
+                margin-bottom: 0.5rem !important;
+                font-size: 0.85rem;
+            }
+            #scroll-notice {
+                font-size: 0.78rem !important;
+                margin-top: 0.3rem !important;
             }
         }
     </style>
@@ -1742,7 +1795,14 @@
                     syncConfirmButton();
                     return;
                 }
-                closeGuidelines();
+                // Immediate feedback + keep the popup open while saving/sending,
+                // so the bare form isn't shown during the wait.
+                if (!confirmGuidelinesBtn.dataset.originalText) {
+                    confirmGuidelinesBtn.dataset.originalText = confirmGuidelinesBtn.textContent;
+                }
+                confirmGuidelinesBtn.textContent = 'שולח...';
+                confirmGuidelinesBtn.disabled = true;
+                confirmGuidelinesBtn.classList.add('is-sending');
                 continueBtn.click();
             });
         });
@@ -1784,6 +1844,12 @@
         async function processWaiver(order) {
             // Block if guardian is under 18
             if (isMinor && guardianIsMinor) {
+                var cgbMinor = document.getElementById('confirm-guidelines-btn');
+                if (cgbMinor) {
+                    cgbMinor.classList.remove('is-sending');
+                    cgbMinor.textContent = cgbMinor.dataset.originalText || cgbMinor.textContent;
+                    cgbMinor.disabled = false;
+                }
                 if (window.customModal) {
                     window.customModal.error('\u05d4\u05d0\u05e4\u05d5\u05d8\u05e8\u05d5\u05e4\u05d5\u05e1 \u05d7\u05d9\u05d9\u05d1 \u05dc\u05d4\u05d9\u05d5\u05ea \u05de\u05e2\u05dc \u05d2\u05d9\u05dc 18', '\u05e9\u05d2\u05d9\u05d0\u05d4');
                 } else {
@@ -1871,6 +1937,19 @@
             
             // Send email notification with updated order (includes real database ID)
             sendWaiverEmail(waiverData, orderWithWaiver);
+
+            // Done — close the guidelines popup and restore its button.
+            var cgbDone = document.getElementById('confirm-guidelines-btn');
+            if (cgbDone) {
+                cgbDone.classList.remove('is-sending');
+                cgbDone.textContent = cgbDone.dataset.originalText || cgbDone.textContent;
+            }
+            var gModal = document.getElementById('guidelines-modal');
+            if (gModal) {
+                gModal.classList.remove('open');
+                gModal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
             
             if (window.customModal) {
                 // Show modal without close button

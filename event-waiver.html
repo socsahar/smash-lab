@@ -395,6 +395,32 @@
                 overflow-y: auto;
                 touch-action: pan-y;
             }
+            /* Trim header/footer on mobile so the reading area gets more room. */
+            .guidelines-header {
+                padding: 0.55rem 1rem;
+            }
+            .guidelines-header h3 {
+                font-size: 1.05rem;
+            }
+            .guidelines-footer {
+                padding: 0.55rem 1rem;
+            }
+            .guidelines-footer .checkbox-group {
+                margin: 0.4rem 0;
+            }
+            .guidelines-footer label {
+                font-size: 0.82rem;
+                line-height: 1.35;
+            }
+            #scroll-prompt {
+                padding: 0.45rem !important;
+                margin-bottom: 0.5rem !important;
+                font-size: 0.85rem;
+            }
+            #scroll-notice {
+                font-size: 0.78rem !important;
+                margin-top: 0.3rem !important;
+            }
         }
         /* Title + guidelines popup (match justwaiver design) */
         
@@ -448,8 +474,8 @@
             border-radius: 12px;
             width: 100%;
             max-width: 760px;
-            max-height: 90vh;
-            max-height: 90dvh;
+            max-height: 92vh;
+            max-height: 92dvh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -515,6 +541,28 @@
             font-size: 0.9rem;
             margin: 0.5rem 0;
             text-align: center;
+        }
+        /* Sending spinner shown on the confirm button while the email is sent */
+        @keyframes wv-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .btn.is-sending {
+            cursor: progress;
+            opacity: 0.9;
+        }
+        .btn.is-sending::after {
+            content: '';
+            display: inline-block;
+            width: 0.95em;
+            height: 0.95em;
+            margin-inline-start: 0.5em;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: wv-spin 0.7s linear infinite;
+            vertical-align: -0.12em;
         }
     </style>
 
@@ -1852,7 +1900,14 @@
                     syncConfirmButton();
                     return;
                 }
-                closeGuidelines();
+                // Immediate feedback + keep the popup open while sending, so the
+                // bare form isn't shown during the wait.
+                if (!confirmGuidelinesBtn.dataset.originalText) {
+                    confirmGuidelinesBtn.dataset.originalText = confirmGuidelinesBtn.textContent;
+                }
+                confirmGuidelinesBtn.textContent = 'שולח...';
+                confirmGuidelinesBtn.disabled = true;
+                confirmGuidelinesBtn.classList.add('is-sending');
                 continueBtn.click();
             });
 
@@ -1993,6 +2048,12 @@
 
             // Block if guardian is under 18
             if (isMinor && guardianIsMinor) {
+                var cgbMinor = document.getElementById('confirm-guidelines-btn');
+                if (cgbMinor) {
+                    cgbMinor.classList.remove('is-sending');
+                    cgbMinor.textContent = cgbMinor.dataset.originalText || cgbMinor.textContent;
+                    cgbMinor.disabled = false;
+                }
                 if (window.customModal) {
                     window.customModal.error('האפוטרופוס חייב להיות מעל גיל 18', 'שגיאה');
                 } else {
@@ -2065,13 +2126,42 @@
                 localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
             }
 
-            const sharedResult = await publishSharedEventSignature(eventId, waiverData, evRecord);
-            if (sharedResult && typeof sharedResult.signedCount === 'number') {
-                signedCount = sharedResult.signedCount;
+            let emailResult;
+            try {
+                const sharedResult = await publishSharedEventSignature(eventId, waiverData, evRecord);
+                if (sharedResult && typeof sharedResult.signedCount === 'number') {
+                    signedCount = sharedResult.signedCount;
+                }
+                // Send emails and wait for actual result (do not fail silently)
+                emailResult = await sendEventWaiverEmail(waiverData, evRecord, eventName);
+            } catch (submitErr) {
+                console.error('Event waiver submit failed:', submitErr);
+                var cgbErr2 = document.getElementById('confirm-guidelines-btn');
+                if (cgbErr2) {
+                    cgbErr2.classList.remove('is-sending');
+                    cgbErr2.textContent = cgbErr2.dataset.originalText || cgbErr2.textContent;
+                    cgbErr2.disabled = false;
+                }
+                if (window.customModal) {
+                    window.customModal.error('אירעה שגיאה בשליחה. אנא נסו שוב.', 'שגיאה');
+                } else {
+                    alert('אירעה שגיאה בשליחה. אנא נסו שוב.');
+                }
+                return;
             }
 
-            // Send emails and wait for actual result (do not fail silently)
-            const emailResult = await sendEventWaiverEmail(waiverData, evRecord, eventName);
+            // Done — close the guidelines popup and restore its button.
+            var cgbDone2 = document.getElementById('confirm-guidelines-btn');
+            if (cgbDone2) {
+                cgbDone2.classList.remove('is-sending');
+                cgbDone2.textContent = cgbDone2.dataset.originalText || cgbDone2.textContent;
+            }
+            var gModal2 = document.getElementById('guidelines-modal');
+            if (gModal2) {
+                gModal2.classList.remove('open');
+                gModal2.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
 
             // Show success / next participant UI
             const formCard = document.querySelector('.card');
