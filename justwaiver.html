@@ -361,6 +361,33 @@
                 overflow-y: auto;
                 touch-action: pan-y;
             }
+            /* Trim the header/footer on mobile so the scrollable reading area
+               (the flex:1 waiver text) gets noticeably more room. */
+            .guidelines-header {
+                padding: 0.55rem 1rem;
+            }
+            .guidelines-header h3 {
+                font-size: 1.05rem;
+            }
+            .guidelines-footer {
+                padding: 0.55rem 1rem;
+            }
+            .guidelines-footer .checkbox-group {
+                margin: 0.4rem 0;
+            }
+            .guidelines-footer label {
+                font-size: 0.82rem;
+                line-height: 1.35;
+            }
+            #scroll-prompt {
+                padding: 0.45rem !important;
+                margin-bottom: 0.5rem !important;
+                font-size: 0.85rem;
+            }
+            #scroll-notice {
+                font-size: 0.78rem !important;
+                margin-top: 0.3rem !important;
+            }
         }
         /* Guidelines popup (opened from the "קרא וחתום על התקנון" button) */
         
@@ -393,8 +420,8 @@
             border-radius: 12px;
             width: 100%;
             max-width: 760px;
-            max-height: 90vh;
-            max-height: 90dvh;
+            max-height: 92vh;
+            max-height: 92dvh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -460,6 +487,28 @@
             font-size: 0.9rem;
             margin: 0.5rem 0;
             text-align: center;
+        }
+        /* Sending spinner shown on the confirm button while the email is sent */
+        @keyframes wv-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .btn.is-sending {
+            cursor: progress;
+            opacity: 0.9;
+        }
+        .btn.is-sending::after {
+            content: '';
+            display: inline-block;
+            width: 0.95em;
+            height: 0.95em;
+            margin-inline-start: 0.5em;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: wv-spin 0.7s linear infinite;
+            vertical-align: -0.12em;
         }
     </style>
     <link rel="stylesheet" href="css/navbar.css">
@@ -1491,7 +1540,15 @@
                     syncConfirmButton();
                     return;
                 }
-                closeGuidelines();
+                // Give immediate feedback on the button the user just clicked and
+                // keep the popup open while the email is sending, so there's no
+                // dead time where the bare form is shown for a few seconds.
+                if (!confirmGuidelinesBtn.dataset.originalText) {
+                    confirmGuidelinesBtn.dataset.originalText = confirmGuidelinesBtn.textContent;
+                }
+                confirmGuidelinesBtn.textContent = 'שולח...';
+                confirmGuidelinesBtn.disabled = true;
+                confirmGuidelinesBtn.classList.add('is-sending');
                 submitBtn.click();
             });
 
@@ -1593,6 +1650,10 @@
                 emailjs.send(window.ENV_CONFIG.EMAILJS_SERVICE_ID, window.ENV_CONFIG.EMAILJS_TEMPLATE_ID, templateParams)
                     .then(function(response) {
                         console.log('Email sent successfully!', response.status, response.text);
+                        // Sending finished — restore the confirm button and close the popup.
+                        confirmGuidelinesBtn.classList.remove('is-sending');
+                        confirmGuidelinesBtn.textContent = confirmGuidelinesBtn.dataset.originalText || 'אני מאשר/ת ושולח/ת כתב ויתור';
+                        closeGuidelines();
                         if (window.customModal) {
                             window.customModal.success('כתב הויתור נשלח בהצלחה! תודה.', 'הצלחה! ✅').then(() => {
                                 // Reset form fields
@@ -1623,6 +1684,10 @@
                         }
                     }, function(error) {
                         console.error('Failed to send email:', error);
+                        // Restore the confirm button so the user can retry from the popup.
+                        confirmGuidelinesBtn.classList.remove('is-sending');
+                        confirmGuidelinesBtn.textContent = confirmGuidelinesBtn.dataset.originalText || 'אני מאשר/ת ושולח/ת כתב ויתור';
+                        confirmGuidelinesBtn.disabled = false;
                         if (window.customModal) {
                             window.customModal.error('שגיאה בשליחת המייל. אנא נסה שנית.', 'שגיאה');
                         } else {
