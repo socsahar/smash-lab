@@ -131,6 +131,11 @@
             margin-right: auto;
         }
         
+        /* Mobile-only "back to menu" button — hidden on desktop. */
+        .back-to-menu-btn {
+            display: none;
+        }
+        
         .loading {
             display: flex;
             justify-content: center;
@@ -1900,6 +1905,27 @@
                 padding: 1rem;
                 font-size: 1rem;
             }
+            /* On phones: show ONLY the tab menu first; hide section content
+               until a tab is tapped (menu mode), with a back-to-menu button. */
+            .main-content.mobile-menu-mode .admin-section {
+                display: none !important;
+            }
+            .main-content.mobile-menu-mode .back-to-menu-btn {
+                display: none;
+            }
+            .main-content:not(.mobile-menu-mode) .back-to-menu-btn {
+                display: block;
+                width: 100%;
+                padding: 0.9rem;
+                margin-bottom: 1rem;
+                background: #1a1a1a;
+                border: 1px solid #ff6b00;
+                color: #ff6b00;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+            }
             /* Enhanced Calendar Mobile Optimizations */
             .calendar-header {
                 padding: 15px;
@@ -2250,6 +2276,9 @@
                 🎉 אירועים גדולים
             </button>
         </div>
+
+        <!-- Mobile-only: return to the tab menu -->
+        <button type="button" class="back-to-menu-btn" onclick="showAdminMenu()">☰ חזרה לתפריט</button>
 
         <!-- Dashboard Section -->
         <section id="dashboard-section" class="admin-section active">
@@ -2880,8 +2909,24 @@
     <script src="js/admin-bookings.js?v=20260612"></script>
 
     <script>
+        // Mobile: show only the tab menu (hide all section content).
+        function showAdminMenu() {
+            const mc = document.querySelector('.main-content');
+            if (mc) mc.classList.add('mobile-menu-mode');
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            window.scrollTo(0, 0);
+        }
+
         // Tab Switching
         function switchTab(tabName) {
+            // Leaving the mobile menu — show the selected section's content.
+            const mc = document.querySelector('.main-content');
+            if (mc) mc.classList.remove('mobile-menu-mode');
             // Update tab buttons
             document.querySelectorAll('.admin-tab').forEach(tab => {
                 tab.classList.remove('active');
@@ -2964,6 +3009,11 @@
             if (checkAuth()) {
                 // Load initial dashboard
                 loadDashboard();
+
+                // On phones, start by showing only the tab menu (no section open).
+                if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches) {
+                    showAdminMenu();
+                }
 
                 // Hamburger Menu Functionality
                 const hamburger = document.getElementById('hamburger');
