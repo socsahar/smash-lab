@@ -3,32 +3,33 @@
 // This module handles month/week/day calendar views with booking visualization
 
 (function() {
-    'use strict';
-    
-    const API_BASE = window.location.hostname === 'localhost' 
-        ? 'http://localhost:8000' 
-        : '';
+        'use strict';
 
-    let currentDate = new Date();
-    let currentView = 'month'; // 'month', 'week', or 'day'
-    let calendarBookings = [];
+        const API_BASE = window.location.hostname === 'localhost' ?
+            'http://localhost:8000' :
+            '';
 
-// Load calendar
-async function loadCalendar() {
-    const calendarSection = document.getElementById('calendar-section');
-    
-    try {
-        calendarSection.innerHTML = '<div class="loading">טוען לוח שנה</div>';
-        
-        // Fetch bookings for current month
-        await fetchCalendarBookings();
-        
-        // Render calendar
-        renderCalendar();
-        
-    } catch (error) {
-        console.error('Error loading calendar:', error);
-        calendarSection.innerHTML = `
+        let currentDate = new Date();
+        let currentView = 'month'; // 'month', 'week', or 'day'
+        let calendarBookings = [];
+        let calendarEvents = [];
+
+        // Load calendar
+        async function loadCalendar() {
+            const calendarSection = document.getElementById('calendar-section');
+
+            try {
+                calendarSection.innerHTML = '<div class="loading">טוען לוח שנה</div>';
+
+                // Fetch bookings for current month
+                await fetchCalendarBookings();
+
+                // Render calendar
+                renderCalendar();
+
+            } catch (error) {
+                console.error('Error loading calendar:', error);
+                calendarSection.innerHTML = `
             <div style="text-align: center; padding: 3rem; color: #ef4444;">
                 <h3>שגיאה בטעינת לוח השנה</h3>
                 <p>${error.message}</p>
@@ -37,42 +38,73 @@ async function loadCalendar() {
                 </button>
             </div>
         `;
-    }
-}
+            }
+        }
 
-// Fetch bookings for date range
-async function fetchCalendarBookings() {
-    const startDate = getStartOfMonth(currentDate);
-    const endDate = getEndOfMonth(currentDate);
-    
-    const response = await fetch(
-        `${API_BASE}/api/calendar/bookings?startDate=${startDate}&endDate=${endDate}`
-    );
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // Extract bookings array from response object and normalize field names
-    const rawBookings = Array.isArray(data) ? data : (data.bookings || []);
-    
-    // Normalize booking data to ensure consistent field names
-    calendarBookings = rawBookings.map(booking => ({
-        ...booking,
-        date: booking.booking_date || booking.date,
-        time: booking.booking_time || booking.time,
-        package_id: booking.package_id || booking.packageId,
-        customer_name: booking.customer_name || booking.customerName
-    }));
-}
+        // Fetch bookings for date range
+        async function fetchCalendarBookings() {
+            const startDate = getStartOfMonth(currentDate);
+            const endDate = getEndOfMonth(currentDate);
 
-// Render calendar UI
-function renderCalendar() {
-    const calendarSection = document.getElementById('calendar-section');
-    
-    const html = `
+            const response = await fetch(
+                `${API_BASE}/api/calendar/bookings?startDate=${startDate}&endDate=${endDate}`
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Extract bookings array from response object and normalize field names
+            const rawBookings = Array.isArray(data) ? data : (data.bookings || []);
+
+            // Normalize booking data to ensure consistent field names
+            calendarBookings = rawBookings.map(booking => ({
+                ...booking,
+                date: booking.booking_date || booking.date,
+                time: booking.booking_time || booking.time,
+                package_id: booking.package_id || booking.packageId,
+                customer_name: booking.customer_name || booking.customerName
+            }));
+
+            // Also load "large events" so they show on the calendar even if the
+            // bookings mirror failed (events are stored separately from bookings).
+            try {
+                let evList = [];
+                const evRes = await fetch(`${API_BASE}/api/events`);
+                if (evRes.ok) {
+                    const evData = await evRes.json();
+                    evList = Array.isArray(evData) ? evData : (evData.events || []);
+                }
+                if (!evList || !evList.length) {
+                    try { evList = JSON.parse(localStorage.getItem('smashlabs_events') || '[]'); } catch (e) { evList = []; }
+                }
+                calendarEvents = (evList || [])
+                    .filter(ev => ev && ev.datetime)
+                    .map(ev => {
+                        const dtStr = String(ev.datetime);
+                        return {
+                            id: ev.id,
+                            date: dtStr.split('T')[0],
+                            time: dtStr.indexOf('T') !== -1 ? dtStr.split('T')[1].slice(0, 5) : '',
+                            title: ev.title || 'אירוע',
+                            participants: ev.participants || 0,
+                            signedCount: Array.isArray(ev.signatures) ? ev.signatures.length : (ev.signedCount || 0),
+                            status: ev.status || 'active'
+                        };
+                    });
+            } catch (e) {
+                console.warn('Failed to load events for calendar:', e);
+                calendarEvents = [];
+            }
+        }
+
+        // Render calendar UI
+        function renderCalendar() {
+            const calendarSection = document.getElementById('calendar-section');
+
+            const html = `
         <div class="calendar-header">
             <div class="calendar-controls">
                 <div class="view-controls">
@@ -106,70 +138,78 @@ function renderCalendar() {
             ${renderCalendarView()}
         </div>
     `;
-    
-    calendarSection.innerHTML = html;
-}
 
-// Render different calendar views
-function renderCalendarView() {
-    switch (currentView) {
-        case 'day':
-            return renderDayView();
-        case 'week':
-            return renderWeekView();
-        case 'month':
-        default:
-            return renderMonthView();
-    }
-}
+            calendarSection.innerHTML = html;
+        }
 
-// Render month view
-function renderMonthView() {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
-    
-    const days = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
-    
-    let html = '<div class="calendar-grid month-view">';
-    
-    // Day headers
-    days.forEach(day => {
-        html += `<div class="calendar-day-header">${day}</div>`;
-    });
-    
-    // Empty cells before first day
-    for (let i = 0; i < startingDayOfWeek; i++) {
-        html += '<div class="calendar-day empty"></div>';
-    }
-    
-    // Days of month
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const dayBookings = calendarBookings.filter(b => {
-            const bookingDate = b.date;
-            const match = bookingDate === dateStr;
-            if (day === 1) {
-                console.log(`🔍 Checking day ${day}:`, {
-                    dateStr,
-                    bookingDate,
-                    match,
-                    booking: b
-                });
+        // Render different calendar views
+        function renderCalendarView() {
+            switch (currentView) {
+                case 'day':
+                    return renderDayView();
+                case 'week':
+                    return renderWeekView();
+                case 'month':
+                default:
+                    return renderMonthView();
             }
-            return match;
-        });
-        
-        const isToday = isDateToday(dateStr);
-        
-        html += `
+        }
+
+        // Render month view
+        function renderMonthView() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+
+            const days = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
+
+            let html = '<div class="calendar-grid month-view">';
+
+            // Day headers
+            days.forEach(day => {
+                html += `<div class="calendar-day-header">${day}</div>`;
+            });
+
+            // Empty cells before first day
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                html += '<div class="calendar-day empty"></div>';
+            }
+
+            // Days of month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayBookings = calendarBookings.filter(b => {
+                    const bookingDate = b.date;
+                    const match = bookingDate === dateStr;
+                    if (day === 1) {
+                        console.log(`🔍 Checking day ${day}:`, {
+                            dateStr,
+                            bookingDate,
+                            match,
+                            booking: b
+                        });
+                    }
+                    return match;
+                });
+
+                const isToday = isDateToday(dateStr);
+                const dayEvents = calendarEvents.filter(ev => ev.date === dateStr);
+
+                html += `
             <div class="calendar-day ${isToday ? 'today' : ''}" onclick="selectDate('${dateStr}')">
                 <div class="day-number">${day}</div>
                 <div class="day-bookings">
+                    ${dayEvents.map(ev => `
+                        <div class="calendar-booking event-booking"
+                             onclick="event.stopPropagation(); viewEventFromCalendar('${ev.id}')"
+                             title="אירוע: ${ev.title}">
+                            🎉 ${ev.time ? ev.time + ' ' : ''}${ev.title}
+                        </div>
+                    `).join('')}
                     ${dayBookings.slice(0, 3).map(booking => `
                         <div class="calendar-booking ${getPackageClass(booking.package_id)}" 
                              onclick="event.stopPropagation(); viewBookingDetails('${booking.id}')"
@@ -203,6 +243,7 @@ function renderWeekView() {
     days.forEach(day => {
         const dateStr = formatDateISO(day);
         const dayBookings = calendarBookings.filter(b => b.date === dateStr);
+        const dayEvents = calendarEvents.filter(ev => ev.date === dateStr);
         const isToday = isDateToday(dateStr);
         
         html += `
@@ -212,6 +253,13 @@ function renderWeekView() {
                     <div class="day-number">${day.getDate()}</div>
                 </div>
                 <div class="day-bookings">
+                    ${dayEvents.map(ev => `
+                        <div class="calendar-booking event-booking"
+                             onclick="event.stopPropagation(); viewEventFromCalendar('${ev.id}')"
+                             title="אירוע: ${ev.title}">
+                            🎉 ${ev.time ? ev.time + ' ' : ''}${ev.title}
+                        </div>
+                    `).join('')}
                     ${dayBookings.map(booking => `
                         <div class="calendar-booking ${getPackageClass(booking.package_id)}" 
                              onclick="event.stopPropagation(); viewBookingDetails('${booking.id}')"
@@ -234,11 +282,21 @@ function renderWeekView() {
 function renderDayView() {
     const dateStr = formatDateISO(currentDate);
     const dayBookings = calendarBookings.filter(b => b.date === dateStr);
+    const dayEvents = calendarEvents.filter(ev => ev.date === dateStr);
     
     // Group by hour
     const hours = Array.from({ length: 14 }, (_, i) => i + 9); // 9:00 - 22:00
     
     let html = '<div class="day-view">';
+    
+    if (dayEvents.length) {
+        html += '<div class="day-events-banner" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">' +
+            dayEvents.map(ev => `
+                <div class="calendar-booking event-booking" onclick="viewEventFromCalendar('${ev.id}')" title="אירוע">
+                    🎉 ${ev.time ? ev.time + ' ' : ''}${ev.title}${ev.participants ? ' (' + (ev.signedCount || 0) + '/' + ev.participants + ')' : ''}
+                </div>`).join('') +
+            '</div>';
+    }
     
     hours.forEach(hour => {
         const hourBookings = dayBookings.filter(b => {
@@ -464,6 +522,15 @@ function getPaymentStatusText(status) {
     return paymentStatusTexts[status] || status;
 }
 
+    function viewEventFromCalendar(id) {
+        try { sessionStorage.setItem('smashlabs_focus_event', id || ''); } catch (e) {}
+        if (typeof switchTab === 'function') {
+            switchTab('events');
+        } else {
+            window.location.hash = 'events';
+        }
+    }
+
     // Make functions globally accessible
     window.loadCalendar = loadCalendar;
     window.switchView = switchView;
@@ -471,5 +538,6 @@ function getPaymentStatusText(status) {
     window.goToToday = goToToday;
     window.jumpToMonth = jumpToMonth;
     window.selectDate = selectDate;
+    window.viewEventFromCalendar = viewEventFromCalendar;
     
 })();

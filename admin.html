@@ -629,6 +629,13 @@
             color: #fff;
         }
         
+        .calendar-booking.event-booking {
+            background: rgba(255, 193, 7, 0.22);
+            border-color: #ffc107;
+            color: #fff;
+            font-weight: 600;
+        }
+        
         .more-bookings {
             font-size: 0.7rem;
             color: #1fb6c2;
@@ -3882,6 +3889,10 @@
 
             document.getElementById('createEventForm').reset();
             await loadEvents();
+            // Refresh the calendar so the new event shows on its date immediately.
+            if (typeof loadCalendar === 'function') {
+                try { loadCalendar(); } catch (e) { console.warn('loadCalendar refresh failed:', e); }
+            }
 
             const link = buildWaiverLink(id, title);
             window.customModal.success(
