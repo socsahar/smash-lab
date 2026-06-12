@@ -3833,9 +3833,16 @@
                     return false;
                 }
                 const dt = ev.datetime ? new Date(ev.datetime) : null;
-                const bookingDate = ev.datetime ? ev.datetime.split('T')[0] : null;
-                const bookingTime = (ev.datetime && ev.datetime.includes('T'))
-                    ? ev.datetime.split('T')[1].slice(0, 5) : null;
+                if (!dt || isNaN(dt.getTime())) {
+                    console.warn('Event has no valid datetime — not mirrored to orders panel');
+                    return false;
+                }
+                const bookingDate = ev.datetime.split('T')[0];
+                const bookingTime = ev.datetime.includes('T')
+                    ? ev.datetime.split('T')[1].slice(0, 5) : '00:00';
+                // bookings table requires NOT NULL duration_minutes & end_datetime.
+                const durationMinutes = 120;
+                const endDt = new Date(dt.getTime() + durationMinutes * 60000);
                 const row = {
                     package_id: 'event',
                     package_name: ev.title || 'אירוע',
@@ -3844,9 +3851,9 @@
                     customer_phone: ev.phone || '',
                     booking_date: bookingDate,
                     booking_time: bookingTime,
-                    booking_datetime: dt ? dt.toISOString() : null,
-                    end_datetime: dt ? dt.toISOString() : null,
-                    duration_minutes: null,
+                    booking_datetime: dt.toISOString(),
+                    end_datetime: endDt.toISOString(),
+                    duration_minutes: durationMinutes,
                     order_id: ev.id,
                     status: 'confirmed',
                     price: 0
