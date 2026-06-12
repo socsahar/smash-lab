@@ -608,6 +608,38 @@ app.get('/api/events/:eventId/signatures/:signatureId', async(req, res) => {
     }
 });
 
+// Diagnostic: report whether DB persistence is active. Read-only, exposes no secrets.
+// Open https://<your-site>/api/persistence-status to see why data may not persist.
+app.get('/api/persistence-status', async(req, res) => {
+    const configured = hasSupabasePersistence();
+    const status = {
+        storageMode: configured ? 'supabase (persistent)' : 'local-file (EPHEMERAL — resets on every Render restart/deploy)',
+        supabasePersistence: configured,
+        hasSupabaseUrl: Boolean(process.env.SUPABASE_URL),
+        hasServiceKey: Boolean(process.env.SUPABASE_SERVICE_KEY),
+        eventsTable: SUPABASE_EVENTS_TABLE,
+        eventsTableOk: false,
+        eventsCount: null,
+        error: null
+    };
+    if (configured) {
+        try {
+            const { count, error } = await supabasePersistence
+                .from(SUPABASE_EVENTS_TABLE)
+                .select('event_id', { count: 'exact', head: true });
+            if (error) {
+                status.error = error.message || String(error);
+            } else {
+                status.eventsTableOk = true;
+                status.eventsCount = typeof count === 'number' ? count : null;
+            }
+        } catch (e) {
+            status.error = (e && e.message) ? e.message : String(e);
+        }
+    }
+    res.json(status);
+});
+
 app.get('/api/events', async(req, res) => {
     try {
         const events = await readEventsStore();
