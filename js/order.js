@@ -77,17 +77,23 @@ async function handleOrderSubmit(e) {
     // Show confirmation
     const confirmMessage = `הזמנה נשמרה בהצלחה!\n\n<strong>מספר הזמנה:</strong> ${orderData.orderId}\n<strong>תאריך:</strong> ${date}\n<strong>שעה:</strong> ${time}\n\nמעביר לכתב ויתור...`;
     
+    let hasContinued = false;
+    const continueToWaiver = () => {
+        if (hasContinued) return;
+        hasContinued = true;
+        window.location.href = 'waiver.html';
+    };
+
     if (window.customModal) {
-        window.customModal.success(confirmMessage, 'הזמנה נשמרה! 🎉', false);
-        // Auto-redirect after 5 seconds
-        setTimeout(() => {
-            window.location.href = 'waiver.html';
-        }, 5000);
+        // Clicking "מעולה!" moves the user forward to the waiver step (not back).
+        window.customModal.success(confirmMessage, 'הזמנה נשמרה! 🎉', false)
+            .then(continueToWaiver);
+        // Fallback: auto-continue after 5 seconds if the user doesn't click.
+        setTimeout(continueToWaiver, 5000);
     } else {
         alert(`הזמנה נשמרה!\nמספר הזמנה: ${orderData.orderId}\nתאריך: ${date}\nשעה: ${time}\nמעביר לכתב ויתור...`);
-        setTimeout(() => {
-            window.location.href = 'waiver.html';
-        }, 5000);
+        // The alert blocks until dismissed, so continue immediately afterwards.
+        continueToWaiver();
     }
 }
 
