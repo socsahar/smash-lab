@@ -284,23 +284,33 @@ function renderWeekView() {
 // Render day view
 function renderDayView() {
     const dateStr = formatDateISO(currentDate);
-    const dayBookings = calendarBookings.filter(b => b.date === dateStr);
-    const dayEvents = calendarEvents.filter(ev => ev.date === dateStr);
-    
+    // Compare only the YYYY-MM-DD part in case a date arrives as a full datetime string.
+    const sameDay = (d) => String(d || '').slice(0, 10) === dateStr;
+    const dayBookings = calendarBookings.filter(b => sameDay(b.date));
+    const dayEvents = calendarEvents.filter(ev => sameDay(ev.date));
+
+    // Robustly pull the hour out of "13:20", "13:20:00" or even an ISO datetime.
+    const getHour = (t) => {
+        const m = String(t || '').match(/(\d{1,2}):(\d{2})/);
+        return m ? parseInt(m[1], 10) : NaN;
+    };
+
     // Group by hour
-    const hours = Array.from({ length: 14 }, (_, i) => i + 9); // 9:00 - 22:00
-    
+    const minHour = 9, maxHour = 22;
+    const hours = Array.from({ length: maxHour - minHour + 1 }, (_, i) => i + minHour); // 9:00 - 22:00
+
+    // Clamp out-of-range / unparseable times into the nearest edge slot so nothing is ever hidden.
+    const bucketHour = (t) => {
+        const h = getHour(t);
+        if (isNaN(h)) return minHour;
+        return Math.min(maxHour, Math.max(minHour, h));
+    };
+
     let html = '<div class="day-view">';
-    
+
     hours.forEach(hour => {
-        const hourBookings = dayBookings.filter(b => {
-            const bookingHour = parseInt(String(b.time || '').split(':')[0], 10);
-            return bookingHour === hour;
-        });
-        const hourEvents = dayEvents.filter(ev => {
-            const eventHour = parseInt(String(ev.time || '').split(':')[0], 10);
-            return eventHour === hour;
-        });
+        const hourBookings = dayBookings.filter(b => bucketHour(b.time) === hour);
+        const hourEvents = dayEvents.filter(ev => bucketHour(ev.time) === hour);
         const hasItems = hourBookings.length > 0 || hourEvents.length > 0;
         
         html += `
