@@ -277,13 +277,13 @@
                     const cancelled = checkout.events.find(e => e.type === 'CHECKOUT_CANCELLED' || e.type === 'CANCELLED');
 
                     if (declined) {
-                        const gatewayMsg = declined.details ? .additional_data ? .gateway_response_message || '';
+                        const gatewayMsg = declined.details?.additional_data?.gateway_response_message || '';
                         const reason = gatewayMsg || 'העסקה נדחתה על ידי חברת האשראי';
                         console.log('❌ Transaction DECLINED:', reason);
                         return {
                             approved: false,
                             reason: reason,
-                            transactionId: declined.details ? .id
+                            transactionId: declined.details?.id
                         };
                     }
 
@@ -299,7 +299,7 @@
                         console.log('✅ Transaction APPROVED');
                         return {
                             approved: true,
-                            transactionId: approved.details ? .id || checkout.transaction_id
+                            transactionId: approved.details?.id || checkout.transaction_id
                         };
                     }
                 }
