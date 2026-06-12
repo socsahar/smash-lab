@@ -123,6 +123,9 @@
                            onchange="jumpToMonth(this.value)"
                            title="קפוץ לחודש / שנה" aria-label="קפוץ לחודש ושנה"
                            style="background:#1a1a1a;color:#fff;border:1px solid rgba(255,107,0,0.4);border-radius:6px;padding:6px 10px;font-family:inherit;cursor:pointer;">
+                    <button class="nav-btn add-booking-btn" onclick="openNewBookingFromHeader()"
+                            title="הוספת אירוע / הזמנה" aria-label="הוספת אירוע חדש"
+                            style="background:#ff6b00;color:#fff;border:none;font-weight:700;">➕ אירוע חדש</button>
                 </div>
             </div>
         </div>
@@ -394,9 +397,20 @@ async function jumpToMonth(value) {
 }
 
 async function selectDate(dateStr) {
-    // Open create booking modal with the selected date
+    // Clicking a day navigates to that day's day view (no longer opens the add modal)
+    const parts = (dateStr || '').split('-').map(Number);
+    if (parts.length === 3 && parts[0] && parts[1] && parts[2]) {
+        currentDate = new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    currentView = 'day';
+    await fetchCalendarBookings();
+    renderCalendar();
+}
+
+// Open the "add event / booking" modal from the header button, defaulting to the date in view
+function openNewBookingFromHeader() {
     if (typeof openCreateBookingModal === 'function') {
-        openCreateBookingModal(dateStr);
+        openCreateBookingModal(formatDateISO(currentDate));
     }
 }
 
@@ -538,6 +552,7 @@ function getPaymentStatusText(status) {
     window.goToToday = goToToday;
     window.jumpToMonth = jumpToMonth;
     window.selectDate = selectDate;
+    window.openNewBookingFromHeader = openNewBookingFromHeader;
     window.viewEventFromCalendar = viewEventFromCalendar;
     
 })();
