@@ -292,26 +292,30 @@ function renderDayView() {
     
     let html = '<div class="day-view">';
     
-    if (dayEvents.length) {
-        html += '<div class="day-events-banner" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">' +
-            dayEvents.map(ev => `
-                <div class="calendar-booking event-booking" onclick="viewEventFromCalendar('${ev.id}')" title="אירוע">
-                    🎉 ${ev.time ? ev.time + ' ' : ''}${ev.title}${ev.participants ? ' (' + (ev.signedCount || 0) + '/' + ev.participants + ')' : ''}
-                </div>`).join('') +
-            '</div>';
-    }
-    
     hours.forEach(hour => {
         const hourBookings = dayBookings.filter(b => {
-            const bookingHour = parseInt(b.time.split(':')[0]);
+            const bookingHour = parseInt(String(b.time || '').split(':')[0], 10);
             return bookingHour === hour;
         });
+        const hourEvents = dayEvents.filter(ev => {
+            const eventHour = parseInt(String(ev.time || '').split(':')[0], 10);
+            return eventHour === hour;
+        });
+        const hasItems = hourBookings.length > 0 || hourEvents.length > 0;
         
         html += `
             <div class="hour-slot">
                 <div class="hour-label">${hour}:00</div>
                 <div class="hour-bookings">
-                    ${hourBookings.length > 0 ? hourBookings.map(booking => `
+                    ${hourEvents.map(ev => `
+                        <div class="calendar-booking event-booking" 
+                             onclick="viewEventFromCalendar('${ev.id}')" title="אירוע">
+                            <div class="booking-time">🎉 ${ev.time || ''}</div>
+                            <div class="booking-package">${ev.title}</div>
+                            ${ev.participants ? `<div class="booking-customer">👥 ${ev.signedCount || 0}/${ev.participants}</div>` : ''}
+                        </div>
+                    `).join('')}
+                    ${hourBookings.map(booking => `
                         <div class="calendar-booking ${getPackageClass(booking.package_id)}" 
                              onclick="viewBookingDetails('${booking.id}')">
                             <div class="booking-time">${booking.time}</div>
@@ -323,7 +327,8 @@ function renderDayView() {
                                 <span class="payment-badge ${booking.payment_status}">${getPaymentStatusText(booking.payment_status)}</span>
                             </div>
                         </div>
-                    `).join('') : '<div class="empty-hour">ללא הזמנות</div>'}
+                    `).join('')}
+                    ${hasItems ? '' : '<div class="empty-hour">ללא הזמנות</div>'}
                 </div>
             </div>
         `;
@@ -432,7 +437,12 @@ function getStartOfWeek(date) {
 }
 
 function formatDateISO(date) {
-    return date.toISOString().split('T')[0];
+    // Use LOCAL date parts (not toISOString, which shifts to UTC and can land on the
+    // previous day in timezones ahead of UTC like Israel) so day lookups match booking dates.
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
 }
 
 function isDateToday(dateStr) {
