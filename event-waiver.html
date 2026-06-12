@@ -1899,7 +1899,10 @@
 
         async function fetchSharedEventSignatures(eventId) {
             try {
-                const res = await fetch(`/api/events/${encodeURIComponent(eventId)}/signatures`);
+                // Summary mode: we only need the signed COUNT here, not the heavy base64
+                // signature images. Fetching the full images on every visitor's page load
+                // was a major source of Supabase egress.
+                const res = await fetch(`/api/events/${encodeURIComponent(eventId)}/signatures?summary=1`);
                 if (!res.ok) return null;
                 return await res.json();
             } catch (e) {
