@@ -16,7 +16,7 @@
 
     // Instagram configuration
     const INSTAGRAM_CONFIG = {
-        profileUrl: 'https://www.instagram.com/smashlabs', // Your Instagram profile URL
+        profileUrl: 'https://www.instagram.com/smash_lab_nahariya?igsh=N2YxeW94ZnQ2ejNk', // Your Instagram profile URL
         tooltipText: 'עקבו אחרינו באינסטגרם!',
         trackingEnabled: true
     };
@@ -59,7 +59,7 @@
             <a href="${ORDER_CONFIG.url}" class="order-button" role="button" aria-label="הזמן עכשיו - מעבר לרכישת חבילה">
                 <div class="whatsapp-tooltip order-tooltip">${ORDER_CONFIG.tooltipText}</div>
                 <svg class="whatsapp-icon order-icon" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                    <path d="M22 10V6c0-1.11-.9-2-2-2H4c-1.1 0-1.99.89-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.11.9 2 2 2h16c1.1 0 2-.89 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-2-1.46c-1.19.69-2 1.99-2 3.46s.81 2.77 2 3.46V18H4v-2.54c1.19-.69 2-1.99 2-3.46 0-1.48-.8-2.77-1.99-3.46L4 6h16v2.54zM9.5 15.5h5v1h-5v-1zm0-3h5v1h-5v-1zm0-3h5v1h-5v-1z"/>
                 </svg>
             </a>
         `;
