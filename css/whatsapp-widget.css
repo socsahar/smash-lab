@@ -388,3 +388,29 @@
         left: 62px !important;
     }
 }
+
+/* Visible label for order button */
+.whatsapp-label {
+    display: none;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin-inline-start: 0.6rem;
+}
+
+.order-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Show the label on medium+ screens */
+@media (min-width: 480px) {
+    .order-button .order-label {
+        display: inline-block;
+        background: var(--primary, #ff6b00);
+        padding: 6px 10px;
+        border-radius: 10px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+}

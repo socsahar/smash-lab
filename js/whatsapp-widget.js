@@ -24,7 +24,7 @@
     // Order/Booking configuration
     const ORDER_CONFIG = {
         url: 'select-package.html',
-        tooltipText: 'הזמן עכשיו!',
+        tooltipText: 'הזמן עכשיו',
         trackingEnabled: true
     };
 
@@ -58,6 +58,7 @@
             </a>
             <a href="${ORDER_CONFIG.url}" class="order-button" role="button" aria-label="הזמן עכשיו - מעבר לרכישת חבילה">
                 <div class="whatsapp-tooltip order-tooltip">${ORDER_CONFIG.tooltipText}</div>
+                <span class="whatsapp-label order-label">${ORDER_CONFIG.tooltipText}</span>
                 <svg class="whatsapp-icon order-icon" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                     <path d="M22 10V6c0-1.11-.9-2-2-2H4c-1.1 0-1.99.89-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.11.9 2 2 2h16c1.1 0 2-.89 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-2-1.46c-1.19.69-2 1.99-2 3.46s.81 2.77 2 3.46V18H4v-2.54c1.19-.69 2-1.99 2-3.46 0-1.48-.8-2.77-1.99-3.46L4 6h16v2.54zM9.5 15.5h5v1h-5v-1zm0-3h5v1h-5v-1zm0-3h5v1h-5v-1z"/>
                 </svg>
