@@ -28,18 +28,18 @@
                 'Supabase not ready', 'processWaiver', 'Address data',
                 'Sample record', 'Sample cities'
             ];
-            
+
             function shouldBlock(args) {
                 const str = JSON.stringify(args);
-                return blockedPatterns.some(pattern => 
+                return blockedPatterns.some(pattern =>
                     str.toLowerCase().includes(pattern.toLowerCase()));
             }
-            
+
             const originalLog = console.log;
             const originalError = console.error;
             const originalWarn = console.warn;
             const originalInfo = console.info;
-            
+
             console.log = function(...args) {
                 if (!shouldBlock(args)) originalLog.apply(console, args);
             };
@@ -68,18 +68,20 @@
     <!-- Preload and load fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+
     <!-- Fallback styles for payment page -->
     <style>
         /* Fallback styles if main CSS fails to load */
-        body { 
-            font-family: 'Heebo', 'Rubik', Arial, sans-serif; 
-            background: #1a1a1a; 
-            color: #fff; 
-            margin: 0; 
+        
+        body {
+            font-family: 'Heebo', 'Rubik', Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            margin: 0;
             padding: 0;
             min-height: 100vh;
         }
+        
         .header-inner {
             display: flex;
             justify-content: space-between;
@@ -87,41 +89,57 @@
             padding: 1rem 2rem;
             background: #222;
         }
-        .logo { color: #ff6b00; font-size: 1.5rem; text-decoration: none; font-weight: bold; }
-        .nav-links { 
-            display: flex; 
-            list-style: none; 
-            gap: 1rem; 
-            margin: 0; 
-            padding: 0; 
+        
+        .logo {
+            color: #ff6b00;
+            font-size: 1.5rem;
+            text-decoration: none;
+            font-weight: bold;
         }
-        .nav-links a { 
-            color: #fff; 
-            text-decoration: none; 
-            padding: 0.5rem 1rem; 
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+            margin: 0;
+            padding: 0;
         }
-        .nav-links a:hover { color: #ff6b00; }
-        .hero { 
-            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); 
-            padding: 4rem 2rem; 
-            text-align: center; 
+        
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
         }
-        .hero h1 { 
-            font-size: 2.5rem; 
-            margin-bottom: 1rem; 
-            color: #ff6b00; 
+        
+        .nav-links a:hover {
+            color: #ff6b00;
         }
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 2rem; 
+        
+        .hero {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            padding: 4rem 2rem;
+            text-align: center;
         }
-        .card { 
-            background: #222; 
-            border-radius: 10px; 
-            padding: 2rem; 
-            margin: 2rem 0; 
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ff6b00;
         }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .card {
+            background: #222;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
         .payment-summary {
             background: #333;
             border: 2px solid #ff6b00;
@@ -129,12 +147,14 @@
             padding: 1.5rem;
             margin-bottom: 2rem;
         }
+        
         .price-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 0.5rem;
             padding: 0.5rem 0;
         }
+        
         .total-price {
             font-size: 1.5rem;
             font-weight: bold;
@@ -143,40 +163,47 @@
             padding-top: 1rem;
             margin-top: 1rem;
         }
-        .form-group { 
-            margin-bottom: 1.5rem; 
+        
+        .form-group {
+            margin-bottom: 1.5rem;
         }
-        .form-group label { 
-            display: block; 
-            margin-bottom: 0.5rem; 
-            color: #ff6b00; 
-            font-weight: bold; 
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ff6b00;
+            font-weight: bold;
         }
-        .form-group input, .form-group select { 
-            width: 100%; 
-            padding: 0.75rem; 
-            border: 1px solid #444; 
-            background: #333; 
-            color: #fff; 
-            border-radius: 5px; 
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #444;
+            background: #333;
+            color: #fff;
+            border-radius: 5px;
             font-size: 1rem;
             box-sizing: border-box;
         }
-        .btn { 
-            background: linear-gradient(45deg, #ff6b00, #1fb6c2); 
-            color: #fff; 
-            padding: 1rem 2rem; 
-            border: none; 
-            border-radius: 5px; 
-            font-size: 1rem; 
-            cursor: pointer; 
-            text-decoration: none; 
-            display: inline-block; 
+        
+        .btn {
+            background: linear-gradient(45deg, #ff6b00, #1fb6c2);
+            color: #fff;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
             margin: 0.5rem;
         }
+        
         .btn-secondary {
             background: #555;
         }
+        
         .coupon-section {
             margin: 1.5rem 0;
             padding: 1rem;
@@ -184,11 +211,13 @@
             border: 1px solid rgba(31, 182, 194, 0.3);
             border-radius: 8px;
         }
+        
         .coupon-input-group {
             display: flex;
             gap: 0.5rem;
             margin-top: 0.5rem;
         }
+        
         .coupon-input-group input {
             flex: 1;
             padding: 0.75rem;
@@ -200,6 +229,7 @@
             font-size: 1rem;
             text-transform: uppercase;
         }
+        
         .coupon-input-group button {
             padding: 0.75rem 1.5rem;
             border: none;
@@ -208,48 +238,64 @@
             font-weight: bold;
             transition: all 0.2s;
         }
+        
         .btn-apply-coupon {
             background: linear-gradient(45deg, #1fb6c2, #00d4ff);
             color: #fff;
         }
+        
         .btn-apply-coupon:hover {
             transform: scale(1.05);
         }
+        
         .btn-remove-coupon {
             background: rgba(239, 68, 68, 0.2);
             color: #ef4444;
             border: 1px solid #ef4444;
         }
+        
         .btn-remove-coupon:hover {
             background: rgba(239, 68, 68, 0.4);
         }
+        
         .coupon-message {
             margin-top: 0.5rem;
             padding: 0.5rem;
             border-radius: 5px;
             font-size: 0.9rem;
         }
+        
         .coupon-success {
             background: rgba(76, 175, 80, 0.2);
             color: #4caf50;
             border: 1px solid #4caf50;
         }
+        
         .coupon-error {
             background: rgba(239, 68, 68, 0.2);
             color: #ef4444;
             border: 1px solid #ef4444;
         }
+        
         .discount-item {
             color: #4caf50;
             font-weight: bold;
         }
-        .hamburger { display: none; }
+        
+        .hamburger {
+            display: none;
+        }
+        
         @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .hamburger { display: block; }
+            .nav-links {
+                display: none;
+            }
+            .hamburger {
+                display: block;
+            }
         }
     </style>
-    
+
     <!-- NagishLi Accessibility Plugin Configuration -->
     <script>
         window.NagishLiConfig = {
@@ -290,7 +336,8 @@
 </head>
 
 <body>
-    <a href="#main" class="skip-to-content" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--primary,#ff6b00);color:#fff;padding:0.75rem 1.5rem;border-radius:8px;z-index:100000;font-weight:600;text-decoration:none;transition:top 0.3s;" onfocus="this.style.top='1rem'" onblur="this.style.top='-100%'">דלג לתוכן הראשי</a>
+    <a href="#main" class="skip-to-content" style="position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:var(--primary,#ff6b00);color:#fff;padding:0.75rem 1.5rem;border-radius:8px;z-index:100000;font-weight:600;text-decoration:none;transition:top 0.3s;"
+        onfocus="this.style.top='1rem'" onblur="this.style.top='-100%'">דלג לתוכן הראשי</a>
 
     <div id="site-header"></div>
 
@@ -308,7 +355,7 @@
         <section class="section fade-in" id="payment">
             <div class="container">
                 <h2 class="section-title graffiti-text">סיכום הזמנה</h2>
-                
+
                 <div class="card" style="max-width: 700px; margin: 0 auto;">
                     <!-- Order Summary -->
                     <div id="order-summary" class="payment-summary">
@@ -316,7 +363,7 @@
                         <div id="order-details">
                             <!-- Order details will be loaded here by JavaScript -->
                         </div>
-                        
+
                         <!-- Coupon Section -->
                         <div class="coupon-section">
                             <h4 style="color: #1fb6c2; margin: 0 0 0.5rem 0;">🎟️ יש לך קוד קופון?</h4>
@@ -331,7 +378,7 @@
                     <!-- Payment Form -->
                     <form id="payment-form">
                         <h3 style="color: #ff6b00; margin-bottom: 1rem;">תשלום מאובטח</h3>
-                        
+
                         <div style="background: rgba(31, 182, 194, 0.1); border: 1px solid rgba(31, 182, 194, 0.3); padding: 1rem; border-radius: 8px; text-align: center; margin-bottom: 1.5rem;">
                             <p style="font-size: 1rem; color: #1fb6c2; margin: 0 0 0.5rem 0;">🔒 תשלום מאובטח באמצעות כרטיס אשראי</p>
                             <p style="font-size: 0.85rem; color: #aaa; margin: 0;">פרטי הכרטיס מעובדים באופן מאובטח ע"י Verifone</p>
@@ -370,12 +417,12 @@
     <script src="scripts.js"></script>
     <script src="js/nagishli.js"></script>
     <script src="js/whatsapp-widget.js"></script>
-    
+
     <script>
         // Load order details from localStorage
         document.addEventListener('DOMContentLoaded', function() {
             const orderData = localStorage.getItem('currentOrder');
-            
+
             if (!orderData) {
                 if (window.customModal) {
                     window.customModal.error('לא נמצאו פרטי הזמנה. מפנה חזרה לדף ההזמנה...', 'שגיאה').then(() => {
@@ -387,9 +434,9 @@
                 }
                 return;
             }
-            
+
             const order = JSON.parse(orderData);
-            
+
             // Check if waiver was signed
             if (!order.waiverSigned || !order.waiver) {
                 if (window.customModal) {
@@ -402,19 +449,19 @@
                 }
                 return;
             }
-            
+
             displayOrderSummary(order);
-            
+
             // Handle payment form submission - credit card only
             document.getElementById('payment-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 await processCreditCardPayment(order);
             });
         });
-        
+
         // Global variable to track applied coupon
         let appliedCoupon = null;
-        
+
         function displayOrderSummary(order) {
             const serviceNames = {
                 'paint-room': 'חדר צבע',
@@ -425,7 +472,7 @@
                 'rent-lab': 'השכרת מעבדה',
                 'combo': 'משולב'
             };
-            
+
             const servicePrices = {
                 'paint-room': 120,
                 'rage-room': 150,
@@ -435,13 +482,13 @@
                 'rent-lab': 500,
                 'combo': 200
             };
-            
+
             // Get service from order.service or fallback to packageName
             const serviceKey = order.service || order.roomType || 'not-selected';
             const displayName = order.packageName || serviceNames[serviceKey] || serviceKey || 'לא נבחר';
             const basePrice = order.price || servicePrices[serviceKey] || 100;
             const subtotal = basePrice * parseInt(order.quantity || order.participants || 1);
-            
+
             // Calculate discount if coupon applied
             let discount = 0;
             let totalPrice = subtotal;
@@ -449,7 +496,7 @@
                 discount = appliedCoupon.discount;
                 totalPrice = Math.max(0, subtotal - discount);
             }
-            
+
             const detailsHTML = `
                 <div class="price-item">
                     <span><strong>שם:</strong> ${order.name}</span>

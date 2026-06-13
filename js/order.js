@@ -1,7 +1,7 @@
 // Order form handling - Saves to Supabase and localStorage
 async function handleOrderSubmit(e) {
     e.preventDefault();
-    
+
     const formData = new FormData(e.target);
     const name = formData.get('name');
     const email = formData.get('email');
@@ -12,7 +12,7 @@ async function handleOrderSubmit(e) {
     const notes = formData.get('notes');
     const createAccount = formData.get('create_account') === 'on';
     const password = formData.get('register_password');
-    
+
     // Validate required fields
     if (!name || !email || !phone || !quantity || !date || !time) {
         if (window.customModal) {
@@ -22,7 +22,7 @@ async function handleOrderSubmit(e) {
         }
         return;
     }
-    
+
     // Validate password if account creation is requested
     if (createAccount && password) {
         const hasLength = password.length >= 8;
@@ -30,7 +30,7 @@ async function handleOrderSubmit(e) {
         const hasLowercase = /[a-z]/.test(password);
         const hasNumber = /[0-9]/.test(password);
         const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-        
+
         if (!hasLength || !hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
             if (window.customModal) {
                 window.customModal.error('הסיסמה אינה עומדת בכל הדרישות. אנא בדוק את התנאים למטה.', 'סיסמה לא תקינה');
@@ -47,36 +47,36 @@ async function handleOrderSubmit(e) {
         }
         return;
     }
-    
+
     // Get existing order data (includes package selection)
     const existingOrder = JSON.parse(localStorage.getItem('currentOrder') || '{}');
-    
+
     // Create order object, merging with existing data to preserve package selection
     const orderData = {
-        ...existingOrder,  // Preserve service, packageName, price, roomType from select-package
+        ...existingOrder, // Preserve service, packageName, price, roomType from select-package
         name,
         email,
         phone,
-        participants: quantity,  // Save as 'participants' for package filtering
-        quantity,  // Keep for backward compatibility
+        participants: quantity, // Save as 'participants' for package filtering
+        quantity, // Keep for backward compatibility
         date,
         time,
         notes,
-        createAccount,  // Flag to create account AFTER payment
-        accountPassword: password || null,  // Store password to create account after payment
+        createAccount, // Flag to create account AFTER payment
+        accountPassword: password || null, // Store password to create account after payment
         timestamp: new Date().toISOString()
     };
-    
+
     // Generate temporary order ID for tracking
     orderData.orderId = `TEMP-${Date.now()}`;
-    
+
     // Store order in localStorage for the waiver page and payment
     localStorage.setItem('currentOrder', JSON.stringify(orderData));
-    localStorage.setItem('smashlabs_order', JSON.stringify(orderData));  // For select-package compatibility
-    
+    localStorage.setItem('smashlabs_order', JSON.stringify(orderData)); // For select-package compatibility
+
     // Show confirmation
     const confirmMessage = `הזמנה נשמרה בהצלחה!\n\n<strong>מספר הזמנה:</strong> ${orderData.orderId}\n<strong>תאריך:</strong> ${date}\n<strong>שעה:</strong> ${time}\n\nמעביר לכתב ויתור...`;
-    
+
     let hasContinued = false;
     const continueToWaiver = () => {
         if (hasContinued) return;
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('Order form not found!');
     }
-    
+
     // Add real-time validation for name field
     const nameInput = document.getElementById('name');
     if (nameInput) {
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.value = this.value.replace(/[^a-zA-Zא-ת\s'\-]/g, '');
         });
     }
-    
+
     // Add real-time validation for phone field
     const phoneInput = document.getElementById('phone');
     if (phoneInput) {
@@ -138,14 +138,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const passwordContainer = document.getElementById('password-field-container');
             const hasAccountCheckbox = document.getElementById('has-account');
             const hasAccountSection = hasAccountCheckbox ? hasAccountCheckbox.closest('.form-group') : null;
-            
+
             if (nameInput && !nameInput.value) {
                 nameInput.value = currentUser.name;
             }
             if (emailInput && !emailInput.value) {
                 emailInput.value = currentUser.email;
             }
-            
+
             // Hide both account sections if user is already logged in
             if (createAccountCheckbox && passwordContainer) {
                 const accountSection = createAccountCheckbox.closest('.form-group');
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (hasAccountSection) {
                 hasAccountSection.style.display = 'none';
             }
-            
+
             // Try to load saved waiver
             if (window.orderDB && window.orderDB.getUserSavedWaiver) {
                 window.orderDB.getUserSavedWaiver(currentUser.id).then(waiver => {
@@ -170,13 +170,13 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
         // Silent error
     }
-    
+
     // Toggle "has account" login fields
     const hasAccountCheckbox = document.getElementById('has-account');
     const loginFieldsContainer = document.getElementById('login-fields-container');
     const loadAccountBtn = document.getElementById('load-account-btn');
     const loginStatus = document.getElementById('login-status');
-    
+
     if (hasAccountCheckbox && loginFieldsContainer) {
         hasAccountCheckbox.addEventListener('change', function() {
             if (this.checked) {
@@ -187,13 +187,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Handle "Load my details" button
     if (loadAccountBtn) {
         loadAccountBtn.addEventListener('click', async function() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-            
+
             if (!email || !password) {
                 if (loginStatus) {
                     loginStatus.style.color = '#ff6b6b';
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 return;
             }
-            
+
             // Show loading
             this.disabled = true;
             this.textContent = 'טוען...';
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 loginStatus.style.color = '#1fb6c2';
                 loginStatus.textContent = 'מתחבר...';
             }
-            
+
             try {
                 // Login via customer endpoint
                 const response = await fetch('/api/customer/login', {
@@ -217,9 +217,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok && data.user) {
                     // Success - store user session
                     const userWithoutPassword = {
@@ -230,21 +230,21 @@ document.addEventListener('DOMContentLoaded', function() {
                         loginTime: Date.now()
                     };
                     sessionStorage.setItem('smashlabs_current_user', JSON.stringify(userWithoutPassword));
-                    
+
                     // Fill form with user data
                     document.getElementById('name').value = data.user.name;
                     document.getElementById('email').value = data.user.email;
                     if (data.user.phone && document.getElementById('phone')) {
                         document.getElementById('phone').value = data.user.phone;
                     }
-                    
+
                     // Try to load saved waiver
                     if (window.orderDB && window.orderDB.getUserSavedWaiver) {
                         const waiver = await window.orderDB.getUserSavedWaiver(data.user.id);
                         if (waiver && waiver.saved_waiver_data) {
                             localStorage.setItem('smashlabs_saved_waiver', JSON.stringify(waiver.saved_waiver_data));
                             localStorage.setItem('smashlabs_waiver_date', waiver.saved_waiver_date);
-                            
+
                             if (loginStatus) {
                                 loginStatus.style.color = '#22c55e';
                                 loginStatus.textContent = '✅ פרטים וכתב ויתור נטענו בהצלחה!';
@@ -256,13 +256,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         }
                     }
-                    
+
                     // Hide login section and account creation section
                     const hasAccountSection = hasAccountCheckbox.closest('.form-group');
-                    const createAccountSection = document.getElementById('create-account')?.closest('.form-group');
+                    const createAccountSection = document.getElementById('create-account') ? .closest('.form-group');
                     if (hasAccountSection) hasAccountSection.style.display = 'none';
                     if (createAccountSection) createAccountSection.style.display = 'none';
-                    
+
                 } else {
                     // Login failed
                     if (loginStatus) {
@@ -283,12 +283,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Toggle password field visibility when checkbox is checked
     const createAccountCheckbox = document.getElementById('create-account');
     const passwordContainer = document.getElementById('password-field-container');
     const passwordInput = document.getElementById('register-password');
-    
+
     if (createAccountCheckbox && passwordContainer && passwordInput) {
         createAccountCheckbox.addEventListener('change', function() {
             if (this.checked) {
@@ -302,13 +302,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 resetPasswordValidation();
             }
         });
-        
+
         // Add password validation on input
         passwordInput.addEventListener('input', function() {
             validateOrderPassword(this.value);
         });
     }
-    
+
     // Password validation function for order form
     function validateOrderPassword(password) {
         const hasLength = password.length >= 8;
@@ -316,17 +316,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const hasLowercase = /[a-z]/.test(password);
         const hasNumber = /[0-9]/.test(password);
         const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-        
+
         // Update UI for each requirement
         updateRequirement('order-req-length', hasLength);
         updateRequirement('order-req-uppercase', hasUppercase);
         updateRequirement('order-req-lowercase', hasLowercase);
         updateRequirement('order-req-number', hasNumber);
         updateRequirement('order-req-special', hasSpecial);
-        
+
         return hasLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
     }
-    
+
     function updateRequirement(elementId, isValid) {
         const element = document.getElementById(elementId);
         if (element) {
@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     function resetPasswordValidation() {
         const requirements = ['order-req-length', 'order-req-uppercase', 'order-req-lowercase', 'order-req-number', 'order-req-special'];
         requirements.forEach(id => {
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Remove header emojis as requested
     try {
         const rx = /[\p{Extended_Pictographic}\uFE0F]/gu;

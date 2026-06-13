@@ -381,13 +381,12 @@ a:focus {
     text-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
 }
 
+
 /* Neon Color Classes with Glow Effects & RTL Support */
+
 .neon-orange {
     color: #ff8c00 !important;
-    text-shadow: 0 0 10px rgba(255, 140, 0, 0.8), 
-                 0 0 20px rgba(255, 140, 0, 0.6),
-                 0 0 30px rgba(255, 140, 0, 0.4),
-                 0 2px 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 10px rgba(255, 140, 0, 0.8), 0 0 20px rgba(255, 140, 0, 0.6), 0 0 30px rgba(255, 140, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
     -webkit-text-fill-color: #ff8c00;
     background: none;
     direction: rtl;
@@ -396,10 +395,7 @@ a:focus {
 
 .neon-pink {
     color: #ff0099 !important;
-    text-shadow: 0 0 10px rgba(255, 0, 153, 0.8),
-                 0 0 20px rgba(255, 0, 153, 0.6),
-                 0 0 30px rgba(255, 0, 153, 0.4),
-                 0 2px 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 10px rgba(255, 0, 153, 0.8), 0 0 20px rgba(255, 0, 153, 0.6), 0 0 30px rgba(255, 0, 153, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
     -webkit-text-fill-color: #ff0099;
     background: none;
     direction: rtl;
@@ -408,10 +404,7 @@ a:focus {
 
 .neon-blue {
     color: #0099ff !important;
-    text-shadow: 0 0 10px rgba(0, 153, 255, 0.8),
-                 0 0 20px rgba(0, 153, 255, 0.6),
-                 0 0 30px rgba(0, 153, 255, 0.4),
-                 0 2px 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 10px rgba(0, 153, 255, 0.8), 0 0 20px rgba(0, 153, 255, 0.6), 0 0 30px rgba(0, 153, 255, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
     -webkit-text-fill-color: #0099ff;
     background: none;
     direction: rtl;
@@ -420,10 +413,7 @@ a:focus {
 
 .neon-green {
     color: #00ff00 !important;
-    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8),
-                 0 0 20px rgba(0, 255, 0, 0.6),
-                 0 0 30px rgba(0, 255, 0, 0.4),
-                 0 2px 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.6), 0 0 30px rgba(0, 255, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
     -webkit-text-fill-color: #00ff00;
     background: none;
     direction: rtl;
@@ -432,23 +422,19 @@ a:focus {
 
 .neon-purple {
     color: #9b5de5 !important;
-    text-shadow: 0 0 10px rgba(155, 93, 229, 0.8),
-                 0 0 20px rgba(155, 93, 229, 0.6),
-                 0 0 30px rgba(155, 93, 229, 0.4),
-                 0 2px 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 10px rgba(155, 93, 229, 0.8), 0 0 20px rgba(155, 93, 229, 0.6), 0 0 30px rgba(155, 93, 229, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
     -webkit-text-fill-color: #9b5de5;
     background: none;
     direction: rtl;
     unicode-bidi: isolate;
 }
 
+
 /* Neon Color Classes with Glow Effects & RTL Support */
+
 .neon-orange {
     color: #ff8c00 !important;
-    text-shadow: 0 0 10px rgba(255, 140, 0, 0.8), 
-                 0 0 20px rgba(255, 140, 0, 0.6),
-                 0 0 30px rgba(255, 140, 0, 0.4),
-                 0 2px 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 10px rgba(255, 140, 0, 0.8), 0 0 20px rgba(255, 140, 0, 0.6), 0 0 30px rgba(255, 140, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
     -webkit-text-fill-color: #ff8c00;
     background: none;
     direction: rtl;
@@ -457,10 +443,7 @@ a:focus {
 
 .neon-pink {
     color: #ff0099 !important;
-    text-shadow: 0 0 10px rgba(255, 0, 153, 0.8),
-                 0 0 20px rgba(255, 0, 153, 0.6),
-                 0 0 30px rgba(255, 0, 153, 0.4),
-                 0 2px 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 10px rgba(255, 0, 153, 0.8), 0 0 20px rgba(255, 0, 153, 0.6), 0 0 30px rgba(255, 0, 153, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
     -webkit-text-fill-color: #ff0099;
     background: none;
     direction: rtl;
@@ -469,10 +452,7 @@ a:focus {
 
 .neon-blue {
     color: #0099ff !important;
-    text-shadow: 0 0 10px rgba(0, 153, 255, 0.8),
-                 0 0 20px rgba(0, 153, 255, 0.6),
-                 0 0 30px rgba(0, 153, 255, 0.4),
-                 0 2px 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 10px rgba(0, 153, 255, 0.8), 0 0 20px rgba(0, 153, 255, 0.6), 0 0 30px rgba(0, 153, 255, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
     -webkit-text-fill-color: #0099ff;
     background: none;
     direction: rtl;
@@ -481,10 +461,7 @@ a:focus {
 
 .neon-green {
     color: #00ff00 !important;
-    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8),
-                 0 0 20px rgba(0, 255, 0, 0.6),
-                 0 0 30px rgba(0, 255, 0, 0.4),
-                 0 2px 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.6), 0 0 30px rgba(0, 255, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
     -webkit-text-fill-color: #00ff00;
     background: none;
     direction: rtl;
@@ -493,10 +470,7 @@ a:focus {
 
 .neon-purple {
     color: #9b5de5 !important;
-    text-shadow: 0 0 10px rgba(155, 93, 229, 0.8),
-                 0 0 20px rgba(155, 93, 229, 0.6),
-                 0 0 30px rgba(155, 93, 229, 0.4),
-                 0 2px 8px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 10px rgba(155, 93, 229, 0.8), 0 0 20px rgba(155, 93, 229, 0.6), 0 0 30px rgba(155, 93, 229, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
     -webkit-text-fill-color: #9b5de5;
     background: none;
     direction: rtl;
@@ -615,7 +589,9 @@ header {
     color: var(--text);
 }
 
+
 /* Mobile Hamburger Menu */
+
 .hamburger {
     display: none;
     flex-direction: column;
@@ -635,7 +611,9 @@ header {
     transition: 0.3s;
 }
 
+
 /* Overlay for mobile menu */
+
 .mobile-overlay {
     display: none;
     position: fixed;
@@ -668,7 +646,9 @@ header {
     /* Triple top padding for hero - super generous! */
 }
 
+
 /* Standardized Room Hero Section */
+
 .room-hero {
     min-height: 60vh;
     background-size: cover;
@@ -677,7 +657,9 @@ header {
     position: relative;
 }
 
+
 /* Dark overlay for text readability */
+
 .room-hero::before {
     content: '';
     position: absolute;
@@ -685,11 +667,13 @@ header {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
     z-index: 1;
 }
 
+
 /* Room-specific background images */
+
 #axes-hero {
     background-image: url('photos/axes/throwingaxs.jpeg');
 }
@@ -703,10 +687,12 @@ header {
 }
 
 #graffiti-hero {
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), radial-gradient(circle, var(--neon-pink) 0%, var(--dark-bg) 100%);
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), radial-gradient(circle, var(--neon-pink) 0%, var(--dark-bg) 100%);
 }
 
+
 /* Ensure hero content is above overlay */
+
 .room-hero .hero-content {
     position: relative;
     z-index: 2;
@@ -719,20 +705,23 @@ header {
 .room-hero .hero-content h1 {
     font-size: clamp(2rem, 6vw, 3.5rem);
     margin-bottom: var(--spacing-md);
-    text-shadow: 0 0 30px rgba(255, 107, 0, 0.8), 0 2px 10px rgba(0,0,0,0.8);
+    text-shadow: 0 0 30px rgba(255, 107, 0, 0.8), 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
 .room-hero .hero-content p {
     font-size: clamp(1.1rem, 3vw, 1.5rem);
     margin-bottom: var(--spacing-lg);
-    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
+
 /* Mobile optimization */
+
 @media (max-width: 768px) {
     .room-hero {
         min-height: 50vh;
-        background-attachment: scroll; /* Better performance on mobile */
+        background-attachment: scroll;
+        /* Better performance on mobile */
     }
 }
 
@@ -859,6 +848,7 @@ header {
    GRINDERS SECTION (2x2 SYMMETRIC)
    ================================ */
 
+
 /* ================================
    ACTIVITIES GRID (6-ITEM LAYOUT)
    Desktop: 2x3 (2 columns, 3 rows) | Mobile: stacked
@@ -906,7 +896,9 @@ header {
     margin: 0;
 }
 
+
 /* Tablet: 2 columns x 3 rows */
+
 @media (max-width: 900px) {
     .activities-grid-container {
         grid-template-columns: repeat(2, 1fr);
@@ -936,7 +928,9 @@ header {
     width: 100% !important;
 }
 
+
 /* Tablet: 2 columns */
+
 @media (max-width: 900px) {
     .rooms-grid,
     .rooms-grid-responsive {
@@ -964,12 +958,15 @@ header {
     margin-top: auto;
 }
 
+
 /* Room description text styling */
+
 .room-description {
     font-size: 1.2rem;
     line-height: 1.8;
     margin-bottom: 2rem;
-    text-align: right; /* RTL-friendly for Hebrew */
+    text-align: right;
+    /* RTL-friendly for Hebrew */
 }
 
 .room-card:hover {
@@ -1415,9 +1412,7 @@ body::after {
         padding-left: 1.5rem;
         padding-right: 1.5rem;
     }
-    
     /* Hamburger & nav handled by navbar.css */
-    
     .section {
         padding: var(--spacing-xl) var(--spacing-lg);
     }
@@ -1520,7 +1515,6 @@ body::after {
         font-size: 0.9rem;
         line-height: 1.5;
     }
-    
     /* Hamburger & nav handled by navbar.css */
     .hero {
         min-height: 60vh;
