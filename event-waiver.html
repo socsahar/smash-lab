@@ -2243,6 +2243,7 @@
 
             const templateParams = {
                 to_email: window.ENV_CONFIG.EMAIL_TO,
+                email_subject: 'אירוע ' + (eventTitle || '') + ' — ' + waiverData.fullName + (isMinor ? ' (קטין)' : ''),
                 order_id: 'EVT-' + eventId,
                 full_name: waiverData.fullName + (isMinor ? ' (קטין)' : ''),
                 id_number: waiverData.idNumber,

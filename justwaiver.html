@@ -1630,6 +1630,7 @@
                 // Send email
                 const templateParams = {
                     to_email: window.ENV_CONFIG.EMAIL_TO,
+                    email_subject: 'טופס ויתור בתוך המתחם — ' + waiverData.fullName + (isMinor ? ' (קטין)' : ''),
                     order_id: 'QR Code - No Booking',
                     full_name: waiverData.fullName + (isMinor ? ' (\u05e7\u05d8\u05d9\u05df)' : ''),
                     id_number: waiverData.idNumber,

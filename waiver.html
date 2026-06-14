@@ -1995,6 +1995,7 @@
             
             const templateParams = {
                 to_email: window.ENV_CONFIG.EMAIL_TO,
+                email_subject: 'קונה ONLINE — ' + waiverData.fullName + (isMinor ? ' (קטין)' : ''),
                 order_id: order.orderId || 'ללא מספר',
                 full_name: waiverData.fullName + (isMinor ? ' (קטין)' : ''),
                 id_number: waiverData.idNumber,
