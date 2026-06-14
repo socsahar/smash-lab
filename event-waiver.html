@@ -2246,7 +2246,7 @@
                     const dd = String(d.getDate()).padStart(2, '0');
                     const mm = String(d.getMonth() + 1).padStart(2, '0');
                     const yyyy = d.getFullYear();
-                    eventDateShort = dd + '/' + mm + '/' + yyyy;
+                    eventDateShort = dd + '.' + mm + '.' + yyyy;
                 }
             }
             const signedCount = (evRecord && evRecord.signatures) ? evRecord.signatures.length : 0;
@@ -2254,7 +2254,7 @@
 
             const templateParams = {
                 to_email: window.ENV_CONFIG.EMAIL_TO,
-                email_subject: (eventDateShort ? eventDateShort + ' - ' : '') + (eventTitle || '') + ' — ' + waiverData.fullName + (isMinor ? ' (קטין)' : ''),
+                email_subject: waiverData.fullName + (isMinor ? ' (קטין)' : '') + ' — ' + (eventTitle || '') + (eventDateShort ? ' - ' + eventDateShort : ''),
                 order_id: 'EVT-' + eventId,
                 full_name: waiverData.fullName + (isMinor ? ' (קטין)' : ''),
                 id_number: waiverData.idNumber,
