@@ -259,7 +259,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Hide login section and account creation section
                     const hasAccountSection = hasAccountCheckbox.closest('.form-group');
-                    const createAccountSection = document.getElementById('create-account') ? .closest('.form-group');
+                    const createAccountEl = document.getElementById('create-account');
+                    const createAccountSection = createAccountEl && createAccountEl.closest('.form-group');
                     if (hasAccountSection) hasAccountSection.style.display = 'none';
                     if (createAccountSection) createAccountSection.style.display = 'none';
 

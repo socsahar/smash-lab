@@ -1348,6 +1348,32 @@
         
         .events-container {
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .events-container .section-title {
+            order: 0;
+        }
+        
+        .events-container .event-form-card {
+            order: 1;
+        }
+        
+        .events-container .events-list-section {
+            order: 2;
+        }
+        /* On phones the create-event form is very tall and pushes the search +
+           signatures list far off-screen, so admins think the search is missing.
+           Show the events list (with its search box) first on mobile. */
+        
+        @media (max-width: 768px) {
+            .events-container .events-list-section {
+                order: 1;
+            }
+            .events-container .event-form-card {
+                order: 2;
+            }
         }
         
         .event-form-card {

@@ -5,8 +5,10 @@
  */
 
 // Get config from window.ENV_CONFIG (loaded by config.js)
-const SUPABASE_URL = window.ENV_CONFIG ? .SUPABASE_URL || 'https://aquhidjcuxkhkwosfvgf.supabase.co';
-const SUPABASE_ANON_KEY = window.ENV_CONFIG ? .SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxdWhpZGpjdXhraGt3b3NmdmdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyODk5MjgsImV4cCI6MjA4NDg2NTkyOH0.qyUyRWFn6cpLL43ZgmLdJwfkq6UfAK_weNdb7Oclnps';
+// NOTE: avoid optional chaining (?.) here — the repo auto-formatter rewrites it to `? .`
+// which is a syntax error that kills this whole file (breaking login). Use explicit guards.
+const SUPABASE_URL = (window.ENV_CONFIG && window.ENV_CONFIG.SUPABASE_URL) || 'https://aquhidjcuxkhkwosfvgf.supabase.co';
+const SUPABASE_ANON_KEY = (window.ENV_CONFIG && window.ENV_CONFIG.SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxdWhpZGpjdXhraGt3b3NmdmdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyODk5MjgsImV4cCI6MjA4NDg2NTkyOH0.qyUyRWFn6cpLL43ZgmLdJwfkq6UfAK_weNdb7Oclnps';
 
 // Load Supabase from CDN
 const script = document.createElement('script');
