@@ -2238,12 +2238,23 @@
             const eventDate = (evRecord && evRecord.datetime)
                 ? new Date(evRecord.datetime).toLocaleString('he-IL', { dateStyle: 'short', timeStyle: 'short' })
                 : '';
+            // Date-only (DD/MM/YYYY) for the email subject line
+            let eventDateShort = '';
+            if (evRecord && evRecord.datetime) {
+                const d = new Date(evRecord.datetime);
+                if (!isNaN(d.getTime())) {
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const yyyy = d.getFullYear();
+                    eventDateShort = dd + '/' + mm + '/' + yyyy;
+                }
+            }
             const signedCount = (evRecord && evRecord.signatures) ? evRecord.signatures.length : 0;
             const totalParticipants = (evRecord && evRecord.participants) || 0;
 
             const templateParams = {
                 to_email: window.ENV_CONFIG.EMAIL_TO,
-                email_subject: 'אירוע ' + (eventTitle || '') + ' — ' + waiverData.fullName + (isMinor ? ' (קטין)' : ''),
+                email_subject: (eventDateShort ? eventDateShort + ' - ' : '') + (eventTitle || '') + ' — ' + waiverData.fullName + (isMinor ? ' (קטין)' : ''),
                 order_id: 'EVT-' + eventId,
                 full_name: waiverData.fullName + (isMinor ? ' (קטין)' : ''),
                 id_number: waiverData.idNumber,
